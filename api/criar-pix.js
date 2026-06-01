@@ -21,11 +21,9 @@ export default async function handler(req, res) {
     })
     const data = await r.json().catch(() => ({}))
     if (!r.ok) {
-      const msg = data?.message || data?.error
-        || (data?.errors ? JSON.stringify(data.errors) : '')
-        || `HTTP ${r.status}`
-      console.error('[BravoPay] erro criar transação', r.status, data)
-      return res.status(r.status).json({ error: `BravoPay (${r.status}): ${msg}`, status: r.status, detail: data })
+      const raw = data && Object.keys(data).length ? JSON.stringify(data) : `HTTP ${r.status}`
+      console.error('[BravoPay] erro criar transação', r.status, raw)
+      return res.status(r.status).json({ error: `BravoPay (${r.status}): ${raw}`, status: r.status, detail: data })
     }
 
     // devolve só o necessário para o checkout
