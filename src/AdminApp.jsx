@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Sidebar from './components/Sidebar.jsx'
 import Topbar from './components/Topbar.jsx'
+import { logout } from './auth.js'
 import Dashboard from './pages/Dashboard.jsx'
 import Analises from './pages/Analises.jsx'
 import Custos from './pages/Custos.jsx'
@@ -28,18 +30,24 @@ export default function AdminApp() {
   const [page, setPage] = useState('dashboard')
   const live = useLiveCount()
   const mainRef = useRef(null)
+  const navigate = useNavigate()
   const [title, sub] = pageTitles[page]
 
   useEffect(() => {
     mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
   }, [page])
 
+  function handleLogout() {
+    logout()
+    navigate('/')
+  }
+
   const Page = PAGES[page]
 
   return (
     <div className="app">
       <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
-      <Sidebar page={page} onSelect={setPage} liveCount={live.atCheckout} />
+      <Sidebar page={page} onSelect={setPage} liveCount={live.atCheckout} onLogout={handleLogout} />
       <main className="main" ref={mainRef}>
         <Topbar title={title} sub={sub} />
         <section

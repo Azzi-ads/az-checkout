@@ -7,7 +7,7 @@ const SECTIONS = [
   {
     label: 'Principal',
     items: [
-      { id: 'dashboard', label: 'Início', icon: 'dashboard' },
+      { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
       {
         id: 'analises', label: 'Análises', icon: 'chart',
         children: [
@@ -74,7 +74,7 @@ function NavGroup({ item, page, onSelect }) {
   )
 }
 
-export default function Sidebar({ page, onSelect, liveCount }) {
+export default function Sidebar({ page, onSelect, liveCount, onLogout }) {
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -107,6 +107,9 @@ export default function Sidebar({ page, onSelect, liveCount }) {
         <div className="user">
           <div className="av" aria-hidden="true">{currentUser.initials}</div>
           <div className="meta"><b>{currentUser.name}</b><span>{currentUser.plan}</span></div>
+          <button type="button" className="logout" onClick={onLogout} aria-label="Sair da conta" title="Sair">
+            <Icon name="arrowLeft" />
+          </button>
         </div>
       </div>
     </aside>

@@ -176,7 +176,7 @@ export default function Checkout() {
           <div className="ck-done-val">
             <span>Total pago</span><b className="num">{formatBRL(total)}</b>
           </div>
-          <Link to="/" className="btn btn-primary">Voltar ao painel</Link>
+          <Link to="/app" className="btn btn-primary">Voltar ao painel</Link>
         </div>
       </CheckoutShell>
     )
@@ -291,7 +291,7 @@ function CheckoutShell({ children, mmss, hideTimer }) {
         </div>
       )}
       <header className="ck-top">
-        <Link to="/" className="ck-back" aria-label="Voltar ao painel"><Icon name="arrowLeft" /></Link>
+        <Link to="/app" className="ck-back" aria-label="Voltar ao painel"><Icon name="arrowLeft" /></Link>
         <img className="ck-logo" src="/logo-wide.png" alt="AZ Checkout" width="1921" height="819" />
         <span className="ck-safe"><Icon name="lock" />Compra segura</span>
       </header>

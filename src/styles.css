@@ -580,3 +580,61 @@ body::before{
   .metrics,.health,.cost-auto,.cost-manual{grid-template-columns:1fr}
   .geo-nm{width:92px;flex-basis:92px}
 }
+
+/* botão de logout na sidebar */
+.user{position:relative}
+.logout{
+  margin-left:auto;display:grid;place-items:center;width:32px;height:32px;flex:0 0 32px;
+  border-radius:9px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted);transition:.15s;
+}
+.logout:hover{background:var(--surface-3);color:var(--red)}
+.logout svg{width:16px;height:16px}
+
+/* ===================================================================
+   Login / entrada
+   =================================================================== */
+.login{min-height:100vh;display:grid;grid-template-columns:1.05fr .95fr;position:relative;z-index:1}
+.login-hero{
+  display:flex;flex-direction:column;justify-content:center;gap:18px;padding:56px clamp(28px,6vw,84px);
+  background:linear-gradient(160deg,var(--surface),var(--bg));border-right:1px solid var(--line);
+}
+.login-logo{width:188px;height:auto;border-radius:12px;margin-bottom:6px}
+.login-hero h1{font-size:40px;font-weight:800;line-height:1.06}
+.login-hero h1 b{color:var(--yellow)}
+.login-hero>p{color:var(--muted);font-size:15px;font-weight:500;max-width:440px;line-height:1.55}
+.login-feats{list-style:none;display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.login-feats li{display:flex;align-items:flex-start;gap:11px;font-size:14px;font-weight:600}
+.login-feats svg{width:18px;height:18px;color:var(--yellow);flex:0 0 18px;margin-top:1px}
+.login-trust{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-size:12.5px;font-weight:600;color:var(--muted-2)}
+.login-trust svg{width:15px;height:15px;color:var(--green)}
+
+.login-panel{display:flex;align-items:center;justify-content:center;padding:40px 24px}
+.login-card{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px}
+.login-tabs{display:flex;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:4px;margin-bottom:20px}
+.login-tabs button{flex:1;appearance:none;background:none;border:0;color:var(--muted);font-weight:700;font-size:13.5px;padding:9px;border-radius:8px;transition:.15s}
+.login-tabs button.on{background:var(--yellow);color:#000}
+.login-card h2{font-size:22px;font-weight:800}
+.login-sub{color:var(--muted);font-size:13.5px;margin:5px 0 20px;font-weight:500}
+.login-forgot{display:inline-block;font-size:12.5px;font-weight:600;color:var(--muted);margin:2px 0 4px}
+.login-forgot:hover{color:var(--yellow)}
+.login-btn{width:100%;justify-content:center;padding:14px;font-size:15px;margin-top:14px}
+.login-alt{text-align:center;font-size:13px;color:var(--muted);margin-top:16px;font-weight:500}
+.login-alt button{appearance:none;background:none;border:0;color:var(--yellow);font-weight:700;font-size:13px;cursor:pointer}
+.login-demo{display:block;text-align:center;margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:13px;font-weight:600;color:var(--muted-2)}
+.login-demo:hover{color:var(--text)}
+
+@media(max-width:840px){
+  .login{grid-template-columns:1fr}
+  .login-hero{border-right:0;border-bottom:1px solid var(--line);padding:40px 28px;gap:14px}
+  .login-hero h1{font-size:30px}
+  .login-feats{display:none}
+}
+
+/* ===================================================================
+   Densidade global — reduz ~7% o tamanho geral (fontes + espaçamentos).
+   Compensa a altura para não sobrar faixa em branco no rodapé.
+   =================================================================== */
+.app,.ck-page,.login{zoom:.93}
+.app{height:calc(100vh / .93)}
+.ck-page{height:calc(100vh / .93)}
+.login{height:calc(100vh / .93);min-height:0;overflow-y:auto}
