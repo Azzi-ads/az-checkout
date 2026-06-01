@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     const r = await fetch(`${BASE}/transactions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-      body: JSON.stringify({ product_id, amount_cents, method: 'PIX', customer, utm, fbclid, ttclid, gclid }),
+      body: JSON.stringify({ product_id, amount_cents, method: 'pix', customer, utm, fbclid, ttclid, gclid }),
     })
     const data = await r.json().catch(() => ({}))
     if (!r.ok) {
