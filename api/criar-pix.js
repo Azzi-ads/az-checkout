@@ -20,7 +20,13 @@ export default async function handler(req, res) {
       body: JSON.stringify({ product_id, amount_cents, method: 'PIX', customer, utm, fbclid, ttclid, gclid }),
     })
     const data = await r.json().catch(() => ({}))
-    if (!r.ok) return res.status(r.status).json({ error: data?.message || 'Erro ao criar transação no BravoPay.', detail: data })
+    if (!r.ok) {
+      const msg = data?.message || data?.error
+        || (data?.errors ? JSON.stringify(data.errors) : '')
+        || `HTTP ${r.status}`
+      console.error('[BravoPay] erro criar transação', r.status, data)
+      return res.status(r.status).json({ error: `BravoPay (${r.status}): ${msg}`, status: r.status, detail: data })
+    }
 
     // devolve só o necessário para o checkout
     return res.status(200).json({
