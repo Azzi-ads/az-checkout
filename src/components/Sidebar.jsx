@@ -22,13 +22,9 @@ const SECTIONS = [
         ],
       },
       { id: 'livex', label: 'Livex', icon: 'livex', live: true },
-      {
-        id: 'checkout', label: 'Checkout', icon: 'card',
-        children: [
-          { id: 'produtos', label: 'Produtos', icon: 'produtos' },
-          { id: 'integracoes', label: 'Integrações', icon: 'store' },
-        ],
-      },
+      { id: 'produtos', label: 'Produtos', icon: 'produtos' },
+      { id: 'checkout', label: 'Checkout', icon: 'card' },
+      { id: 'integracoes', label: 'Integrações', icon: 'store' },
       { id: 'vendas', label: 'Vendas', icon: 'vendas' },
       { id: 'config', label: 'Configurações', icon: 'config' },
     ],

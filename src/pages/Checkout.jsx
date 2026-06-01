@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import Icon from '../components/Icon.jsx'
 import { products as seedProducts, checkoutDescriptions, installments, formatBRL } from '../data.js'
 import { getProducts } from '../store.js'
@@ -75,7 +75,6 @@ function Frame({ children, preview, styleVars, showTimer, mmss }) {
         <div className="ck-timer"><Icon name="bolt" /> Oferta por tempo limitado — expira em <b className="num">{mmss}</b></div>
       )}
       <header className="ck-top">
-        <Link to="/app" className="ck-back" aria-label="Voltar ao painel"><Icon name="arrowLeft" /></Link>
         <img className="ck-logo" src="/logo-wide.png" alt="AZ Checkout" width="1921" height="819" />
         <span className="ck-safe"><Icon name="lock" />Compra segura</span>
       </header>
@@ -251,7 +250,7 @@ export function CheckoutView({ product, preview = false }) {
           <h2>Pagamento confirmado! 🎉</h2>
           <p className="ck-muted">Enviamos o acesso de <b>{product.name}</b> para <b>{data.email || 'seu e-mail'}</b>.</p>
           <div className="ck-done-val"><span>Total pago</span><b className="num">{formatBRL(total)}</b></div>
-          {!preview && <Link to="/app" className="btn btn-primary">Voltar ao painel</Link>}
+          <p className="ck-muted">Você já pode fechar esta página.</p>
         </div>
       </Frame>
     )

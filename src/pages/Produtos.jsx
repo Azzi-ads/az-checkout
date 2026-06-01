@@ -3,24 +3,23 @@ import { Link } from 'react-router-dom'
 import Icon from '../components/Icon.jsx'
 import { formatBRL } from '../data.js'
 import { getProducts, saveProducts } from '../store.js'
-import ProductEditor from './ProductEditor.jsx'
+import ProductForm from './ProductForm.jsx'
 
 function slugify(s) {
   return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'produto'
 }
-function uniqueSlug(base, products, ignore) {
+function uniqueSlug(base, products) {
   let slug = base, i = 2
-  while (products.some((p) => p.slug === slug && p.slug !== ignore)) slug = `${base}-${i++}`
+  while (products.some((p) => p.slug === slug)) slug = `${base}-${i++}`
   return slug
 }
 
 function CheckoutLinkRow({ slug }) {
   const [copied, setCopied] = useState(false)
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
-  const url = `${origin}/checkout/${slug}`
   function copy() {
-    navigator.clipboard?.writeText(url)
+    navigator.clipboard?.writeText(`${origin}/checkout/${slug}`)
     setCopied(true); setTimeout(() => setCopied(false), 2000)
   }
   return (
@@ -36,9 +35,7 @@ function CheckoutLinkRow({ slug }) {
 function ProductCard({ p, onEdit, onDelete }) {
   return (
     <div className="card prod">
-      <div className="thumb">
-        {p.image ? <img src={p.image} alt="" /> : <Icon name={p.icon} strokeWidth={1.6} />}
-      </div>
+      <div className="thumb">{p.image ? <img src={p.image} alt="" /> : <Icon name={p.icon} strokeWidth={1.6} />}</div>
       <div className="prod-tools">
         <button type="button" onClick={() => onEdit(p)} aria-label={`Editar ${p.name}`} title="Editar"><Icon name="edit" /></button>
         <button type="button" className="del" onClick={() => onDelete(p)} aria-label={`Apagar ${p.name}`} title="Apagar"><Icon name="trash" /></button>
@@ -58,13 +55,12 @@ function ProductCard({ p, onEdit, onDelete }) {
 
 export default function Produtos() {
   const [products, setProducts] = useState(() => getProducts())
-  const [view, setView] = useState('list') // list | editor
+  const [modal, setModal] = useState(false)
   const [editing, setEditing] = useState(null)
 
   function persist(next) { setProducts(next); saveProducts(next) }
-
-  function openNew() { setEditing(null); setView('editor') }
-  function openEdit(p) { setEditing(p); setView('editor') }
+  function openNew() { setEditing(null); setModal(true) }
+  function openEdit(p) { setEditing(p); setModal(true) }
 
   function handleSave(draft) {
     const price = formatBRL(Number(draft.amount))
@@ -78,16 +74,12 @@ export default function Produtos() {
       next = [{ ...base, slug, meta: '0 vendas' }, ...products]
     }
     persist(next)
-    setView('list')
+    setModal(false)
   }
 
   function handleDelete(p) {
     if (!window.confirm(`Apagar "${p.name}"? Essa ação não pode ser desfeita.`)) return
     persist(products.filter((x) => x.slug !== p.slug))
-  }
-
-  if (view === 'editor') {
-    return <ProductEditor product={editing} onSave={handleSave} onCancel={() => setView('list')} />
   }
 
   return (
@@ -101,16 +93,16 @@ export default function Produtos() {
         <div className="card empty">
           <Icon name="produtos" />
           <p>Você ainda não tem produtos</p>
-          <span>Crie seu primeiro produto e personalize o checkout dele.</span>
+          <span>Crie seu primeiro produto. Depois é só personalizar o checkout na aba Checkout.</span>
           <button type="button" className="btn btn-primary" style={{ marginTop: 14 }} onClick={openNew}><Icon name="plus" />Criar primeiro produto</button>
         </div>
       ) : (
         <div className="grid prod-grid">
-          {products.map((p) => (
-            <ProductCard key={p.slug} p={p} onEdit={openEdit} onDelete={handleDelete} />
-          ))}
+          {products.map((p) => <ProductCard key={p.slug} p={p} onEdit={openEdit} onDelete={handleDelete} />)}
         </div>
       )}
+
+      {modal && <ProductForm product={editing} onSave={handleSave} onClose={() => setModal(false)} />}
     </>
   )
 }

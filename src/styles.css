@@ -840,3 +840,22 @@ body::before{
 .copy-field input{flex:1;min-width:0;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;color:var(--text);font-family:inherit;font-size:13px;outline:none}
 .copy-field .btn{white-space:nowrap}
 @media(max-width:720px){.integ-grid{grid-template-columns:1fr}}
+
+/* ===== Aba Checkout: seleção de produto ===== */
+.pick-grid{grid-template-columns:repeat(3,1fr)}
+.pick-card{display:flex;align-items:center;gap:13px;text-align:left;appearance:none;color:var(--text);transition:.16s;cursor:pointer}
+.pick-card:hover{border-color:var(--yellow);transform:translateY(-2px)}
+.pick-thumb{width:46px;height:46px;flex:0 0 46px;border-radius:11px;overflow:hidden;display:grid;place-items:center;background:linear-gradient(135deg,var(--surface-3),var(--surface-2));border:1px solid var(--line)}
+.pick-thumb img{width:100%;height:100%;object-fit:cover}
+.pick-thumb svg{width:22px;height:22px;color:var(--yellow)}
+.pick-body{flex:1;min-width:0}
+.pick-body b{display:block;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pick-body span{font-size:12.5px;color:var(--muted-2);font-weight:600}
+.pick-cta{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--yellow);white-space:nowrap}
+.pick-cta svg{width:14px;height:14px}
+@media(max-width:1080px){.pick-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){.pick-grid{grid-template-columns:1fr}}
+
+/* botão-link inline (ex.: "buscar" no rótulo) */
+.link-btn{appearance:none;background:none;border:0;color:var(--yellow);font-weight:700;font-size:12px;cursor:pointer;margin-left:6px}
+.link-btn:disabled{opacity:.6;cursor:default}
