@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AZ Checkout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="mark">AZ</div>
+      <div class="name">AZ <b>Checkout</b><small>Plataforma</small></div>
+    </div>
+
+    <div class="nav-label">Menu</div>
+    <button class="nav-item active" data-page="dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      Início
+    </button>
+    <button class="nav-item" data-page="livex">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5"/></svg>
+      Livex
+      <span class="badge"><span class="dot"></span><span id="liveBadge">12</span></span>
+    </button>
+    <button class="nav-item" data-page="produtos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>
+      Produtos
+    </button>
+    <button class="nav-item" data-page="vendas">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19V5M20 19V11M12 19V8"/><path d="M3 21h18"/></svg>
+      Vendas
+    </button>
+    <button class="nav-item" data-page="config">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.6 1.6 0 0 0 4.6 15H4.5a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 6 8.3l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 11 4.6V4.5a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7h.1a2 2 0 1 1 0 4h-.1"/></svg>
+      Configurações
+    </button>
+
+    <div class="nav-label">Conta</div>
+    <button class="nav-item" data-page="planos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2l2.6 6.3L21 9l-5 4.3L17.5 21 12 17l-5.5 4L8 13.3 3 9l6.4-.7L12 2z"/></svg>
+      Planos
+    </button>
+
+    <div class="side-foot">
+      <div class="user">
+        <div class="av">L</div>
+        <div class="meta"><b>Lucas</b><span>Plano Prime</span></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="ptitle">Início</h1>
+        <div class="sub" id="psub">Visão geral da sua operação</div>
+      </div>
+      <div class="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input placeholder="Buscar...">
+      </div>
+      <button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Novo</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <section class="page active" id="dashboard">
+      <div class="grid kpis">
+        <div class="card kpi">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="lbl">Faturamento hoje</div>
+          <div class="val num">R$ 18.430</div>
+          <div class="delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 15l7-7 7 7"/></svg>+12,4%</div>
+        </div>
+        <div class="card kpi">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 7h14l-1.5 11a2 2 0 0 1-2 1.8H8.5a2 2 0 0 1-2-1.8L5 7z"/><path d="M9 7V5a3 3 0 0 1 6 0v2"/></svg></div>
+          <div class="lbl">Pedidos pagos</div>
+          <div class="val num">312</div>
+          <div class="delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 15l7-7 7 7"/></svg>+8,1%</div>
+        </div>
+        <div class="card kpi">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg></div>
+          <div class="lbl">Ticket médio</div>
+          <div class="val num">R$ 59,07</div>
+          <div class="delta up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 15l7-7 7 7"/></svg>+3,9%</div>
+        </div>
+        <div class="card kpi">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div>
+          <div class="lbl">Taxa de conversão</div>
+          <div class="val num">4,7%</div>
+          <div class="delta down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M19 9l-7 7-7-7"/></svg>-0,6%</div>
+        </div>
+      </div>
+
+      <div class="grid row2">
+        <div class="card">
+          <div class="card-head"><h3>Faturamento — 7 dias</h3><span class="pill">R$ 112.940 no período</span></div>
+          <svg class="chart" viewBox="0 0 640 220" preserveAspectRatio="none">
+            <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(255,212,0,.34)"/><stop offset="100%" stop-color="rgba(255,212,0,0)"/>
+            </linearGradient></defs>
+            <line class="gl" x1="0" y1="40" x2="640" y2="40"/>
+            <line class="gl" x1="0" y1="95" x2="640" y2="95"/>
+            <line class="gl" x1="0" y1="150" x2="640" y2="150"/>
+            <path class="area" d="M0,150 L106,120 L213,135 L320,80 L426,95 L533,50 L640,65 L640,200 L0,200 Z"/>
+            <path class="line" d="M0,150 L106,120 L213,135 L320,80 L426,95 L533,50 L640,65"/>
+            <circle class="dot" cx="533" cy="50" r="5"/>
+          </svg>
+          <svg viewBox="0 0 640 20" style="width:100%;height:20px">
+            <text class="xlab" x="0" y="14">Seg</text><text class="xlab" x="100" y="14">Ter</text>
+            <text class="xlab" x="207" y="14">Qua</text><text class="xlab" x="314" y="14">Qui</text>
+            <text class="xlab" x="420" y="14">Sex</text><text class="xlab" x="527" y="14">Sáb</text><text class="xlab" x="612" y="14">Dom</text>
+          </svg>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Vendas recentes</h3></div>
+          <div class="feed">
+            <div class="it"><div class="av">JM</div><div><div class="who">João M.</div><div class="what">Curso de Tráfego Pago · há 2 min</div></div><div class="amt num">R$ 297</div></div>
+            <div class="it"><div class="av">AS</div><div><div class="who">Ana S.</div><div class="what">E-book Finanças · há 9 min</div></div><div class="amt num">R$ 47</div></div>
+            <div class="it"><div class="av">RP</div><div><div class="who">Rafael P.</div><div class="what">Mentoria Premium · há 21 min</div></div><div class="amt num">R$ 1.997</div></div>
+            <div class="it"><div class="av">CL</div><div><div class="who">Carla L.</div><div class="what">Pack Templates · há 38 min</div></div><div class="amt num">R$ 89</div></div>
+            <div class="it"><div class="av">DF</div><div><div class="who">Diego F.</div><div class="what">Curso de Tráfego Pago · há 51 min</div></div><div class="amt num">R$ 297</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIVEX -->
+    <section class="page" id="livex">
+      <div class="live-hero">
+        <div class="live-ring"><span class="pulse"></span><b id="liveBig">12</b></div>
+        <div class="txt">
+          <span class="live-now"><span class="dot"></span>AO VIVO AGORA</span>
+          <h3>Pessoas no checkout neste momento</h3>
+          <p>Acompanhe em tempo real quem está finalizando uma compra e onde cada pessoa está parada no fluxo.</p>
+        </div>
+      </div>
+
+      <div class="grid kpis" style="margin-top:16px">
+        <div class="card kpi"><div class="lbl">No checkout</div><div class="val num" id="lv1">12</div></div>
+        <div class="card kpi"><div class="lbl">Em pagamento</div><div class="val num" id="lv2">4</div></div>
+        <div class="card kpi"><div class="lbl">Abandonos (1h)</div><div class="val num">37</div></div>
+        <div class="card kpi"><div class="lbl">Conversão ao vivo</div><div class="val num">31%</div></div>
+      </div>
+
+      <div class="grid row2">
+        <div class="card">
+          <div class="card-head"><h3>Sessões ativas</h3><span class="pill">Atualiza em tempo real</span></div>
+          <table class="tbl">
+            <thead><tr><th>Visitante</th><th>Produto</th><th>Etapa</th><th>Tempo</th><th>Valor</th></tr></thead>
+            <tbody>
+              <tr><td>Visitante #4821</td><td>Mentoria Premium</td><td><span class="tag pend"><span class="d"></span>Pagamento</span></td><td class="num">1m 12s</td><td class="num">R$ 1.997</td></tr>
+              <tr><td>Visitante #4822</td><td>Curso de Tráfego</td><td><span class="tag pago"><span class="d"></span>Dados</span></td><td class="num">42s</td><td class="num">R$ 297</td></tr>
+              <tr><td>Visitante #4823</td><td>E-book Finanças</td><td><span class="tag pend"><span class="d"></span>Pagamento</span></td><td class="num">2m 03s</td><td class="num">R$ 47</td></tr>
+              <tr><td>Visitante #4824</td><td>Pack Templates</td><td><span class="tag pago"><span class="d"></span>Carrinho</span></td><td class="num">18s</td><td class="num">R$ 89</td></tr>
+              <tr><td>Visitante #4825</td><td>Curso de Tráfego</td><td><span class="tag pago"><span class="d"></span>Dados</span></td><td class="num">1m 30s</td><td class="num">R$ 297</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Funil ao vivo</h3></div>
+          <div class="funnel">
+            <div class="step"><div class="nm">Entrou no checkout</div><div class="bar"><div class="fill" style="width:100%">48</div></div></div>
+            <div class="step"><div class="nm">Preencheu dados</div><div class="bar"><div class="fill" style="width:64%">31</div></div></div>
+            <div class="step"><div class="nm">Foi p/ pagamento</div><div class="bar"><div class="fill" style="width:33%">16</div></div></div>
+            <div class="step"><div class="nm">Compra aprovada</div><div class="bar"><div class="fill" style="width:23%">11</div></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRODUTOS -->
+    <section class="page" id="produtos">
+      <div class="card-head"><h3 style="font-size:18px">Seus produtos</h3><button class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Adicionar produto</button></div>
+      <div class="grid prod-grid">
+        <div class="card prod"><div class="thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16v12H4z"/><path d="M4 10h16"/></svg></div><div class="body"><h4>Curso de Tráfego Pago</h4><div class="price num">R$ 297,00</div><div class="meta"><span class="tag pago"><span class="d"></span>Ativo</span><span>1.204 vendas</span></div></div></div>
+        <div class="card prod"><div class="thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 4h11l3 3v13H5z"/><path d="M9 9h6M9 13h6"/></svg></div><div class="body"><h4>E-book Finanças</h4><div class="price num">R$ 47,00</div><div class="meta"><span class="tag pago"><span class="d"></span>Ativo</span><span>3.890 vendas</span></div></div></div>
+        <div class="card prod"><div class="thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></svg></div><div class="body"><h4>Mentoria Premium</h4><div class="price num">R$ 1.997,00</div><div class="meta"><span class="tag pago"><span class="d"></span>Ativo</span><span>86 vendas</span></div></div></div>
+        <div class="card prod"><div class="thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 9v11"/></svg></div><div class="body"><h4>Pack de Templates</h4><div class="price num">R$ 89,00</div><div class="meta"><span class="tag pend"><span class="d"></span>Rascunho</span><span>540 vendas</span></div></div></div>
+        <div class="card prod"><div class="thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 10l9-6 9 6-9 6-9-6z"/><path d="M3 14l9 6 9-6"/></svg></div><div class="body"><h4>Comunidade VIP</h4><div class="price num">R$ 39,90<small style="font-size:13px;color:var(--muted)">/mês</small></div><div class="meta"><span class="tag pago"><span class="d"></span>Ativo</span><span>412 assinantes</span></div></div></div>
+        <div class="card prod"><div class="thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M3 12h18"/></svg></div><div class="body"><h4>Novo produto</h4><div class="price" style="color:var(--muted-2)">Criar agora</div><div class="meta"><span>Configure em minutos</span></div></div></div>
+      </div>
+    </section>
+
+    <!-- VENDAS -->
+    <section class="page" id="vendas">
+      <div class="chips">
+        <button class="chip on">Todas</button><button class="chip">Pagas</button><button class="chip">Pendentes</button><button class="chip">Reembolsadas</button>
+      </div>
+      <div class="card">
+        <table class="tbl">
+          <thead><tr><th>Pedido</th><th>Cliente</th><th>Produto</th><th>Valor</th><th>Status</th><th>Data</th></tr></thead>
+          <tbody>
+            <tr><td class="id">#AZ-10428</td><td>João Martins</td><td>Curso de Tráfego Pago</td><td class="num">R$ 297,00</td><td><span class="tag pago"><span class="d"></span>Pago</span></td><td>01/06 · 14:32</td></tr>
+            <tr><td class="id">#AZ-10427</td><td>Ana Souza</td><td>E-book Finanças</td><td class="num">R$ 47,00</td><td><span class="tag pago"><span class="d"></span>Pago</span></td><td>01/06 · 14:25</td></tr>
+            <tr><td class="id">#AZ-10426</td><td>Rafael Pires</td><td>Mentoria Premium</td><td class="num">R$ 1.997,00</td><td><span class="tag pend"><span class="d"></span>Pendente</span></td><td>01/06 · 14:13</td></tr>
+            <tr><td class="id">#AZ-10425</td><td>Carla Lima</td><td>Pack de Templates</td><td class="num">R$ 89,00</td><td><span class="tag pago"><span class="d"></span>Pago</span></td><td>01/06 · 13:56</td></tr>
+            <tr><td class="id">#AZ-10424</td><td>Diego Ferreira</td><td>Curso de Tráfego Pago</td><td class="num">R$ 297,00</td><td><span class="tag reemb"><span class="d"></span>Reembolsado</span></td><td>01/06 · 13:40</td></tr>
+            <tr><td class="id">#AZ-10423</td><td>Bruna Alves</td><td>Comunidade VIP</td><td class="num">R$ 39,90</td><td><span class="tag pago"><span class="d"></span>Pago</span></td><td>01/06 · 13:21</td></tr>
+            <tr><td class="id">#AZ-10422</td><td>Marcos Reis</td><td>E-book Finanças</td><td class="num">R$ 47,00</td><td><span class="tag pago"><span class="d"></span>Pago</span></td><td>01/06 · 12:58</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CONFIGURAÇÕES -->
+    <section class="page" id="config">
+      <div class="grid set-grid">
+        <div class="card">
+          <div class="card-head"><h3>Dados da loja</h3></div>
+          <div class="field"><label>Nome da loja</label><input value="AZ Checkout"></div>
+          <div class="field"><label>E-mail de suporte</label><input value="suporte@azcheckout.com"></div>
+          <div class="field"><label>Moeda padrão</label><select><option>Real (BRL) — R$</option><option>Dólar (USD) — $</option></select></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Gateways de pagamento</h3></div>
+          <div class="toggle-row"><div class="t"><b>Pix</b><span>Aprovação instantânea</span></div><div class="sw on" data-sw></div></div>
+          <div class="toggle-row"><div class="t"><b>Cartão de crédito</b><span>Em até 12x</span></div><div class="sw on" data-sw></div></div>
+          <div class="toggle-row"><div class="t"><b>Boleto</b><span>Compensa em 1-2 dias úteis</span></div><div class="sw" data-sw></div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Aparência do checkout</h3></div>
+          <div class="field"><label>Cor principal</label><input value="#0a0a0b — Preto"></div>
+          <div class="field"><label>Cor de destaque</label><input value="#ffd400 — Amarelo"></div>
+          <div class="toggle-row"><div class="t"><b>Mostrar selo de segurança</b><span>Aumenta a confiança no pagamento</span></div><div class="sw on" data-sw></div></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Notificações</h3></div>
+          <div class="toggle-row"><div class="t"><b>Venda aprovada</b><span>Receba no e-mail e no app</span></div><div class="sw on" data-sw></div></div>
+          <div class="toggle-row"><div class="t"><b>Carrinho abandonado</b><span>Alerta após 30 min</span></div><div class="sw on" data-sw></div></div>
+          <div class="toggle-row"><div class="t"><b>Resumo diário</b><span>Todo dia às 9h</span></div><div class="sw" data-sw></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLANOS -->
+    <section class="page" id="planos">
+      <div class="plans-head">
+        <h2>Escolha o plano ideal</h2>
+        <p>Comece de graça e evolua conforme sua operação cresce. Sem surpresas, com taxas que diminuem quanto maior o seu plano.</p>
+      </div>
+      <div class="grid plans">
+        <!-- START -->
+        <div class="plan normal">
+          <div class="tagtop">Entrada essencial</div>
+          <h3>Plano Start</h3>
+          <div class="desc">Base essencial para iniciar a operação com a AZ Checkout sem mensalidade fixa.</div>
+          <div class="price">Gratuito</div>
+          <div class="fee">
+            <div class="fl">Taxa por pedido</div>
+            <div class="fv">2.5% <span style="font-size:13px;font-weight:600;color:var(--muted)">por pedido pago</span></div>
+            <div class="fn">Sem mensalidade fixa.</div>
+          </div>
+          <ul class="bens">
+            <li class="bt">Benefícios incluídos</li>
+            <li class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>Checkout AZ pronto para uso</li>
+            <li class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>Personalização completa dos temas</li>
+            <li class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>Integrações com gateways externos</li>
+            <li class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>Suporte via chat</li>
+          </ul>
+          <button class="btn btn-ghost cta">Começar grátis</button>
+        </div>
+
+        <!-- PRIME (featured) -->
+        <div class="plan feat">
+          <div class="recommend">Recomendado</div>
+          <div class="tagtop">Escolha inteligente</div>
+          <h3>Plano Prime</h3>
+          <div class="desc">Melhor equilíbrio entre mensalidade, taxa e recursos para crescer com previsibilidade.</div>
+          <div class="price">R$ 127,00<small>/mês</small></div>
+          <div class="fee">
+            <div class="fl">Taxa por pedido</div>
+            <div class="fv">2% <span style="font-size:13px;font-weight:600;color:var(--muted)">por pedido pago</span></div>
+            <div class="fn">Mais eficiência operacional.</div>
+          </div>
+          <ul class="bens">
+            <li class="bt">Benefícios incluídos</li>
+            <li class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>Tudo do plano Start</li>
+            <li class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>60 dias de histórico de carrinhos</li>
+            <li class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>Mais opções de integrações</li>
+            <li class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>Suporte prioritário via chat</li>
+          </ul>
+          <button class="btn btn-primary cta">Assinar o Prime</button>
+        </div>
+
+        <!-- ELITE -->
+        <div class="plan normal">
+          <div class="tagtop">Performance máxima</div>
+          <h3>Plano Elite</h3>
+          <div class="desc">Estrutura premium para operações que exigem mais suporte, flexibilidade e performance.</div>
+          <div class="price">R$ 387,00<small>/mês</small></div>
+          <div class="fee">
+            <div class="fl">Taxa por pedido</div>
+            <div class="fv">1.5% <span style="font-size:13px;font-weight:600;color:var(--muted)">por pedido pago</span></div>
+            <div class="fn">Mais estrutura e performance.</div>
+          </div>
+          <ul class="bens">
+            <li class="bt">Benefícios incluídos</li>
+            <li class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>Tudo do plano Prime</li>
+            <li class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>90 dias de histórico de carrinhos</li>
+            <li class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>Integrações ilimitadas</li>
+            <li class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>Acesso antecipado a novos recursos</li>
+          </ul>
+          <button class="btn btn-ghost cta">Assinar o Elite</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
