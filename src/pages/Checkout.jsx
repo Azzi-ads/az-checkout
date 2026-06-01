@@ -5,7 +5,7 @@ import { products as seedProducts, checkoutDescriptions, installments, formatBRL
 import { getProducts, getProfile } from '../store.js'
 import { themeVars } from '../theme.js'
 import { ensureCheckout } from '../checkoutConfig.js'
-import { ping, leave } from '../liveTracker.js'
+import { ping, leave, recordEvent } from '../liveTracker.js'
 
 /* máscaras */
 const d = (s) => s.replace(/\D/g, '')
@@ -119,6 +119,9 @@ export function CheckoutView({ product, preview = false }) {
   const [sid] = useState(() => Math.random().toString(36).slice(2, 8))
   const stepRef = useRef('Dados')
   stepRef.current = status === 'pix' ? 'Pagamento' : status === 'paid' ? 'Aprovado' : 'Dados'
+  const recordedRef = useRef(false)
+  const outcomeRef = useRef('abandoned')
+  const infoRef = useRef({})
 
   useEffect(() => {
     if (!cfg.timer || preview) return
@@ -206,16 +209,36 @@ export function CheckoutView({ product, preview = false }) {
     return () => clearInterval(id)
   }, [status, pixData, preview])
 
-  // Rastreio ao vivo: enquanto a pessoa está no checkout, manda "heartbeat".
+  // ---- Rastreio ao vivo + registro de métricas ----
+  if (status === 'paid') outcomeRef.current = 'paid'
+  infoRef.current = { product: product.name, amount: total, value: formatBRL(total), step: stepRef.current }
+
+  function endSession() {
+    if (recordedRef.current || preview) return
+    recordedRef.current = true
+    recordEvent({ ...infoRef.current, outcome: outcomeRef.current, ts: Date.now() })
+    leave(sid)
+  }
+
+  // heartbeat enquanto está no checkout (para o Livex ao vivo)
   useEffect(() => {
-    if (preview) return
-    const send = () => ping(sid, { product: product.name, step: stepRef.current, value: formatBRL(total) })
+    if (preview || status === 'paid') return
+    const send = () => { if (!recordedRef.current) ping(sid, infoRef.current) }
     send()
     const iv = setInterval(send, 4000)
-    const onUnload = () => leave(sid)
+    return () => clearInterval(iv)
+  }, [sid, preview, status, product.name, total])
+
+  // pagou → registra evento "paid"
+  useEffect(() => { if (status === 'paid') endSession() }, [status])
+
+  // saiu (fechou aba / navegou) → registra evento (abandono, se não pagou)
+  useEffect(() => {
+    if (preview) return
+    const onUnload = () => endSession()
     window.addEventListener('beforeunload', onUnload)
-    return () => { clearInterval(iv); leave(sid); window.removeEventListener('beforeunload', onUnload) }
-  }, [sid, preview, product.name, total])
+    return () => { endSession(); window.removeEventListener('beforeunload', onUnload) }
+  }, [preview])
 
   const trust = [
     { icon: 'shield', title: 'Compra 100% segura', desc: 'Seus dados são criptografados.' },

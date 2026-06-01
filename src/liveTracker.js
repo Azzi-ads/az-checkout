@@ -35,3 +35,19 @@ export function getLiveSessions() {
   write(map)
   return Object.entries(map).map(([id, v]) => ({ id, ...v }))
 }
+
+// ===== Histórico de eventos (para métricas 24h/7d/30d) =====
+const EV_KEY = 'az_live_events'
+
+export function recordEvent(e) {
+  try {
+    const arr = JSON.parse(localStorage.getItem(EV_KEY) || '[]')
+    arr.push(e)
+    const cut = Date.now() - 60 * 864e5 // mantém ~60 dias
+    const trimmed = arr.filter((x) => (x.ts || 0) >= cut).slice(-2000)
+    localStorage.setItem(EV_KEY, JSON.stringify(trimmed))
+  } catch { /* ignore */ }
+}
+export function getEvents() {
+  try { return JSON.parse(localStorage.getItem(EV_KEY) || '[]') } catch { return [] }
+}
