@@ -2,7 +2,13 @@ import { useRef, useState } from 'react'
 import Icon from '../components/Icon.jsx'
 import Toggle from '../components/Toggle.jsx'
 import { CheckoutView } from './Checkout.jsx'
+import { formatBRL } from '../data.js'
 import { ACCENTS, MODES } from '../theme.js'
+
+// Lê os campos do produto do BravoPay (o nome dos campos pode variar).
+const bvId = (p) => p.id || p.product_id || p.uuid || ''
+const bvName = (p) => p.name || p.title || p.description || bvId(p)
+const bvCents = (p) => (p.amount_cents != null ? p.amount_cents : (p.price != null ? Math.round(p.price * 100) : null))
 import {
   CHECKOUT_MODELS, FIELD_DEFS, METHOD_DEFS, applyModel, defaultCheckout, ensureCheckout,
 } from '../checkoutConfig.js'
@@ -25,7 +31,29 @@ export default function ProductEditor({ product, onSave, onCancel }) {
   const fileRef = useRef(null)
 
   const cfg = draft.checkout
+  const [bravoList, setBravoList] = useState(null)
+  const [loadingList, setLoadingList] = useState(false)
+  const [listError, setListError] = useState('')
   const setDraftF = (patch) => setDraft((d) => ({ ...d, ...patch }))
+
+  async function buscarProdutos() {
+    setLoadingList(true); setListError('')
+    try {
+      const r = await fetch('/api/produtos-bravo')
+      const j = await r.json()
+      if (!r.ok) throw new Error(j.error || 'Erro ao buscar produtos.')
+      setBravoList(j.products || [])
+    } catch (e) {
+      setListError(e.message)
+    } finally {
+      setLoadingList(false)
+    }
+  }
+  function escolherProduto(id) {
+    const p = (bravoList || []).find((x) => bvId(x) === id)
+    const cents = p ? bvCents(p) : null
+    setDraftF({ bravoProductId: id, ...(cents != null ? { amount: cents / 100 } : {}) })
+  }
   const setCfg = (patch) => setDraft((d) => ({ ...d, checkout: { ...d.checkout, ...patch } }))
   const setField = (k, v) => setCfg({ fields: { ...cfg.fields, [k]: v } })
   const setMethod = (k, v) => setCfg({ methods: { ...cfg.methods, [k]: v } })
@@ -92,14 +120,40 @@ export default function ProductEditor({ product, onSave, onCancel }) {
 
           {/* Integração de pagamento */}
           <section className="card">
-            <div className="card-head"><h3>Pagamento (BravoPay)</h3></div>
-            <div className="field">
-              <label htmlFor="pe-bravo">ID do produto no BravoPay</label>
-              <input id="pe-bravo" value={draft.bravoProductId || ''} onChange={(e) => setDraftF({ bravoProductId: e.target.value })} placeholder="Ex.: prod_xxx (do painel BravoPay)" />
-              <small style={{ display: 'block', marginTop: 6, fontSize: 12, color: 'var(--muted-2)' }}>
-                Encontre em bravopay.solutions/dashboard/produtos. Sem isso, o Pix real não é gerado.
-              </small>
+            <div className="card-head">
+              <h3>Pagamento (BravoPay)</h3>
+              <button type="button" className="btn btn-ghost" onClick={buscarProdutos} disabled={loadingList} style={{ fontSize: 12, padding: '8px 12px' }}>
+                <Icon name={loadingList ? 'refresh' : 'store'} />{loadingList ? 'Buscando…' : 'Buscar produtos'}
+              </button>
             </div>
+
+            {bravoList ? (
+              <div className="field">
+                <label htmlFor="pe-bravo-sel">Produto no BravoPay</label>
+                <select id="pe-bravo-sel" value={draft.bravoProductId || ''} onChange={(e) => escolherProduto(e.target.value)}>
+                  <option value="">Selecione um produto…</option>
+                  {bravoList.map((p) => (
+                    <option key={bvId(p)} value={bvId(p)}>
+                      {bvName(p)}{bvCents(p) != null ? ` — ${formatBRL(bvCents(p) / 100)}` : ''}
+                    </option>
+                  ))}
+                </select>
+                {bravoList.length === 0 && (
+                  <small style={{ display: 'block', marginTop: 6, fontSize: 12, color: 'var(--muted-2)' }}>
+                    Nenhum produto na sua conta BravoPay. Crie um em bravopay.solutions/dashboard/produtos.
+                  </small>
+                )}
+              </div>
+            ) : (
+              <div className="field">
+                <label htmlFor="pe-bravo">ID do produto no BravoPay</label>
+                <input id="pe-bravo" value={draft.bravoProductId || ''} onChange={(e) => setDraftF({ bravoProductId: e.target.value })} placeholder="Clique em “Buscar produtos” ou cole o ID" />
+                <small style={{ display: 'block', marginTop: 6, fontSize: 12, color: 'var(--muted-2)' }}>
+                  Dica: clique em “Buscar produtos” para escolher numa lista. Sem isso, o Pix real não é gerado.
+                </small>
+              </div>
+            )}
+            {listError && <p style={{ color: 'var(--red)', fontSize: 12, marginTop: 4, fontWeight: 600 }}>{listError}</p>}
           </section>
 
           {/* Modelo */}
