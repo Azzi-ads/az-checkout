@@ -744,3 +744,62 @@ body::before{
 .meta-val{font-size:12.5px;font-weight:800;white-space:nowrap}
 .meta-val span{color:var(--muted-2);font-weight:700}
 @media(max-width:1000px){.meta-bar{display:none}}
+
+/* ===== Produtos: foto + ferramentas (editar/apagar) ===== */
+.prod .thumb img{width:100%;height:100%;object-fit:cover}
+.prod-tools{position:absolute;top:10px;right:10px;z-index:2;display:flex;gap:6px;opacity:0;transition:.15s}
+.prod:hover .prod-tools,.prod:focus-within .prod-tools{opacity:1}
+.prod-tools button{
+  display:grid;place-items:center;width:30px;height:30px;border-radius:8px;
+  background:rgba(10,10,11,.55);backdrop-filter:blur(4px);border:1px solid var(--line);color:var(--text);transition:.15s;
+}
+.prod-tools button:hover{background:var(--surface-3)}
+.prod-tools button.del:hover{background:rgba(255,93,93,.16);color:var(--red);border-color:var(--red)}
+.prod-tools svg{width:15px;height:15px}
+
+/* ===== Editor de produto ===== */
+.editor-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.editor-head h2{font-size:20px;font-weight:800}
+.editor-actions{margin-left:auto;display:flex;gap:10px}
+.editor-grid{display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:start}
+.editor-form{display:flex;flex-direction:column;gap:16px;min-width:0}
+.editor-preview-wrap{position:sticky;top:16px}
+.editor-preview-label{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:10px}
+.editor-preview-label svg{width:15px;height:15px;color:var(--yellow)}
+.editor-preview{border:1px solid var(--line-2);border-radius:16px;overflow:hidden;max-height:calc(100vh - 170px);overflow-y:auto}
+
+/* modelos de checkout */
+.model-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.model-card{
+  display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:3px;appearance:none;
+  background:var(--surface-2);border:1.5px solid var(--line);border-radius:12px;padding:14px;color:var(--text);transition:.16s;
+}
+.model-card svg{width:22px;height:22px;color:var(--muted);margin-bottom:4px}
+.model-card b{font-size:13.5px;font-weight:700}
+.model-card span{font-size:11.5px;color:var(--muted-2);font-weight:500;line-height:1.4}
+.model-card.on{border-color:var(--yellow);background:var(--yellow-soft)}
+.model-card.on svg{color:var(--yellow)}
+
+/* preview embutido do checkout */
+.ck-preview{background:var(--bg);color:var(--text)}
+.ck-preview-top{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface)}
+.ck-preview-top .ck-logo{height:24px;width:auto;border-radius:6px}
+.ck-preview-top .ck-safe{margin-left:auto}
+.ck-preview-body{padding:16px}
+.ck-preview .ck-grid{grid-template-columns:1fr;gap:14px}
+.ck-preview .ck-summary{position:static;order:-1}
+.ck-preview .ck-intro h2{font-size:18px}
+
+@media(max-width:1080px){
+  .editor-grid{grid-template-columns:1fr}
+  .editor-preview-wrap{position:static}
+  .editor-preview{max-height:none}
+}
+@media(max-width:720px){
+  .model-cards{grid-template-columns:1fr}
+}
+
+/* intro do checkout (título/subtítulo configuráveis) */
+.ck-intro{margin-bottom:2px}
+.ck-intro h2{font-size:22px;font-weight:800}
+.ck-intro p{color:var(--muted);font-size:13.5px;margin-top:5px;font-weight:500}

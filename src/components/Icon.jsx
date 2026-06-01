@@ -49,6 +49,7 @@ const PATHS = {
   palette: <><path d="M12 3a9 9 0 1 0 0 18c1.2 0 2-.8 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.2 0-1 .8-1.5 1.8-1.5H17a4 4 0 0 0 4-4c0-4.4-4-8-9-8z" /><circle cx="7.5" cy="11.5" r="1.2" /><circle cx="12" cy="8" r="1.2" /><circle cx="16.5" cy="11.5" r="1.2" /></>,
   user: <><circle cx="12" cy="9" r="3.4" /><path d="M5.5 20a6.5 6.5 0 0 1 13 0" /></>,
   close: <path d="M6 6l12 12M18 6L6 18" />,
+  edit: <><path d="M4 20h4l10-10a2.8 2.8 0 0 0-4-4L4 16v4z" /><path d="M13.5 6.5l4 4" /></>,
 
   // thumbnails de produtos
   'p-video': <><path d="M4 6h16v12H4z" /><path d="M4 10h16" /></>,
