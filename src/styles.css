@@ -726,3 +726,21 @@ body::before{
 .prev-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .prev-bar{height:10px;border-radius:99px;background:var(--surface-3);overflow:hidden}
 .prev-fill{height:100%;width:64%;border-radius:99px;background:linear-gradient(90deg,var(--yellow-dim),var(--yellow))}
+
+/* ===== Barra de meta no cabeçalho (0 → 100k, tema raio) ===== */
+.meta-bar{
+  display:flex;align-items:center;gap:11px;margin-left:auto;
+  background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:8px 14px;
+}
+.meta-cap{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.meta-cap svg{width:14px;height:14px;color:var(--yellow)}
+.meta-track{position:relative;width:150px;height:8px;border-radius:99px;background:var(--surface-3)}
+.meta-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--yellow-dim),var(--yellow));transition:width .6s ease}
+.meta-head{
+  position:absolute;top:50%;transform:translate(-50%,-50%);width:21px;height:21px;border-radius:99px;
+  background:var(--yellow);display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.35);transition:left .6s ease;
+}
+.meta-head svg{width:12px;height:12px;color:#000;stroke-width:2.4}
+.meta-val{font-size:12.5px;font-weight:800;white-space:nowrap}
+.meta-val span{color:var(--muted-2);font-weight:700}
+@media(max-width:1000px){.meta-bar{display:none}}
