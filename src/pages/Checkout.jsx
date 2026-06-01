@@ -65,10 +65,14 @@ function Brand({ logo, name }) {
   return <span />
 }
 
-function Frame({ children, preview, styleVars, showTimer, mmss, logo, brandName, secure }) {
+function Frame({ children, preview, styleVars, showTimer, mmss, logo, brandName, secure, bg }) {
+  const bgStyle = bg
+    ? { background: `linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.6)), ${bg}`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    : {}
+  const style = { ...styleVars, ...bgStyle }
   if (preview) {
     return (
-      <div className="ck-preview" style={styleVars}>
+      <div className="ck-preview" style={style}>
         <div className="ck-preview-top">
           <Brand logo={logo} name={brandName} />
           <span className="ck-safe"><Icon name="lock" />Compra segura</span>
@@ -78,7 +82,7 @@ function Frame({ children, preview, styleVars, showTimer, mmss, logo, brandName,
     )
   }
   return (
-    <div className="ck-page" style={styleVars}>
+    <div className="ck-page" style={style}>
       {showTimer && (
         <div className="ck-timer"><Icon name="bolt" /> Oferta por tempo limitado — expira em <b className="num">{mmss}</b></div>
       )}
@@ -268,7 +272,7 @@ export function CheckoutView({ product, preview = false }) {
   /* Pix gerado */
   if (status === 'pix') {
     return (
-      <Frame preview={preview} styleVars={styleVars} showTimer={cfg.timer} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure}>
+      <Frame preview={preview} styleVars={styleVars} showTimer={cfg.timer} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure} bg={cfg.bg}>
         <div className="ck-grid">
           <div className="card ck-pixbox">
             <span className="ck-badge"><span className="dot" />Aguardando pagamento</span>
@@ -293,7 +297,7 @@ export function CheckoutView({ product, preview = false }) {
   /* aprovado */
   if (status === 'paid') {
     return (
-      <Frame preview={preview} styleVars={styleVars} showTimer={false} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure}>
+      <Frame preview={preview} styleVars={styleVars} showTimer={false} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure} bg={cfg.bg}>
         <div className="ck-done card">
           <div className="ck-done-ic"><Icon name="check" strokeWidth={3} /></div>
           <h2>Pagamento confirmado! 🎉</h2>

@@ -3,7 +3,7 @@ import Icon from '../components/Icon.jsx'
 import Toggle from '../components/Toggle.jsx'
 import { CheckoutView } from './Checkout.jsx'
 import { ACCENTS, MODES } from '../theme.js'
-import { CHECKOUT_MODELS, FIELD_DEFS, METHOD_DEFS, applyModel, ensureCheckout } from '../checkoutConfig.js'
+import { CHECKOUT_MODELS, CHECKOUT_THEMES, FIELD_DEFS, METHOD_DEFS, applyModel, ensureCheckout } from '../checkoutConfig.js'
 import { getProducts, saveProducts } from '../store.js'
 
 /* ---------- editor de checkout de UM produto ---------- */
@@ -15,11 +15,19 @@ function CheckoutCustomizer({ product, onSave, onBack }) {
   const setMethod = (k, v) => setCfg({ methods: { ...cfg.methods, [k]: v } })
   const setBump = (patch) => setCfg({ bump: { ...cfg.bump, ...patch } })
   const logoRef = useRef(null)
+  const bgRef = useRef(null)
   function pickLogo(e) {
     const file = e.target.files?.[0]
     if (!file) return
     const r = new FileReader()
     r.onload = () => setCfg({ logo: String(r.result) })
+    r.readAsDataURL(file)
+  }
+  function pickBg(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const r = new FileReader()
+    r.onload = () => setCfg({ bg: `url(${r.result})` })
     r.readAsDataURL(file)
   }
 
@@ -48,6 +56,26 @@ function CheckoutCustomizer({ product, onSave, onBack }) {
                 <input ref={logoRef} type="file" accept="image/*" hidden onChange={pickLogo} />
                 <p className="profile-hint">Sem logo, mostramos o nome do produto. A logo da AZ não aparece no checkout.</p>
               </div>
+            </div>
+          </section>
+
+          <section className="card">
+            <div className="card-head"><h3>Temas</h3><span className="pill">fundo + cor</span></div>
+            <div className="theme-grid">
+              {CHECKOUT_THEMES.map((t) => {
+                const on = (cfg.bg || '') === t.bg && cfg.accent.toLowerCase() === t.accent.toLowerCase()
+                return (
+                  <button type="button" key={t.key} className={`theme-card${on ? ' on' : ''}`} onClick={() => setCfg({ bg: t.bg, accent: t.accent, theme: t.mode })}>
+                    <span className="theme-prev" style={{ background: t.bg || 'var(--bg)' }}><i style={{ background: t.accent }} /></span>
+                    <b>{t.label}</b>
+                  </button>
+                )
+              })}
+            </div>
+            <div className="profile-photo-actions" style={{ marginTop: 14 }}>
+              <button type="button" className="btn btn-ghost" onClick={() => bgRef.current?.click()}><Icon name="camera" />Imagem de fundo</button>
+              {cfg.bg && String(cfg.bg).startsWith('url(') && <button type="button" className="btn btn-ghost" onClick={() => setCfg({ bg: '' })}><Icon name="trash" />Remover fundo</button>}
+              <input ref={bgRef} type="file" accept="image/*" hidden onChange={pickBg} />
             </div>
           </section>
 

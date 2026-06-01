@@ -19,6 +19,20 @@ export const METHOD_DEFS = [
   { key: 'boleto', label: 'Boleto' },
 ]
 
+// Temas prontos do checkout (fundo + cor de destaque + modo).
+// O "fundo" é um valor CSS (gradiente ou url de imagem).
+export const CHECKOUT_THEMES = [
+  { key: 'padrao', label: 'Padrão', bg: '', accent: '#ffd400', mode: 'dark' },
+  { key: 'aurora', label: 'Aurora', bg: 'radial-gradient(900px 520px at 18% -10%, #5b2a86, transparent 60%), radial-gradient(820px 600px at 120% 15%, #1f6f8b, transparent 55%), #0a0a12', accent: '#22d3ee', mode: 'dark' },
+  { key: 'sunset', label: 'Sunset', bg: 'linear-gradient(160deg, #2a1020, #4a1d2e 52%, #160a10)', accent: '#fb923c', mode: 'dark' },
+  { key: 'neon', label: 'Neon', bg: 'radial-gradient(720px 520px at 82% -5%, rgba(139,92,246,.55), transparent 60%), radial-gradient(600px 500px at 0% 110%, rgba(34,211,238,.25), transparent 60%), #07070d', accent: '#a78bfa', mode: 'dark' },
+  { key: 'floresta', label: 'Floresta', bg: 'linear-gradient(160deg, #07251c, #0a3a2a 58%, #05140f)', accent: '#3ddc91', mode: 'dark' },
+  { key: 'oceano', label: 'Oceano', bg: 'linear-gradient(160deg, #08233a, #0a3354 55%, #05131f)', accent: '#3b82f6', mode: 'dark' },
+  { key: 'rose', label: 'Rosé', bg: 'linear-gradient(160deg, #2a0f1c, #3d1526 60%, #150810)', accent: '#f472b6', mode: 'dark' },
+  { key: 'grafite', label: 'Grafite', bg: 'linear-gradient(160deg, #14151a, #1c1d24 60%, #0c0d11)', accent: '#ffd400', mode: 'dark' },
+  { key: 'clean', label: 'Clean', bg: 'linear-gradient(160deg, #ffffff, #eceef3)', accent: '#7c3aed', mode: 'light' },
+]
+
 // Comportamento padrão por modelo (campos/pagamentos/bump/timer).
 function modelBehavior(model) {
   if (model === 'drop') return {
@@ -51,6 +65,7 @@ export function defaultCheckout(model = 'infoproduto') {
     model,
     accent: '#ffd400',
     theme: 'dark',
+    bg: '',
     title: t.title,
     subtitle: t.subtitle,
     ctaText: t.ctaText,
