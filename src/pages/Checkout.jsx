@@ -21,6 +21,17 @@ const METHOD_META = {
   boleto: { label: 'Boleto', icon: 'barcode', note: '1-2 dias úteis' },
 }
 
+// captura UTMs e click ids da URL para enviar ao gateway (rastreio de campanha)
+function getTracking() {
+  if (typeof window === 'undefined') return {}
+  const p = new URLSearchParams(window.location.search)
+  const v = (k) => p.get(k) || undefined
+  return {
+    utm: { source: v('utm_source'), medium: v('utm_medium'), campaign: v('utm_campaign'), content: v('utm_content'), term: v('utm_term') },
+    fbclid: v('fbclid'), ttclid: v('ttclid'), gclid: v('gclid'),
+  }
+}
+
 function Field({ id, label, icon, hint, ...rest }) {
   return (
     <div className="ck-field">
@@ -91,6 +102,9 @@ export function CheckoutView({ product, preview = false }) {
   const [status, setStatus] = useState('form')
   const [copied, setCopied] = useState(false)
   const [secs, setSecs] = useState(9 * 60 + 59)
+  const [pixData, setPixData] = useState(null) // { id, qr_code, qr_code_image } do BravoPay
+  const [loading, setLoading] = useState(false)
+  const [payError, setPayError] = useState('')
 
   useEffect(() => {
     if (!cfg.timer || preview) return
@@ -112,16 +126,71 @@ export function CheckoutView({ product, preview = false }) {
   const set = (k) => (e) => setData((s) => ({ ...s, [k]: e.target.value }))
   const setA = (k) => (e) => setAddr((s) => ({ ...s, [k]: e.target.value }))
 
-  function pay(e) {
+  async function pay(e) {
     e.preventDefault()
-    if (!canPay) return
-    setStatus(isRapido || method === 'pix' ? 'pix' : 'paid')
-    if (!preview) window.scrollTo({ top: 0, behavior: 'smooth' })
+    if (!canPay || loading) return
+    const goPix = isRapido || method === 'pix'
+
+    // Preview do editor: não chama o gateway de verdade (usa mock visual).
+    if (preview) {
+      setStatus(goPix ? 'pix' : 'paid')
+      return
+    }
+
+    if (goPix) {
+      if (!product.bravoProductId) {
+        setPayError('Este produto ainda não está ligado ao BravoPay. Vá em Produtos → Editar e preencha o "ID do produto no BravoPay".')
+        return
+      }
+      setLoading(true); setPayError('')
+      try {
+        const resp = await fetch('/api/criar-pix', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            product_id: product.bravoProductId,
+            amount_cents: Math.round(total * 100),
+            customer: { name: data.name, email: data.email, phone: d(data.phone), cpf: d(data.cpf) },
+            ...getTracking(),
+          }),
+        })
+        const json = await resp.json()
+        if (!resp.ok) throw new Error(json.error || 'Não foi possível gerar o Pix.')
+        setPixData(json)
+        setStatus('pix')
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      } catch (err) {
+        setPayError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    } else {
+      // Cartão/boleto ainda não integrados de verdade (a doc cobre PIX). Mock por enquanto.
+      setStatus('paid')
+    }
   }
+
   function copyPix() {
-    navigator.clipboard?.writeText('00020126AZcheckoutPixExemplo5204000053039865802BR6304AZ00')
+    const code = pixData?.qr_code || ''
+    if (code) navigator.clipboard?.writeText(code)
     setCopied(true); setTimeout(() => setCopied(false), 2000)
   }
+
+  // Polling: enquanto aguarda o Pix, consulta o status a cada 3s.
+  useEffect(() => {
+    if (preview || status !== 'pix' || !pixData?.id) return
+    const id = setInterval(async () => {
+      try {
+        const r = await fetch(`/api/status?id=${encodeURIComponent(pixData.id)}`)
+        const j = await r.json()
+        if (j.status === 'PAID') { clearInterval(id); setStatus('paid') }
+        else if (['EXPIRED', 'FAILED', 'CANCELED'].includes(j.status)) {
+          clearInterval(id); setPayError(`Pagamento ${j.status.toLowerCase()}.`); setStatus('form'); setPixData(null)
+        }
+      } catch { /* tenta de novo no próximo ciclo */ }
+    }, 3000)
+    return () => clearInterval(id)
+  }, [status, pixData, preview])
 
   const trust = [
     { icon: 'shield', title: 'Compra 100% segura', desc: 'Seus dados são criptografados.' },
@@ -157,7 +226,10 @@ export function CheckoutView({ product, preview = false }) {
             <span className="ck-badge"><span className="dot" />Aguardando pagamento</span>
             <h2>Pague com Pix para liberar na hora</h2>
             <p className="ck-muted">Abra o app do seu banco, escaneie o QR Code ou use o Pix copia e cola.</p>
-            <FakeQR />
+            {pixData?.qr_code_image
+              ? <img className="ck-qr" src={pixData.qr_code_image} alt="QR Code Pix" />
+              : <FakeQR />}
+            {pixData?.qr_code && <div className="ck-pixcode">{pixData.qr_code}</div>}
             <button type="button" className={`btn ${copied ? 'btn-ghost' : 'btn-primary'} ck-copy`} onClick={copyPix}>
               <Icon name={copied ? 'check' : 'copy'} />{copied ? 'Código copiado!' : 'Copiar código Pix'}
             </button>
@@ -267,8 +339,9 @@ export function CheckoutView({ product, preview = false }) {
             </button>
           )}
 
-          <button type="submit" className="btn btn-primary ck-cta" disabled={!canPay}>
-            <Icon name="lock" />{cfg.ctaText} {formatBRL(total)}
+          {payError && <div className="ck-error"><Icon name="close" />{payError}</div>}
+          <button type="submit" className="btn btn-primary ck-cta" disabled={!canPay || loading}>
+            <Icon name="lock" />{loading ? 'Gerando Pix…' : `${cfg.ctaText} ${formatBRL(total)}`}
           </button>
           <p className="ck-secure"><Icon name="shield" /> Ambiente seguro e criptografado · AZ Checkout</p>
         </div>

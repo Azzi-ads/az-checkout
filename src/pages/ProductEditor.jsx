@@ -16,7 +16,7 @@ const CATEGORIES = [
 ]
 
 function newDraft() {
-  return { icon: 'p-video', name: '', amount: 0, oldAmount: 0, status: 'Ativo', desc: '', image: '', checkout: defaultCheckout('infoproduto') }
+  return { icon: 'p-video', name: '', amount: 0, oldAmount: 0, status: 'Ativo', desc: '', image: '', bravoProductId: '', checkout: defaultCheckout('infoproduto') }
 }
 
 export default function ProductEditor({ product, onSave, onCancel }) {
@@ -88,6 +88,18 @@ export default function ProductEditor({ product, onSave, onCancel }) {
             </div>
             <div className="field"><label htmlFor="pe-desc">Descrição</label>
               <input id="pe-desc" value={draft.desc} onChange={(e) => setDraftF({ desc: e.target.value })} placeholder="Breve descrição (aparece no resumo do checkout)" /></div>
+          </section>
+
+          {/* Integração de pagamento */}
+          <section className="card">
+            <div className="card-head"><h3>Pagamento (BravoPay)</h3></div>
+            <div className="field">
+              <label htmlFor="pe-bravo">ID do produto no BravoPay</label>
+              <input id="pe-bravo" value={draft.bravoProductId || ''} onChange={(e) => setDraftF({ bravoProductId: e.target.value })} placeholder="Ex.: prod_xxx (do painel BravoPay)" />
+              <small style={{ display: 'block', marginTop: 6, fontSize: 12, color: 'var(--muted-2)' }}>
+                Encontre em bravopay.solutions/dashboard/produtos. Sem isso, o Pix real não é gerado.
+              </small>
+            </div>
           </section>
 
           {/* Modelo */}
