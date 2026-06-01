@@ -170,6 +170,12 @@ body::before{
 .prod h4{font-size:15px;font-weight:700}
 .prod .price{font-family:'Bricolage Grotesque';font-weight:800;font-size:20px;margin-top:6px}
 .prod .meta{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:12.5px;color:var(--muted-2);font-weight:600}
+.prod-link{
+  display:inline-flex;align-items:center;gap:6px;margin-top:14px;
+  font-size:13px;font-weight:700;color:var(--yellow);
+}
+.prod-link svg{width:15px;height:15px;transition:.16s;transform:rotate(180deg)}
+.prod-link:hover svg{transform:translateX(2px) rotate(180deg)}
 
 /* livex */
 .live-hero{display:flex;align-items:center;gap:18px;background:linear-gradient(135deg,var(--surface),var(--surface-2));border:1px solid var(--line);border-radius:var(--radius);padding:24px}
@@ -276,4 +282,180 @@ body::before{
     animation-duration:.001ms!important;animation-iteration-count:1!important;
     transition-duration:.001ms!important;scroll-behavior:auto!important;
   }
+}
+
+/* ===================================================================
+   Checkout do cliente (rota /checkout) — tema preto + amarelo
+   =================================================================== */
+.ck-page{height:100vh;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column}
+
+.ck-timer{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--yellow-soft);color:var(--yellow);font-weight:700;font-size:13px;
+  padding:9px 16px;text-align:center;border-bottom:1px solid var(--line);
+}
+.ck-timer svg{width:15px;height:15px}
+.ck-timer b{font-weight:800}
+
+.ck-top{
+  display:flex;align-items:center;gap:14px;padding:14px 22px;
+  border-bottom:1px solid var(--line);background:var(--surface);
+}
+.ck-back{
+  display:grid;place-items:center;width:38px;height:38px;flex:0 0 38px;border-radius:11px;
+  background:var(--surface-2);border:1px solid var(--line);color:var(--text);
+}
+.ck-back:hover{background:var(--surface-3)}
+.ck-back svg{width:18px;height:18px;stroke-width:2}
+.ck-logo{height:34px;width:auto;border-radius:8px}
+.ck-safe{
+  margin-left:auto;display:inline-flex;align-items:center;gap:6px;
+  font-size:12.5px;font-weight:700;color:var(--green);
+  background:rgba(61,220,145,.1);padding:6px 12px;border-radius:99px;
+}
+.ck-safe svg{width:14px;height:14px}
+
+.ck-body{flex:1;width:100%;max-width:1080px;margin:0 auto;padding:26px 22px 40px}
+.ck-foot{
+  display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;
+  padding:22px;color:var(--muted-2);font-size:12px;font-weight:500;
+  border-top:1px solid var(--line);
+}
+
+.ck-grid{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
+.ck-main{display:flex;flex-direction:column;gap:16px}
+
+.ck-step-head{display:flex;align-items:center;gap:11px;margin-bottom:18px}
+.ck-step-head h2{font-size:17px;font-weight:700}
+.ck-num{
+  width:26px;height:26px;flex:0 0 26px;border-radius:8px;display:grid;place-items:center;
+  background:var(--yellow);color:#000;font-family:'Bricolage Grotesque';font-weight:800;font-size:14px;
+}
+
+.ck-row{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.ck-field{margin-bottom:13px}
+.ck-field>label{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:6px}
+.ck-input{
+  display:flex;align-items:center;gap:9px;background:var(--surface-2);
+  border:1px solid var(--line);border-radius:10px;padding:0 13px;transition:.15s;
+}
+.ck-input:focus-within{border-color:var(--yellow)}
+.ck-input svg{width:16px;height:16px;color:var(--muted-2);flex:0 0 16px}
+.ck-input input,.ck-input select{
+  flex:1;width:100%;background:none;border:0;outline:none;color:var(--text);
+  font-family:inherit;font-size:14px;padding:12px 0;
+}
+.ck-input select{cursor:pointer}
+.ck-field small{display:block;font-size:11.5px;color:var(--muted-2);margin-top:5px;font-weight:500}
+
+/* abas de pagamento */
+.ck-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.ck-method{
+  display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;
+  background:var(--surface-2);border:1.5px solid var(--line);border-radius:12px;padding:13px 8px;
+  color:var(--text);transition:.16s;appearance:none;
+}
+.ck-method svg{width:22px;height:22px;color:var(--muted);margin-bottom:2px}
+.ck-method b{font-size:13.5px;font-weight:700}
+.ck-method span{font-size:11px;color:var(--muted-2);font-weight:600}
+.ck-method:hover{border-color:var(--line-2)}
+.ck-method.on{border-color:var(--yellow);background:var(--yellow-soft)}
+.ck-method.on svg{color:var(--yellow)}
+
+.ck-pane{animation:fade .25s ease}
+.ck-pane-info{
+  display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600;color:var(--muted);
+  background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:13px 15px;
+}
+.ck-pane-info svg{width:18px;height:18px;color:var(--yellow);flex:0 0 18px}
+
+/* order bump */
+.ck-bump{
+  display:flex;gap:13px;text-align:left;width:100%;
+  background:var(--surface);border:1.5px dashed var(--line-2);border-radius:14px;padding:16px;
+  transition:.16s;appearance:none;color:var(--text);
+}
+.ck-bump:hover{border-color:var(--yellow)}
+.ck-bump.on{border-style:solid;border-color:var(--yellow);background:var(--yellow-soft)}
+.ck-bump-check{
+  width:24px;height:24px;flex:0 0 24px;border-radius:7px;border:2px solid var(--line-2);
+  display:grid;place-items:center;margin-top:2px;background:var(--surface-2);
+}
+.ck-bump.on .ck-bump-check{background:var(--yellow);border-color:var(--yellow);color:#000}
+.ck-bump-check svg{width:15px;height:15px}
+.ck-bump-badge{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--yellow)}
+.ck-bump-body b{display:block;font-size:14.5px;font-weight:700;margin-top:2px}
+.ck-bump-body p{font-size:12.5px;color:var(--muted);margin-top:3px;font-weight:500;line-height:1.45}
+.ck-bump-price{display:inline-block;margin-top:7px;font-weight:800;font-size:14px;color:var(--text)}
+.ck-bump-price s{color:var(--muted-2);font-weight:600;margin-right:5px}
+
+.ck-cta{
+  width:100%;justify-content:center;font-size:16px;padding:16px;border-radius:13px;margin-top:4px;
+}
+.ck-cta:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.ck-cta svg{width:18px;height:18px}
+.ck-secure{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  font-size:12px;color:var(--muted-2);font-weight:600;
+}
+.ck-secure svg{width:14px;height:14px}
+
+/* resumo do pedido */
+.ck-summary{position:sticky;top:16px;display:flex;flex-direction:column;gap:0}
+.ck-prod{display:flex;gap:12px;align-items:center;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.ck-prod-thumb{
+  width:52px;height:52px;flex:0 0 52px;border-radius:11px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--surface-3),var(--surface-2));border:1px solid var(--line);
+}
+.ck-prod-thumb svg{width:24px;height:24px;color:var(--yellow)}
+.ck-prod h3{font-size:15px;font-weight:700}
+.ck-prod p{font-size:12px;color:var(--muted-2);margin-top:3px;font-weight:500;line-height:1.4}
+.ck-lines{display:flex;flex-direction:column;gap:11px;padding:16px 0;border-bottom:1px solid var(--line)}
+.ck-line{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:13.5px;font-weight:600;color:var(--muted)}
+.ck-line .num s{color:var(--muted-2);font-weight:500;margin-right:5px;font-size:12px}
+.ck-total{color:var(--text);font-weight:800;font-size:16px;margin-top:2px}
+.ck-total .num{font-family:'Bricolage Grotesque';font-size:22px}
+.ck-trust{list-style:none;display:flex;flex-direction:column;gap:13px;padding-top:16px}
+.ck-trust li{display:flex;gap:11px;align-items:flex-start}
+.ck-trust svg{width:19px;height:19px;color:var(--yellow);flex:0 0 19px;margin-top:1px}
+.ck-trust b{display:block;font-size:13px;font-weight:700}
+.ck-trust span{font-size:11.5px;color:var(--muted-2);font-weight:500}
+
+/* tela Pix */
+.ck-pixbox{display:flex;flex-direction:column;align-items:center;text-align:center}
+.ck-badge{
+  display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--yellow);
+  background:var(--yellow-soft);padding:6px 13px;border-radius:99px;margin-bottom:14px;
+}
+.ck-badge .dot{width:7px;height:7px;border-radius:99px;background:var(--yellow);animation:pulse 1.4s infinite}
+.ck-pixbox h2{font-size:20px;font-weight:800}
+.ck-muted{color:var(--muted);font-size:13.5px;margin-top:6px;font-weight:500;line-height:1.5}
+.ck-qr{width:200px;height:200px;border-radius:12px;margin:20px 0;background:#fff;padding:10px}
+.ck-copy{width:100%;justify-content:center}
+.ck-copy svg{width:16px;height:16px}
+.ck-pixinfo{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.ck-pixinfo b{font-family:'Bricolage Grotesque';font-size:20px;font-weight:800;color:var(--yellow)}
+.ck-paid-btn{width:100%;justify-content:center;margin-top:12px}
+
+/* tela aprovado */
+.ck-done{max-width:480px;margin:24px auto;text-align:center;display:flex;flex-direction:column;align-items:center}
+.ck-done-ic{
+  width:64px;height:64px;border-radius:99px;display:grid;place-items:center;margin-bottom:18px;
+  background:rgba(61,220,145,.14);color:var(--green);
+}
+.ck-done-ic svg{width:32px;height:32px}
+.ck-done h2{font-size:23px;font-weight:800}
+.ck-done-val{display:flex;align-items:center;justify-content:space-between;width:100%;margin:20px 0;padding:14px 16px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;font-weight:700}
+.ck-done-val b{font-family:'Bricolage Grotesque';font-size:20px}
+
+@media(max-width:860px){
+  .ck-grid{grid-template-columns:1fr}
+  .ck-summary{position:static;order:2}
+  .ck-main{order:1}
+  .ck-row{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  .ck-methods{grid-template-columns:1fr}
+  .ck-body{padding:18px 14px 32px}
+  .ck-top{padding:12px 14px}
 }

@@ -81,12 +81,57 @@ export const livexFunnel = [
 ]
 
 export const products = [
-  { icon: 'p-video', name: 'Curso de Tráfego Pago', price: 'R$ 297,00', tone: 'pago', status: 'Ativo', meta: '1.204 vendas' },
-  { icon: 'p-doc', name: 'E-book Finanças', price: 'R$ 47,00', tone: 'pago', status: 'Ativo', meta: '3.890 vendas' },
-  { icon: 'p-user', name: 'Mentoria Premium', price: 'R$ 1.997,00', tone: 'pago', status: 'Ativo', meta: '86 vendas' },
-  { icon: 'p-grid', name: 'Pack de Templates', price: 'R$ 89,00', tone: 'pend', status: 'Rascunho', meta: '540 vendas' },
-  { icon: 'p-layers', name: 'Comunidade VIP', price: 'R$ 39,90', priceSuffix: '/mês', tone: 'pago', status: 'Ativo', meta: '412 assinantes' },
+  { icon: 'p-video', slug: 'curso-de-trafego-pago', name: 'Curso de Tráfego Pago', price: 'R$ 297,00', amount: 297, oldAmount: 497, tone: 'pago', status: 'Ativo', meta: '1.204 vendas' },
+  { icon: 'p-doc', slug: 'e-book-financas', name: 'E-book Finanças', price: 'R$ 47,00', amount: 47, oldAmount: 97, tone: 'pago', status: 'Ativo', meta: '3.890 vendas' },
+  { icon: 'p-user', slug: 'mentoria-premium', name: 'Mentoria Premium', price: 'R$ 1.997,00', amount: 1997, oldAmount: 2997, tone: 'pago', status: 'Ativo', meta: '86 vendas' },
+  { icon: 'p-grid', slug: 'pack-de-templates', name: 'Pack de Templates', price: 'R$ 89,00', amount: 89, oldAmount: 149, tone: 'pend', status: 'Rascunho', meta: '540 vendas' },
+  { icon: 'p-layers', slug: 'comunidade-vip', name: 'Comunidade VIP', price: 'R$ 39,90', amount: 39.9, priceSuffix: '/mês', tone: 'pago', status: 'Ativo', meta: '412 assinantes' },
   { icon: 'p-plus', name: 'Novo produto', priceText: 'Criar agora', meta: 'Configure em minutos', isNew: true },
+]
+
+// ===== Checkout do cliente =====
+
+// Subtítulo/descrição por produto exibido no resumo do pedido.
+export const checkoutDescriptions = {
+  'curso-de-trafego-pago': 'Curso completo • acesso vitalício + atualizações',
+  'e-book-financas': 'E-book em PDF • download imediato',
+  'mentoria-premium': 'Mentoria em grupo • 12 encontros ao vivo',
+  'pack-de-templates': 'Pacote de templates editáveis • acesso imediato',
+  'comunidade-vip': 'Assinatura mensal • cancele quando quiser',
+}
+
+// Order bump: oferta extra com 1 clique (clássico de checkout de infoproduto).
+export const orderBump = {
+  title: 'Pack de Templates Bônus',
+  desc: 'Leve agora 50+ templates prontos de criativos e páginas por um preço único.',
+  amount: 27,
+  oldAmount: 89,
+  badge: 'OFERTA ÚNICA',
+}
+
+// Parcelas no cartão (até 12x, sem juros no exemplo).
+export function installments(amount, max = 12) {
+  return Array.from({ length: max }, (_, i) => {
+    const n = i + 1
+    const value = amount / n
+    return { n, value, label: `${n}x de ${formatBRL(value)}${n === 1 ? ' à vista' : ' sem juros'}` }
+  })
+}
+
+export function formatBRL(value) {
+  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
+}
+
+export const checkoutTrust = [
+  { icon: 'shield', title: 'Compra 100% segura', desc: 'Seus dados são criptografados.' },
+  { icon: 'refresh', title: 'Garantia de 7 dias', desc: 'Não gostou? Devolvemos seu dinheiro.' },
+  { icon: 'bolt', title: 'Acesso imediato', desc: 'Liberação automática após o pagamento.' },
+]
+
+export const paymentMethods = [
+  { key: 'pix', label: 'Pix', icon: 'pix', note: 'Aprovação na hora' },
+  { key: 'card', label: 'Cartão', icon: 'card', note: 'Em até 12x' },
+  { key: 'boleto', label: 'Boleto', icon: 'barcode', note: '1-2 dias úteis' },
 ]
 
 export const orders = {

@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import Icon from '../components/Icon.jsx'
 import { products } from '../data.js'
 
@@ -21,6 +22,12 @@ function ProductCard({ p }) {
           )}
           <span>{p.meta}</span>
         </div>
+        {p.slug && (
+          <Link className="prod-link" to={`/checkout/${p.slug}`}>
+            Ver checkout
+            <Icon name="arrowLeft" strokeWidth={2.4} />
+          </Link>
+        )}
       </div>
     </div>
   )

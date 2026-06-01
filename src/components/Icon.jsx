@@ -27,6 +27,19 @@ const PATHS = {
   // benefícios
   check: <path d="M5 13l4 4L19 7" />,
 
+  // checkout
+  shield: <path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z" />,
+  refresh: <><path d="M21 12a9 9 0 1 1-2.6-6.3" /><path d="M21 4v5h-5" /></>,
+  bolt: <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" />,
+  lock: <><rect x="4" y="11" width="16" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></>,
+  pix: <path d="M12 3.5l3.4 3.4a2 2 0 0 0 2.8 0M12 3.5L8.6 6.9a2 2 0 0 1-2.8 0M3.5 12l3.4-3.4a2 2 0 0 1 0 2.8M3.5 12l3.4 3.4M20.5 12l-3.4-3.4M20.5 12l-3.4 3.4M12 20.5l3.4-3.4a2 2 0 0 0-2.8 0M12 20.5l-3.4-3.4" />,
+  card: <><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="M3 10h18M7 15h4" /></>,
+  barcode: <path d="M4 5v14M7 5v14M9.5 5v14M13 5v14M15 5v14M17.5 5v14M20 5v14" />,
+  mail: <><rect x="3" y="5" width="18" height="14" rx="2.5" /><path d="m4 7 8 6 8-6" /></>,
+  phone: <path d="M5 4h4l1.5 4-2 1.5a12 12 0 0 0 6 6L16 13l4 1.5V18a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z" />,
+  copy: <><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></>,
+  arrowLeft: <path d="M19 12H5M11 18l-6-6 6-6" />,
+
   // thumbnails de produtos
   'p-video': <><path d="M4 6h16v12H4z" /><path d="M4 10h16" /></>,
   'p-doc': <><path d="M5 4h11l3 3v13H5z" /><path d="M9 9h6M9 13h6" /></>,
