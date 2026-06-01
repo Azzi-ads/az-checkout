@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Icon from './Icon.jsx'
+import { getUser } from '../auth.js'
 
 function initialsOf(name = '') {
   const parts = name.trim().split(/\s+/).filter(Boolean)
@@ -28,7 +29,11 @@ const SECTIONS = [
   },
   {
     label: 'Conta',
-    items: [{ id: 'planos', label: 'Planos', icon: 'planos' }],
+    items: [
+      { id: 'perfil', label: 'Perfil', icon: 'user' },
+      { id: 'aparencia', label: 'Aparência', icon: 'palette' },
+      { id: 'planos', label: 'Planos', icon: 'planos' },
+    ],
   },
 ]
 
@@ -79,18 +84,23 @@ function NavGroup({ item, page, onSelect }) {
   )
 }
 
-export default function Sidebar({ page, onSelect, liveCount, onLogout, user }) {
-  const initials = initialsOf(user?.name)
+export default function Sidebar({ page, onSelect, liveCount, onLogout, profile }) {
+  const name = profile?.name || getUser()?.name || 'Você'
+  const avatar = profile?.avatar
+  const initials = initialsOf(name)
+  const email = getUser()?.email || 'Plano Start'
   return (
     <aside className="sidebar">
       <div className="brand">
         <img className="brand-logo" src="/logo-wide.png" alt="AZ Checkout" width="1921" height="819" />
       </div>
 
-      <button type="button" className="store-switch" aria-label="Trocar de loja">
-        <span className="store-av" aria-hidden="true">{initials}</span>
+      <button type="button" className="store-switch" aria-label="Trocar de loja" onClick={() => onSelect('perfil')}>
+        <span className="store-av" aria-hidden="true">
+          {avatar ? <img src={avatar} alt="" /> : initials}
+        </span>
         <span className="store-meta">
-          <b>{user?.name || 'Minha loja'}</b>
+          <b>{name}</b>
           <span>Plano Start</span>
         </span>
         <Icon name="chevron" />
@@ -111,8 +121,8 @@ export default function Sidebar({ page, onSelect, liveCount, onLogout, user }) {
 
       <div className="side-foot">
         <div className="user">
-          <div className="av" aria-hidden="true">{initials}</div>
-          <div className="meta"><b>{user?.name || 'Você'}</b><span>{user?.email || 'Plano Start'}</span></div>
+          <div className="av" aria-hidden="true">{avatar ? <img src={avatar} alt="" /> : initials}</div>
+          <div className="meta"><b>{name}</b><span>{email}</span></div>
           <button type="button" className="logout" onClick={onLogout} aria-label="Sair da conta" title="Sair">
             <Icon name="arrowLeft" />
           </button>

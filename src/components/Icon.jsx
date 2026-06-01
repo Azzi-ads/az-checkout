@@ -44,6 +44,11 @@ const PATHS = {
   megaphone: <><path d="M3 11v2a1 1 0 0 0 1 1h2l9 5V5L6 10H4a1 1 0 0 0-1 1z" /><path d="M18 9a3 3 0 0 1 0 6" /></>,
   store: <><path d="M4 9l1-5h14l1 5M4 9h16M4 9v10h16V9M9 19v-5h6v5" /></>,
   diagnostic: <><circle cx="11" cy="11" r="7" /><path d="m20 20-3-3M11 8v6M8 11h6" /></>,
+  trash: <><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" /><path d="M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13M10 11v6M14 11v6" /></>,
+  camera: <><path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L17 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z" /><circle cx="12" cy="13" r="3.5" /></>,
+  palette: <><path d="M12 3a9 9 0 1 0 0 18c1.2 0 2-.8 2-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.2 0-1 .8-1.5 1.8-1.5H17a4 4 0 0 0 4-4c0-4.4-4-8-9-8z" /><circle cx="7.5" cy="11.5" r="1.2" /><circle cx="12" cy="8" r="1.2" /><circle cx="16.5" cy="11.5" r="1.2" /></>,
+  user: <><circle cx="12" cy="9" r="3.4" /><path d="M5.5 20a6.5 6.5 0 0 1 13 0" /></>,
+  close: <path d="M6 6l12 12M18 6L6 18" />,
 
   // thumbnails de produtos
   'p-video': <><path d="M4 6h16v12H4z" /><path d="M4 10h16" /></>,

@@ -41,12 +41,12 @@ function RevenueChart() {
   )
 }
 
-export default function Dashboard() {
-  const user = getUser()
+export default function Dashboard({ profile }) {
+  const name = profile?.name || getUser()?.name
   return (
     <>
       <div className="greeting">
-        <h2>{greeting()}, {firstName(user?.name)} 👋</h2>
+        <h2>{greeting()}, {firstName(name)} 👋</h2>
         <p>Sua operação começa aqui. Crie um produto e compartilhe o checkout para ver os números aparecerem.</p>
       </div>
 

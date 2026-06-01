@@ -2,9 +2,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import Icon from '../components/Icon.jsx'
 import {
-  products, checkoutDescriptions, orderBump, paymentMethods,
+  products as seedProducts, checkoutDescriptions, orderBump, paymentMethods,
   installments, formatBRL, checkoutTrust,
 } from '../data.js'
+import { getProducts } from '../store.js'
 
 /* ---------- máscaras simples (pt-BR) ---------- */
 const onlyDigits = (s) => s.replace(/\D/g, '')
@@ -51,10 +52,12 @@ function FakeQR() {
 /* ---------- página ---------- */
 export default function Checkout() {
   const { slug } = useParams()
-  const product = useMemo(
-    () => products.find((p) => p.slug === slug) || products.find((p) => p.slug),
-    [slug],
-  )
+  const product = useMemo(() => {
+    const stored = getProducts().filter((p) => p.slug)
+    const list = stored.length ? stored : seedProducts.filter((p) => p.slug)
+    return list.find((p) => p.slug === slug) || list[0]
+  }, [slug])
+  const description = checkoutDescriptions[product.slug] || product.desc || 'Acesso imediato após o pagamento'
 
   const [data, setData] = useState({ name: '', email: '', phone: '', cpf: '' })
   const [method, setMethod] = useState('pix')
@@ -102,7 +105,7 @@ export default function Checkout() {
         <div className="ck-prod-thumb"><Icon name={product.icon} strokeWidth={1.6} /></div>
         <div>
           <h3>{product.name}</h3>
-          <p>{checkoutDescriptions[product.slug]}</p>
+          <p>{description}</p>
         </div>
       </div>
 
