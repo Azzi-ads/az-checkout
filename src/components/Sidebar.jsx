@@ -29,7 +29,7 @@ export default function Sidebar({ page, onSelect, liveCount }) {
   return (
     <aside className="sidebar">
       <div className="brand">
-        <img className="brand-logo" src="/logo.png" alt="AZ Checkout" width="1254" height="1254" />
+        <img className="brand-logo" src="/logo-wide.png" alt="AZ Checkout" width="1921" height="819" />
       </div>
 
       <nav aria-label="Menu principal">
