@@ -1,6 +1,11 @@
 import { useState } from 'react'
 import Icon from './Icon.jsx'
-import { currentUser, storeSwitcher } from '../data.js'
+
+function initialsOf(name = '') {
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  if (!parts.length) return 'AZ'
+  return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase()
+}
 
 // Estrutura do menu (grupos). Um item com `children` vira grupo retrátil.
 const SECTIONS = [
@@ -74,7 +79,8 @@ function NavGroup({ item, page, onSelect }) {
   )
 }
 
-export default function Sidebar({ page, onSelect, liveCount, onLogout }) {
+export default function Sidebar({ page, onSelect, liveCount, onLogout, user }) {
+  const initials = initialsOf(user?.name)
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -82,10 +88,10 @@ export default function Sidebar({ page, onSelect, liveCount, onLogout }) {
       </div>
 
       <button type="button" className="store-switch" aria-label="Trocar de loja">
-        <span className="store-av" aria-hidden="true">AZ</span>
+        <span className="store-av" aria-hidden="true">{initials}</span>
         <span className="store-meta">
-          <b>{storeSwitcher.name}</b>
-          <span>{storeSwitcher.plan}</span>
+          <b>{user?.name || 'Minha loja'}</b>
+          <span>Plano Start</span>
         </span>
         <Icon name="chevron" />
       </button>
@@ -105,8 +111,8 @@ export default function Sidebar({ page, onSelect, liveCount, onLogout }) {
 
       <div className="side-foot">
         <div className="user">
-          <div className="av" aria-hidden="true">{currentUser.initials}</div>
-          <div className="meta"><b>{currentUser.name}</b><span>{currentUser.plan}</span></div>
+          <div className="av" aria-hidden="true">{initials}</div>
+          <div className="meta"><b>{user?.name || 'Você'}</b><span>{user?.email || 'Plano Start'}</span></div>
           <button type="button" className="logout" onClick={onLogout} aria-label="Sair da conta" title="Sair">
             <Icon name="arrowLeft" />
           </button>

@@ -9,7 +9,7 @@ import {
 function AbandonedChart() {
   const { labels, finalizados, abandonados } = abandonedSeries
   const W = 640, H = 190, pad = 16
-  const max = Math.max(...abandonados, ...finalizados) * 1.1
+  const max = (Math.max(...abandonados, ...finalizados) || 1) * 1.1
   const x = (i) => (i * (W - pad * 2)) / (labels.length - 1) + pad
   const y = (v) => H - 24 - (v / max) * (H - 44)
   const path = (arr) => arr.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ')
@@ -61,7 +61,7 @@ export default function Analises() {
         <div className="card">
           <div className="card-head">
             <h3>Carrinhos abandonados</h3>
-            <span className="pill">68,6% de abandono</span>
+            <span className="pill">0% de abandono</span>
           </div>
           <AbandonedChart />
         </div>
@@ -76,7 +76,7 @@ export default function Analises() {
             ))}
           </div>
           <div className="funnel-foot">
-            Conversão total <b className="num">31%</b>
+            Conversão total <b className="num">0%</b>
           </div>
         </div>
       </div>

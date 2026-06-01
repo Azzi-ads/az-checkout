@@ -1,6 +1,18 @@
 import KPICard from '../components/KPICard.jsx'
 import Icon from '../components/Icon.jsx'
 import { dashboardKpis, recentSales, revenueChart, geoReach, newsWall } from '../data.js'
+import { getUser } from '../auth.js'
+
+function greeting() {
+  const h = new Date().getHours()
+  if (h < 12) return 'Bom dia'
+  if (h < 18) return 'Boa tarde'
+  return 'Boa noite'
+}
+
+function firstName(name = '') {
+  return name.trim().split(/\s+/)[0] || 'por aqui'
+}
 
 function RevenueChart() {
   const { area, line, dot, labels } = revenueChart
@@ -30,8 +42,14 @@ function RevenueChart() {
 }
 
 export default function Dashboard() {
+  const user = getUser()
   return (
     <>
+      <div className="greeting">
+        <h2>{greeting()}, {firstName(user?.name)} 👋</h2>
+        <p>Sua operação começa aqui. Crie um produto e compartilhe o checkout para ver os números aparecerem.</p>
+      </div>
+
       <div className="grid kpis">
         {dashboardKpis.map((k) => (
           <KPICard key={k.label} {...k} />
@@ -48,18 +66,22 @@ export default function Dashboard() {
         </div>
         <div className="card">
           <div className="card-head"><h3>Vendas recentes</h3></div>
-          <div className="feed">
-            {recentSales.map((s) => (
-              <div className="it" key={s.who + s.what}>
-                <div className="av" aria-hidden="true">{s.initials}</div>
-                <div>
-                  <div className="who">{s.who}</div>
-                  <div className="what">{s.what}</div>
+          {recentSales.length === 0 ? (
+            <div className="empty"><Icon name="bag" /><p>Nenhuma venda ainda</p><span>Suas vendas aparecem aqui em tempo real.</span></div>
+          ) : (
+            <div className="feed">
+              {recentSales.map((s) => (
+                <div className="it" key={s.who + s.what}>
+                  <div className="av" aria-hidden="true">{s.initials}</div>
+                  <div>
+                    <div className="who">{s.who}</div>
+                    <div className="what">{s.what}</div>
+                  </div>
+                  <div className="amt num">{s.amount}</div>
                 </div>
-                <div className="amt num">{s.amount}</div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -69,15 +91,19 @@ export default function Dashboard() {
             <h3>Alcance geográfico</h3>
             <span className="pill">Últimos 30 dias</span>
           </div>
-          <div className="geo">
-            {geoReach.map((g) => (
-              <div className="geo-row" key={g.region}>
-                <div className="geo-nm">{g.region}</div>
-                <div className="geo-bar"><div className="geo-fill" style={{ width: `${g.pct}%` }} /></div>
-                <div className="geo-val num">{g.visitors}</div>
-              </div>
-            ))}
-          </div>
+          {geoReach.length === 0 ? (
+            <div className="empty"><Icon name="produtos" /><p>Sem visitantes ainda</p><span>O alcance por região aparece quando seu checkout receber acessos.</span></div>
+          ) : (
+            <div className="geo">
+              {geoReach.map((g) => (
+                <div className="geo-row" key={g.region}>
+                  <div className="geo-nm">{g.region}</div>
+                  <div className="geo-bar"><div className="geo-fill" style={{ width: `${g.pct}%` }} /></div>
+                  <div className="geo-val num">{g.visitors}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
         <div className="card">
           <div className="card-head"><h3>Mural de novidades</h3></div>

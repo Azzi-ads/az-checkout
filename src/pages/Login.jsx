@@ -9,8 +9,14 @@ const FEATURES = [
   'Análises ao vivo: lucro real, jornada e abandono',
 ]
 
+function nameFromEmail(email) {
+  const base = (email.split('@')[0] || 'Você').replace(/[._-]+/g, ' ')
+  return base.replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
 export default function Login() {
   const navigate = useNavigate()
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
   const [mode, setMode] = useState('login') // login | signup
@@ -20,8 +26,9 @@ export default function Login() {
 
   function submit(e) {
     e.preventDefault()
-    if (!email || !pass) return
-    login()
+    if (!email || !pass || (mode === 'signup' && !name)) return
+    const displayName = mode === 'signup' && name ? name.trim() : nameFromEmail(email)
+    login({ name: displayName, email: email.trim() })
     navigate('/app')
   }
 
@@ -52,7 +59,8 @@ export default function Login() {
           {mode === 'signup' && (
             <div className="ck-field">
               <label htmlFor="lg-name">Nome</label>
-              <div className="ck-input"><Icon name="livex" /><input id="lg-name" placeholder="Seu nome" autoComplete="name" /></div>
+              <div className="ck-input"><Icon name="livex" /><input id="lg-name" placeholder="Seu nome"
+                value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" /></div>
             </div>
           )}
           <div className="ck-field">

@@ -24,29 +24,22 @@ export const pageTitles = {
   planos: ['Planos', 'Escolha o melhor para o seu momento'],
 }
 
-export const storeSwitcher = { name: 'AZ Store', plan: 'Plano Prime' }
-
 export const dashboardKpis = [
-  { icon: 'revenue', label: 'Faturamento hoje', value: 'R$ 18.430', delta: '+12,4%', trend: 'up' },
-  { icon: 'bag', label: 'Pedidos pagos', value: '312', delta: '+8,1%', trend: 'up' },
-  { icon: 'lines', label: 'Ticket médio', value: 'R$ 59,07', delta: '+3,9%', trend: 'up' },
-  { icon: 'chart', label: 'Taxa de conversão', value: '4,7%', delta: '-0,6%', trend: 'down' },
+  { icon: 'revenue', label: 'Faturamento hoje', value: 'R$ 0,00' },
+  { icon: 'bag', label: 'Pedidos pagos', value: '0' },
+  { icon: 'lines', label: 'Ticket médio', value: 'R$ 0,00' },
+  { icon: 'chart', label: 'Taxa de conversão', value: '0%' },
 ]
 
-export const recentSales = [
-  { initials: 'JM', who: 'João M.', what: 'Curso de Tráfego Pago · há 2 min', amount: 'R$ 297' },
-  { initials: 'AS', who: 'Ana S.', what: 'E-book Finanças · há 9 min', amount: 'R$ 47' },
-  { initials: 'RP', who: 'Rafael P.', what: 'Mentoria Premium · há 21 min', amount: 'R$ 1.997' },
-  { initials: 'CL', who: 'Carla L.', what: 'Pack Templates · há 38 min', amount: 'R$ 89' },
-  { initials: 'DF', who: 'Diego F.', what: 'Curso de Tráfego Pago · há 51 min', amount: 'R$ 297' },
-]
+// Conta nova: ainda sem vendas.
+export const recentSales = []
 
-// Gráfico de faturamento (7 dias). points em coords do viewBox 640x220.
+// Gráfico de faturamento (7 dias). Conta nova = linha zerada na base.
 export const revenueChart = {
-  total: 'R$ 112.940 no período',
-  area: 'M0,150 L106,120 L213,135 L320,80 L426,95 L533,50 L640,65 L640,200 L0,200 Z',
-  line: 'M0,150 L106,120 L213,135 L320,80 L426,95 L533,50 L640,65',
-  dot: { cx: 533, cy: 50 },
+  total: 'R$ 0,00 no período',
+  area: 'M0,200 L640,200 L640,200 L0,200 Z',
+  line: 'M0,200 L640,200',
+  dot: { cx: 640, cy: 200 },
   labels: [
     { x: 0, t: 'Seg' }, { x: 100, t: 'Ter' }, { x: 207, t: 'Qua' },
     { x: 314, t: 'Qui' }, { x: 420, t: 'Sex' }, { x: 527, t: 'Sáb' }, { x: 612, t: 'Dom' },
@@ -54,10 +47,10 @@ export const revenueChart = {
 }
 
 export const livexKpis = [
-  { label: 'No checkout', value: '12', id: 'noCheckout' },
-  { label: 'Em pagamento', value: '4', id: 'emPagamento' },
-  { label: 'Abandonos (1h)', value: '37' },
-  { label: 'Conversão ao vivo', value: '31%' },
+  { label: 'No checkout', value: '0', id: 'noCheckout' },
+  { label: 'Em pagamento', value: '0', id: 'emPagamento' },
+  { label: 'Abandonos (1h)', value: '0' },
+  { label: 'Conversão ao vivo', value: '0%' },
 ]
 
 export const livexSessions = {
@@ -68,28 +61,22 @@ export const livexSessions = {
     { key: 'time', label: 'Tempo', num: true },
     { key: 'value', label: 'Valor', num: true },
   ],
-  rows: [
-    { visitor: 'Visitante #4821', product: 'Mentoria Premium', step: { label: 'Pagamento', tone: 'pend' }, time: '1m 12s', value: 'R$ 1.997' },
-    { visitor: 'Visitante #4822', product: 'Curso de Tráfego', step: { label: 'Dados', tone: 'pago' }, time: '42s', value: 'R$ 297' },
-    { visitor: 'Visitante #4823', product: 'E-book Finanças', step: { label: 'Pagamento', tone: 'pend' }, time: '2m 03s', value: 'R$ 47' },
-    { visitor: 'Visitante #4824', product: 'Pack Templates', step: { label: 'Carrinho', tone: 'pago' }, time: '18s', value: 'R$ 89' },
-    { visitor: 'Visitante #4825', product: 'Curso de Tráfego', step: { label: 'Dados', tone: 'pago' }, time: '1m 30s', value: 'R$ 297' },
-  ],
+  rows: [],
 }
 
 export const livexFunnel = [
-  { name: 'Entrou no checkout', width: 100, value: 48 },
-  { name: 'Preencheu dados', width: 64, value: 31 },
-  { name: 'Foi p/ pagamento', width: 33, value: 16 },
-  { name: 'Compra aprovada', width: 23, value: 11 },
+  { name: 'Entrou no checkout', width: 0, value: 0 },
+  { name: 'Preencheu dados', width: 0, value: 0 },
+  { name: 'Foi p/ pagamento', width: 0, value: 0 },
+  { name: 'Compra aprovada', width: 0, value: 0 },
 ]
 
 export const products = [
-  { icon: 'p-video', slug: 'curso-de-trafego-pago', name: 'Curso de Tráfego Pago', price: 'R$ 297,00', amount: 297, oldAmount: 497, tone: 'pago', status: 'Ativo', meta: '1.204 vendas' },
-  { icon: 'p-doc', slug: 'e-book-financas', name: 'E-book Finanças', price: 'R$ 47,00', amount: 47, oldAmount: 97, tone: 'pago', status: 'Ativo', meta: '3.890 vendas' },
-  { icon: 'p-user', slug: 'mentoria-premium', name: 'Mentoria Premium', price: 'R$ 1.997,00', amount: 1997, oldAmount: 2997, tone: 'pago', status: 'Ativo', meta: '86 vendas' },
-  { icon: 'p-grid', slug: 'pack-de-templates', name: 'Pack de Templates', price: 'R$ 89,00', amount: 89, oldAmount: 149, tone: 'pend', status: 'Rascunho', meta: '540 vendas' },
-  { icon: 'p-layers', slug: 'comunidade-vip', name: 'Comunidade VIP', price: 'R$ 39,90', amount: 39.9, priceSuffix: '/mês', tone: 'pago', status: 'Ativo', meta: '412 assinantes' },
+  { icon: 'p-video', slug: 'curso-de-trafego-pago', name: 'Curso de Tráfego Pago', price: 'R$ 297,00', amount: 297, oldAmount: 497, tone: 'pago', status: 'Ativo', meta: '0 vendas' },
+  { icon: 'p-doc', slug: 'e-book-financas', name: 'E-book Finanças', price: 'R$ 47,00', amount: 47, oldAmount: 97, tone: 'pago', status: 'Ativo', meta: '0 vendas' },
+  { icon: 'p-user', slug: 'mentoria-premium', name: 'Mentoria Premium', price: 'R$ 1.997,00', amount: 1997, oldAmount: 2997, tone: 'pago', status: 'Ativo', meta: '0 vendas' },
+  { icon: 'p-grid', slug: 'pack-de-templates', name: 'Pack de Templates', price: 'R$ 89,00', amount: 89, oldAmount: 149, tone: 'pend', status: 'Rascunho', meta: '0 vendas' },
+  { icon: 'p-layers', slug: 'comunidade-vip', name: 'Comunidade VIP', price: 'R$ 39,90', amount: 39.9, priceSuffix: '/mês', tone: 'pago', status: 'Ativo', meta: '0 assinantes' },
   { icon: 'p-plus', name: 'Novo produto', priceText: 'Criar agora', meta: 'Configure em minutos', isNew: true },
 ]
 
@@ -147,15 +134,7 @@ export const orders = {
     { key: 'status', label: 'Status' },
     { key: 'date', label: 'Data' },
   ],
-  rows: [
-    { id: '#AZ-10428', client: 'João Martins', product: 'Curso de Tráfego Pago', value: 'R$ 297,00', status: { label: 'Pago', tone: 'pago', key: 'pagas' }, date: '01/06 · 14:32' },
-    { id: '#AZ-10427', client: 'Ana Souza', product: 'E-book Finanças', value: 'R$ 47,00', status: { label: 'Pago', tone: 'pago', key: 'pagas' }, date: '01/06 · 14:25' },
-    { id: '#AZ-10426', client: 'Rafael Pires', product: 'Mentoria Premium', value: 'R$ 1.997,00', status: { label: 'Pendente', tone: 'pend', key: 'pendentes' }, date: '01/06 · 14:13' },
-    { id: '#AZ-10425', client: 'Carla Lima', product: 'Pack de Templates', value: 'R$ 89,00', status: { label: 'Pago', tone: 'pago', key: 'pagas' }, date: '01/06 · 13:56' },
-    { id: '#AZ-10424', client: 'Diego Ferreira', product: 'Curso de Tráfego Pago', value: 'R$ 297,00', status: { label: 'Reembolsado', tone: 'reemb', key: 'reembolsadas' }, date: '01/06 · 13:40' },
-    { id: '#AZ-10423', client: 'Bruna Alves', product: 'Comunidade VIP', value: 'R$ 39,90', status: { label: 'Pago', tone: 'pago', key: 'pagas' }, date: '01/06 · 13:21' },
-    { id: '#AZ-10422', client: 'Marcos Reis', product: 'E-book Finanças', value: 'R$ 47,00', status: { label: 'Pago', tone: 'pago', key: 'pagas' }, date: '01/06 · 12:58' },
-  ],
+  rows: [],
 }
 
 export const orderFilters = [
@@ -218,8 +197,6 @@ export const plans = [
   },
 ]
 
-export const currentUser = { initials: 'L', name: 'Lucas', plan: 'Plano Prime' }
-
 // ===== Painel: Análises =====
 export const analyticsPeriods = [
   { key: 'hoje', label: 'Hoje' },
@@ -230,42 +207,43 @@ export const analyticsPeriods = [
 ]
 
 export const analyticsKpis = [
-  { key: 'vendas', label: 'Vendas Geradas', value: 'R$ 48.920', sub: '312 pedidos', highlight: true },
-  { key: 'receita', label: 'Receita Confirmada', value: 'R$ 41.730', sub: '276 pagos' },
-  { key: 'ticket', label: 'Ticket Médio', value: 'R$ 156,80' },
-  { key: 'convcheckout', label: 'Conversão Checkout', value: '31,4%', sub: '994 criados' },
-  { key: 'abandono', label: 'Carrinhos Abandonados', value: '682', sub: '68,6% abandono' },
+  { key: 'vendas', label: 'Vendas Geradas', value: 'R$ 0,00', sub: '0 pedidos', highlight: true },
+  { key: 'receita', label: 'Receita Confirmada', value: 'R$ 0,00', sub: '0 pagos' },
+  { key: 'ticket', label: 'Ticket Médio', value: 'R$ 0,00' },
+  { key: 'convcheckout', label: 'Conversão Checkout', value: '0%', sub: '0 criados' },
+  { key: 'abandono', label: 'Carrinhos Abandonados', value: '0', sub: '0% abandono' },
 ]
 
-// Série carrinhos abandonados vs finalizados (7 dias). O componente desenha o SVG.
+// Série carrinhos abandonados vs finalizados (7 dias). Conta nova = tudo zero.
 export const abandonedSeries = {
   labels: ['26/05', '27/05', '28/05', '29/05', '30/05', '31/05', '01/06'],
-  finalizados: [28, 35, 22, 41, 33, 49, 52],
-  abandonados: [61, 74, 48, 88, 70, 96, 84],
+  finalizados: [0, 0, 0, 0, 0, 0, 0],
+  abandonados: [0, 0, 0, 0, 0, 0, 0],
 }
 
 export const checkoutJourney = [
-  { step: 'Dados pessoais', value: 994, pct: 100 },
-  { step: 'Entrega', value: 712, pct: 72 },
-  { step: 'Pagamento', value: 463, pct: 47 },
-  { step: 'Compra aprovada', value: 312, pct: 31 },
+  { step: 'Dados pessoais', value: 0, pct: 0 },
+  { step: 'Entrega', value: 0, pct: 0 },
+  { step: 'Pagamento', value: 0, pct: 0 },
+  { step: 'Compra aprovada', value: 0, pct: 0 },
 ]
 
 export const operationHealth = [
-  { label: 'Conversão Checkout', value: '31,4%', trend: 'up', delta: '+2,1%' },
-  { label: 'Conversão Pagamento', value: '66,9%', trend: 'up', delta: '+4,8%' },
-  { label: 'Reembolso', value: '1,8%', trend: 'down', delta: '-0,3%' },
-  { label: 'Cancelamento', value: '0,9%', trend: 'down', delta: '-0,1%' },
+  { label: 'Conversão Checkout', value: '0%', trend: 'up', delta: '0%' },
+  { label: 'Conversão Pagamento', value: '0%', trend: 'up', delta: '0%' },
+  { label: 'Reembolso', value: '0%', trend: 'down', delta: '0%' },
+  { label: 'Cancelamento', value: '0%', trend: 'down', delta: '0%' },
 ]
 
 // ===== Painel: Custos / Lucro real =====
 // Base "automática" (viria do gateway). O componente soma os custos manuais.
+// Conta nova: tudo zerado.
 export const costsBase = {
-  pedidos: 276,
-  faturamento: 41730, // receita confirmada no período
-  checkoutRate: 0.025, // taxa do checkout (2,5% — plano Prime)
+  pedidos: 0,
+  faturamento: 0, // receita confirmada no período
+  checkoutRate: 0.025, // taxa do checkout (2,5% — plano Start)
 }
-export const costsDefaults = { ads: 8200, gateway: 1460, outros: 600 }
+export const costsDefaults = { ads: 0, gateway: 0, outros: 0 }
 
 // ===== Início: Mural de novidades + Alcance geográfico =====
 export const newsWall = [
@@ -275,10 +253,5 @@ export const newsWall = [
   { title: 'Relatório de jornada do checkout', time: 'há 3d' },
 ]
 
-export const geoReach = [
-  { region: 'São Paulo', pct: 42, visitors: '1.204' },
-  { region: 'Rio de Janeiro', pct: 23, visitors: '659' },
-  { region: 'Minas Gerais', pct: 14, visitors: '401' },
-  { region: 'Paraná', pct: 9, visitors: '258' },
-  { region: 'Outros estados', pct: 12, visitors: '344' },
-]
+// Conta nova: ainda sem visitantes.
+export const geoReach = []

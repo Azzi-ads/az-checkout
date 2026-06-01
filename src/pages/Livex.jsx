@@ -1,5 +1,6 @@
 import KPICard from '../components/KPICard.jsx'
 import DataTable from '../components/DataTable.jsx'
+import Icon from '../components/Icon.jsx'
 import { livexKpis, livexSessions, livexFunnel } from '../data.js'
 
 export default function Livex({ live }) {
@@ -39,7 +40,11 @@ export default function Livex({ live }) {
             <h3>Sessões ativas</h3>
             <span className="pill">Atualiza em tempo real</span>
           </div>
-          <DataTable columns={livexSessions.columns} rows={livexSessions.rows} caption="Sessões ativas no checkout" />
+          {livexSessions.rows.length === 0 ? (
+            <div className="empty"><Icon name="livex" /><p>Ninguém no checkout agora</p><span>As sessões ativas aparecem aqui em tempo real.</span></div>
+          ) : (
+            <DataTable columns={livexSessions.columns} rows={livexSessions.rows} caption="Sessões ativas no checkout" />
+          )}
         </div>
         <div className="card">
           <div className="card-head"><h3>Funil ao vivo</h3></div>

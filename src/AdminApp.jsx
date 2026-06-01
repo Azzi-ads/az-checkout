@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Sidebar from './components/Sidebar.jsx'
 import Topbar from './components/Topbar.jsx'
-import { logout } from './auth.js'
+import { logout, getUser } from './auth.js'
 import Dashboard from './pages/Dashboard.jsx'
 import Analises from './pages/Analises.jsx'
 import Custos from './pages/Custos.jsx'
@@ -31,6 +31,7 @@ export default function AdminApp() {
   const live = useLiveCount()
   const mainRef = useRef(null)
   const navigate = useNavigate()
+  const user = getUser() || { name: 'Você', email: '' }
   const [title, sub] = pageTitles[page]
 
   useEffect(() => {
@@ -47,7 +48,7 @@ export default function AdminApp() {
   return (
     <div className="app">
       <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
-      <Sidebar page={page} onSelect={setPage} liveCount={live.atCheckout} onLogout={handleLogout} />
+      <Sidebar page={page} onSelect={setPage} liveCount={live.atCheckout} onLogout={handleLogout} user={user} />
       <main className="main" ref={mainRef}>
         <Topbar title={title} sub={sub} />
         <section
