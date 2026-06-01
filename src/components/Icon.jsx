@@ -39,6 +39,11 @@ const PATHS = {
   phone: <path d="M5 4h4l1.5 4-2 1.5a12 12 0 0 0 6 6L16 13l4 1.5V18a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z" />,
   copy: <><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V5a2 2 0 0 1 2-2h10" /></>,
   arrowLeft: <path d="M19 12H5M11 18l-6-6 6-6" />,
+  chevron: <path d="M6 9l6 6 6-6" />,
+  pulse: <path d="M3 12h4l2-6 4 12 2-6h6" />,
+  megaphone: <><path d="M3 11v2a1 1 0 0 0 1 1h2l9 5V5L6 10H4a1 1 0 0 0-1 1z" /><path d="M18 9a3 3 0 0 1 0 6" /></>,
+  store: <><path d="M4 9l1-5h14l1 5M4 9h16M4 9v10h16V9M9 19v-5h6v5" /></>,
+  diagnostic: <><circle cx="11" cy="11" r="7" /><path d="m20 20-3-3M11 8v6M8 11h6" /></>,
 
   // thumbnails de produtos
   'p-video': <><path d="M4 6h16v12H4z" /><path d="M4 10h16" /></>,

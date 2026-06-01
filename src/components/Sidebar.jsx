@@ -1,27 +1,76 @@
+import { useState } from 'react'
 import Icon from './Icon.jsx'
-import { navMenu, navAccount, currentUser } from '../data.js'
+import { currentUser, storeSwitcher } from '../data.js'
 
-function NavItem({ item, active, onSelect, liveCount }) {
+// Estrutura do menu (grupos). Um item com `children` vira grupo retrátil.
+const SECTIONS = [
+  {
+    label: 'Principal',
+    items: [
+      { id: 'dashboard', label: 'Início', icon: 'dashboard' },
+      {
+        id: 'analises', label: 'Análises', icon: 'chart',
+        children: [
+          { id: 'analises', label: 'Visão geral', icon: 'pulse' },
+          { id: 'custos', label: 'Custos', icon: 'revenue' },
+        ],
+      },
+      { id: 'livex', label: 'Livex', icon: 'livex', live: true },
+      { id: 'produtos', label: 'Produtos', icon: 'produtos' },
+      { id: 'vendas', label: 'Vendas', icon: 'vendas' },
+      { id: 'config', label: 'Configurações', icon: 'config' },
+    ],
+  },
+  {
+    label: 'Conta',
+    items: [{ id: 'planos', label: 'Planos', icon: 'planos' }],
+  },
+]
+
+function NavItem({ item, page, onSelect, liveCount, sub }) {
+  const active = page === item.id
   return (
     <button
       type="button"
-      className={`nav-item${active ? ' active' : ''}`}
+      className={`nav-item${active ? ' active' : ''}${sub ? ' nav-sub' : ''}`}
       aria-current={active ? 'page' : undefined}
       onClick={() => onSelect(item.id)}
     >
       <Icon name={item.icon} />
       {item.label}
       {item.live && (
-        <span
-          className="badge"
-          aria-live="polite"
-          aria-label={`${liveCount} pessoas ao vivo no checkout`}
-        >
+        <span className="badge" aria-live="polite" aria-label={`${liveCount} pessoas ao vivo no checkout`}>
           <span className="dot" aria-hidden="true" />
           <span>{liveCount}</span>
         </span>
       )}
     </button>
+  )
+}
+
+function NavGroup({ item, page, onSelect }) {
+  const childActive = item.children.some((c) => c.id === page)
+  const [open, setOpen] = useState(childActive)
+  const regionId = `grp-${item.id}`
+  return (
+    <>
+      <button
+        type="button"
+        className={`nav-item nav-group${childActive ? ' has-active' : ''}`}
+        aria-expanded={open}
+        aria-controls={regionId}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <Icon name={item.icon} />
+        {item.label}
+        <Icon name="chevron" className={`nav-chevron${open ? ' open' : ''}`} />
+      </button>
+      <div id={regionId} role="group" aria-label={item.label} hidden={!open}>
+        {item.children.map((c) => (
+          <NavItem key={c.id} item={c} page={page} onSelect={onSelect} sub />
+        ))}
+      </div>
+    </>
   )
 }
 
@@ -32,20 +81,26 @@ export default function Sidebar({ page, onSelect, liveCount }) {
         <img className="brand-logo" src="/logo-wide.png" alt="AZ Checkout" width="1921" height="819" />
       </div>
 
-      <nav aria-label="Menu principal">
-        <div className="nav-label" id="nav-menu-label">Menu</div>
-        <div role="group" aria-labelledby="nav-menu-label">
-          {navMenu.map((item) => (
-            <NavItem key={item.id} item={item} active={page === item.id} onSelect={onSelect} liveCount={liveCount} />
-          ))}
-        </div>
+      <button type="button" className="store-switch" aria-label="Trocar de loja">
+        <span className="store-av" aria-hidden="true">AZ</span>
+        <span className="store-meta">
+          <b>{storeSwitcher.name}</b>
+          <span>{storeSwitcher.plan}</span>
+        </span>
+        <Icon name="chevron" />
+      </button>
 
-        <div className="nav-label" id="nav-account-label">Conta</div>
-        <div role="group" aria-labelledby="nav-account-label">
-          {navAccount.map((item) => (
-            <NavItem key={item.id} item={item} active={page === item.id} onSelect={onSelect} liveCount={liveCount} />
-          ))}
-        </div>
+      <nav aria-label="Menu principal">
+        {SECTIONS.map((section) => (
+          <div key={section.label}>
+            <div className="nav-label">{section.label}</div>
+            {section.items.map((item) =>
+              item.children
+                ? <NavGroup key={item.label} item={item} page={page} onSelect={onSelect} />
+                : <NavItem key={item.id} item={item} page={page} onSelect={onSelect} liveCount={liveCount} />,
+            )}
+          </div>
+        ))}
       </nav>
 
       <div className="side-foot">

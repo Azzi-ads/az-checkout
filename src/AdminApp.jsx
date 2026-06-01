@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import Sidebar from './components/Sidebar.jsx'
 import Topbar from './components/Topbar.jsx'
 import Dashboard from './pages/Dashboard.jsx'
+import Analises from './pages/Analises.jsx'
+import Custos from './pages/Custos.jsx'
 import Livex from './pages/Livex.jsx'
 import Produtos from './pages/Produtos.jsx'
 import Vendas from './pages/Vendas.jsx'
@@ -12,6 +14,8 @@ import { pageTitles } from './data.js'
 
 const PAGES = {
   dashboard: Dashboard,
+  analises: Analises,
+  custos: Custos,
   livex: Livex,
   produtos: Produtos,
   vendas: Vendas,

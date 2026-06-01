@@ -15,12 +15,16 @@ export const navAccount = [
 
 export const pageTitles = {
   dashboard: ['Início', 'Visão geral da sua operação'],
+  analises: ['Análises', 'Métricas e jornada do checkout'],
+  custos: ['Custos', 'Lucro real da sua operação'],
   livex: ['Livex', 'Pessoas ao vivo no checkout'],
   produtos: ['Produtos', 'Gerencie seu catálogo'],
   vendas: ['Vendas', 'Histórico de pedidos'],
   config: ['Configurações', 'Ajustes da sua conta e checkout'],
   planos: ['Planos', 'Escolha o melhor para o seu momento'],
 }
+
+export const storeSwitcher = { name: 'AZ Store', plan: 'Plano Prime' }
 
 export const dashboardKpis = [
   { icon: 'revenue', label: 'Faturamento hoje', value: 'R$ 18.430', delta: '+12,4%', trend: 'up' },
@@ -215,3 +219,66 @@ export const plans = [
 ]
 
 export const currentUser = { initials: 'L', name: 'Lucas', plan: 'Plano Prime' }
+
+// ===== Painel: Análises =====
+export const analyticsPeriods = [
+  { key: 'hoje', label: 'Hoje' },
+  { key: 'ontem', label: 'Ontem' },
+  { key: '7d', label: 'Últimos 7 dias' },
+  { key: 'mes', label: 'Mês atual' },
+  { key: 'ano', label: 'Ano atual' },
+]
+
+export const analyticsKpis = [
+  { key: 'vendas', label: 'Vendas Geradas', value: 'R$ 48.920', sub: '312 pedidos', highlight: true },
+  { key: 'receita', label: 'Receita Confirmada', value: 'R$ 41.730', sub: '276 pagos' },
+  { key: 'ticket', label: 'Ticket Médio', value: 'R$ 156,80' },
+  { key: 'convcheckout', label: 'Conversão Checkout', value: '31,4%', sub: '994 criados' },
+  { key: 'abandono', label: 'Carrinhos Abandonados', value: '682', sub: '68,6% abandono' },
+]
+
+// Série carrinhos abandonados vs finalizados (7 dias). O componente desenha o SVG.
+export const abandonedSeries = {
+  labels: ['26/05', '27/05', '28/05', '29/05', '30/05', '31/05', '01/06'],
+  finalizados: [28, 35, 22, 41, 33, 49, 52],
+  abandonados: [61, 74, 48, 88, 70, 96, 84],
+}
+
+export const checkoutJourney = [
+  { step: 'Dados pessoais', value: 994, pct: 100 },
+  { step: 'Entrega', value: 712, pct: 72 },
+  { step: 'Pagamento', value: 463, pct: 47 },
+  { step: 'Compra aprovada', value: 312, pct: 31 },
+]
+
+export const operationHealth = [
+  { label: 'Conversão Checkout', value: '31,4%', trend: 'up', delta: '+2,1%' },
+  { label: 'Conversão Pagamento', value: '66,9%', trend: 'up', delta: '+4,8%' },
+  { label: 'Reembolso', value: '1,8%', trend: 'down', delta: '-0,3%' },
+  { label: 'Cancelamento', value: '0,9%', trend: 'down', delta: '-0,1%' },
+]
+
+// ===== Painel: Custos / Lucro real =====
+// Base "automática" (viria do gateway). O componente soma os custos manuais.
+export const costsBase = {
+  pedidos: 276,
+  faturamento: 41730, // receita confirmada no período
+  checkoutRate: 0.025, // taxa do checkout (2,5% — plano Prime)
+}
+export const costsDefaults = { ads: 8200, gateway: 1460, outros: 600 }
+
+// ===== Início: Mural de novidades + Alcance geográfico =====
+export const newsWall = [
+  { tag: 'Novidade', title: 'Popup de prova social', desc: 'Exiba quem acabou de comprar direto no checkout, configurável no personalizador.', time: 'há 2h' },
+  { title: 'Painel de Custos renovado', time: 'há 2h' },
+  { title: 'Automação AZ 2.0 disponível', time: 'há 1d' },
+  { title: 'Relatório de jornada do checkout', time: 'há 3d' },
+]
+
+export const geoReach = [
+  { region: 'São Paulo', pct: 42, visitors: '1.204' },
+  { region: 'Rio de Janeiro', pct: 23, visitors: '659' },
+  { region: 'Minas Gerais', pct: 14, visitors: '401' },
+  { region: 'Paraná', pct: 9, visitors: '258' },
+  { region: 'Outros estados', pct: 12, visitors: '344' },
+]

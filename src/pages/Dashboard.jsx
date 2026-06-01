@@ -1,5 +1,6 @@
 import KPICard from '../components/KPICard.jsx'
-import { dashboardKpis, recentSales, revenueChart } from '../data.js'
+import Icon from '../components/Icon.jsx'
+import { dashboardKpis, recentSales, revenueChart, geoReach, newsWall } from '../data.js'
 
 function RevenueChart() {
   const { area, line, dot, labels } = revenueChart
@@ -56,6 +57,49 @@ export default function Dashboard() {
                   <div className="what">{s.what}</div>
                 </div>
                 <div className="amt num">{s.amount}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid row2">
+        <div className="card">
+          <div className="card-head">
+            <h3>Alcance geográfico</h3>
+            <span className="pill">Últimos 30 dias</span>
+          </div>
+          <div className="geo">
+            {geoReach.map((g) => (
+              <div className="geo-row" key={g.region}>
+                <div className="geo-nm">{g.region}</div>
+                <div className="geo-bar"><div className="geo-fill" style={{ width: `${g.pct}%` }} /></div>
+                <div className="geo-val num">{g.visitors}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="card">
+          <div className="card-head"><h3>Mural de novidades</h3></div>
+          <div className="news">
+            {newsWall.map((n) => (
+              <div className={`news-it${n.desc ? ' news-feat' : ''}`} key={n.title}>
+                {n.desc ? (
+                  <>
+                    <div className="news-ic"><Icon name="megaphone" /></div>
+                    <div>
+                      <span className="news-tag">{n.tag}</span>
+                      <b>{n.title}</b>
+                      <p>{n.desc}</p>
+                      <span className="news-time">{n.time}</span>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <b>{n.title}</b>
+                    <span className="news-time">{n.time}</span>
+                  </>
+                )}
               </div>
             ))}
           </div>
