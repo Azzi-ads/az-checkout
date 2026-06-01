@@ -26,6 +26,7 @@ export const pageTitles = {
   aparencia: ['Aparência', 'Personalize as cores e o tema do painel'],
   integracoes: ['Integrações', 'Conecte seu gateway de pagamento'],
   checkout: ['Checkout', 'Personalize o checkout dos seus produtos'],
+  security: ['AZ Security', 'Proteção do checkout e dos dados'],
 }
 
 export const dashboardKpis = [

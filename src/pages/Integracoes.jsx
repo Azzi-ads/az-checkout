@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import Icon from '../components/Icon.jsx'
+import { getProfile, saveProfile } from '../store.js'
 
 const GATEWAYS = [
   { key: 'bravopay', name: 'BravoPay', desc: 'Pix • cartão • boleto', status: 'connected', icon: 'bolt' },
@@ -30,6 +31,13 @@ function CopyField({ label, value }) {
 export default function Integracoes() {
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
   const [test, setTest] = useState({ state: 'idle', msg: '' })
+  const [domain, setDomain] = useState(() => getProfile().domain || '')
+  const [savedDom, setSavedDom] = useState(false)
+
+  function saveDomain() {
+    saveProfile({ domain: domain.trim() })
+    setSavedDom(true); setTimeout(() => setSavedDom(false), 2000)
+  }
 
   async function testar() {
     setTest({ state: 'testing', msg: '' })
@@ -81,6 +89,24 @@ export default function Integracoes() {
           <span>A <b>chave secreta</b> fica guardada com segurança no servidor (variável de ambiente <code>BRAVOPAY_API_KEY</code> no Vercel) — nunca no navegador. Cada produto se liga a um produto do BravoPay em <b>Produtos → Editar</b>.</span>
         </div>
         <CopyField label="URL do webhook (cadastre no painel do BravoPay)" value={`${origin}/api/webhook`} />
+      </div>
+
+      <div className="card" style={{ marginTop: 16 }}>
+        <div className="card-head"><h3>Domínio próprio do checkout</h3><span className="pill">opcional • white-label</span></div>
+        <p className="area-intro" style={{ marginBottom: 14 }}>
+          Use seu próprio domínio no checkout. Sem isso, o link usa o nosso: <b>{origin}/checkout/...</b>
+        </p>
+        <div className="field">
+          <label htmlFor="dom">Seu domínio</label>
+          <div className="copy-field">
+            <input id="dom" value={domain} onChange={(e) => setDomain(e.target.value)} placeholder="ex.: pay.minhaloja.com" />
+            <button type="button" className="btn btn-primary" onClick={saveDomain}>{savedDom ? 'Salvo!' : 'Salvar'}</button>
+          </div>
+        </div>
+        <div className="integ-note">
+          <Icon name="lock" />
+          <span>Para ativar: no seu provedor de DNS, crie um <b>CNAME</b> apontando <code>{domain || 'pay.seudominio.com'}</code> para <code>cname.vercel-dns.com</code> e adicione o domínio no painel do Vercel. Depois os links de checkout passam a usar o seu domínio.</span>
+        </div>
       </div>
     </>
   )

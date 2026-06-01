@@ -859,3 +859,48 @@ body::before{
 /* botão-link inline (ex.: "buscar" no rótulo) */
 .link-btn{appearance:none;background:none;border:0;color:var(--yellow);font-weight:700;font-size:12px;cursor:pointer;margin-left:6px}
 .link-btn:disabled{opacity:.6;cursor:default}
+
+/* ===== Checkout white-label ===== */
+.ck-brandname{font-family:'Bricolage Grotesque';font-weight:800;font-size:16px;color:var(--text)}
+.ck-secured{display:inline-flex;align-items:center;gap:6px;color:var(--green);font-weight:700}
+.ck-secured svg{width:14px;height:14px}
+
+/* ===== AZ Security ===== */
+.sec-hero{display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start}
+.sec-main p{color:var(--muted);font-size:13.5px;margin-top:6px;font-weight:500;max-width:460px;line-height:1.5}
+.sec-main h2{font-size:30px;font-weight:800}
+.sec-status{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.sec-live{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted-2)}
+.sec-live .dot{width:7px;height:7px;border-radius:99px;background:var(--muted-2)}
+.sec-live.on{color:var(--green)}
+.sec-live.on .dot{background:var(--green);animation:pulse 1.4s infinite}
+.sec-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;background:var(--surface-3);color:var(--muted-2)}
+.sec-badge.on{background:rgba(61,220,145,.12);color:var(--green)}
+.sec-bars{display:flex;gap:8px;margin-top:18px}
+.sec-bar{height:8px;flex:1;border-radius:99px;background:var(--surface-3)}
+.sec-bar.on{background:linear-gradient(90deg,var(--yellow-dim),var(--yellow))}
+.sec-side{display:flex;flex-direction:column;gap:16px}
+.sec-toggle{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.sec-toggle>span{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--muted-2);text-transform:uppercase;width:100%}
+.sec-toggle b{font-size:15px;font-weight:800;margin-right:auto}
+.sec-indicators{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:16px}
+.sec-ind-title{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted-2)}
+.sec-ind{margin-top:13px}
+.sec-ind-top{display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;margin-bottom:6px}
+.sec-ind-top b{color:var(--text)}
+.sec-ind-top span{color:var(--muted)}
+.sec-ind-bar{height:7px;border-radius:99px;background:var(--surface-3);overflow:hidden}
+.sec-ind-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--yellow-dim),var(--yellow));transition:width .5s ease}
+.sec-checks{grid-template-columns:repeat(4,1fr)}
+.sec-check{display:flex;flex-direction:column;gap:9px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px}
+.sec-check.on{border-color:rgba(61,220,145,.3)}
+.sec-check-ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:var(--surface-3);color:var(--yellow)}
+.sec-check-ic svg{width:17px;height:17px}
+.sec-check-body b{display:block;font-size:13px;font-weight:700}
+.sec-check-body span{font-size:11.5px;color:var(--muted-2)}
+.sec-chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--muted-2)}
+.sec-chip .d{width:6px;height:6px;border-radius:99px;background:var(--muted-2)}
+.sec-chip.on{color:var(--green)}
+.sec-chip.on .d{background:var(--green)}
+@media(max-width:900px){.sec-hero{grid-template-columns:1fr}.sec-checks{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.sec-checks{grid-template-columns:1fr}}

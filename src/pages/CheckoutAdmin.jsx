@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Icon from '../components/Icon.jsx'
 import Toggle from '../components/Toggle.jsx'
 import { CheckoutView } from './Checkout.jsx'
@@ -14,6 +14,14 @@ function CheckoutCustomizer({ product, onSave, onBack }) {
   const setField = (k, v) => setCfg({ fields: { ...cfg.fields, [k]: v } })
   const setMethod = (k, v) => setCfg({ methods: { ...cfg.methods, [k]: v } })
   const setBump = (patch) => setCfg({ bump: { ...cfg.bump, ...patch } })
+  const logoRef = useRef(null)
+  function pickLogo(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const r = new FileReader()
+    r.onload = () => setCfg({ logo: String(r.result) })
+    r.readAsDataURL(file)
+  }
 
   return (
     <div className="editor">
@@ -28,6 +36,21 @@ function CheckoutCustomizer({ product, onSave, onBack }) {
 
       <div className="editor-grid">
         <div className="editor-form">
+          <section className="card">
+            <div className="card-head"><h3>Marca do checkout</h3></div>
+            <div className="profile-photo">
+              <div className="profile-av" style={{ borderRadius: 12, width: 60, height: 60, flexBasis: 60 }}>
+                {cfg.logo ? <img src={cfg.logo} alt="" /> : <Icon name="store" />}
+              </div>
+              <div className="profile-photo-actions">
+                <button type="button" className="btn btn-ghost" onClick={() => logoRef.current?.click()}><Icon name="camera" />Logo do checkout</button>
+                {cfg.logo && <button type="button" className="btn btn-ghost" onClick={() => setCfg({ logo: '' })}><Icon name="trash" />Remover</button>}
+                <input ref={logoRef} type="file" accept="image/*" hidden onChange={pickLogo} />
+                <p className="profile-hint">Sem logo, mostramos o nome do produto. A logo da AZ não aparece no checkout.</p>
+              </div>
+            </div>
+          </section>
+
           <section className="card">
             <div className="card-head"><h3>Modelo de checkout</h3></div>
             <div className="model-cards">

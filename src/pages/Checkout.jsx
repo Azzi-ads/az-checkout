@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Icon from '../components/Icon.jsx'
 import { products as seedProducts, checkoutDescriptions, installments, formatBRL } from '../data.js'
-import { getProducts } from '../store.js'
+import { getProducts, getProfile } from '../store.js'
 import { themeVars } from '../theme.js'
 import { ensureCheckout } from '../checkoutConfig.js'
+import { ping, leave } from '../liveTracker.js'
 
 /* máscaras */
 const d = (s) => s.replace(/\D/g, '')
@@ -56,13 +57,20 @@ function FakeQR() {
   )
 }
 
-/* moldura: página inteira ou preview embutido */
-function Frame({ children, preview, styleVars, showTimer, mmss }) {
+/* moldura: página inteira ou preview embutido. White-label: usa a marca do
+   vendedor (logo do checkout ou nome do produto), nunca a logo da AZ. */
+function Brand({ logo, name }) {
+  if (logo) return <img className="ck-logo" src={logo} alt={name || 'Logo'} />
+  if (name) return <span className="ck-brandname">{name}</span>
+  return <span />
+}
+
+function Frame({ children, preview, styleVars, showTimer, mmss, logo, brandName, secure }) {
   if (preview) {
     return (
       <div className="ck-preview" style={styleVars}>
         <div className="ck-preview-top">
-          <img className="ck-logo" src="/logo-wide.png" alt="AZ Checkout" />
+          <Brand logo={logo} name={brandName} />
           <span className="ck-safe"><Icon name="lock" />Compra segura</span>
         </div>
         <div className="ck-preview-body">{children}</div>
@@ -75,11 +83,14 @@ function Frame({ children, preview, styleVars, showTimer, mmss }) {
         <div className="ck-timer"><Icon name="bolt" /> Oferta por tempo limitado — expira em <b className="num">{mmss}</b></div>
       )}
       <header className="ck-top">
-        <img className="ck-logo" src="/logo-wide.png" alt="AZ Checkout" width="1921" height="819" />
+        <Brand logo={logo} name={brandName} />
         <span className="ck-safe"><Icon name="lock" />Compra segura</span>
       </header>
       <main className="ck-body">{children}</main>
-      <footer className="ck-foot"><span>© AZ Checkout</span><span>·</span><span>Pagamento processado com segurança</span></footer>
+      <footer className="ck-foot">
+        {secure && <span className="ck-secured"><Icon name="shield" />Protegido por AZ Security</span>}
+        <span>Pagamento processado com segurança</span>
+      </footer>
     </div>
   )
 }
@@ -88,6 +99,7 @@ export function CheckoutView({ product, preview = false }) {
   const cfg = ensureCheckout(product)
   const styleVars = themeVars({ accent: cfg.accent, mode: cfg.theme })
   const isRapido = cfg.model === 'rapido'
+  const secure = (() => { try { return !!getProfile().security } catch { return false } })()
 
   const methods = useMemo(
     () => Object.keys(cfg.methods).filter((k) => cfg.methods[k]).map((k) => ({ key: k, ...METHOD_META[k] })),
@@ -104,6 +116,9 @@ export function CheckoutView({ product, preview = false }) {
   const [pixData, setPixData] = useState(null) // { id, qr_code, qr_code_image } do BravoPay
   const [loading, setLoading] = useState(false)
   const [payError, setPayError] = useState('')
+  const [sid] = useState(() => Math.random().toString(36).slice(2, 8))
+  const stepRef = useRef('Dados')
+  stepRef.current = status === 'pix' ? 'Pagamento' : status === 'paid' ? 'Aprovado' : 'Dados'
 
   useEffect(() => {
     if (!cfg.timer || preview) return
@@ -191,6 +206,17 @@ export function CheckoutView({ product, preview = false }) {
     return () => clearInterval(id)
   }, [status, pixData, preview])
 
+  // Rastreio ao vivo: enquanto a pessoa está no checkout, manda "heartbeat".
+  useEffect(() => {
+    if (preview) return
+    const send = () => ping(sid, { product: product.name, step: stepRef.current, value: formatBRL(total) })
+    send()
+    const iv = setInterval(send, 4000)
+    const onUnload = () => leave(sid)
+    window.addEventListener('beforeunload', onUnload)
+    return () => { clearInterval(iv); leave(sid); window.removeEventListener('beforeunload', onUnload) }
+  }, [sid, preview, product.name, total])
+
   const trust = [
     { icon: 'shield', title: 'Compra 100% segura', desc: 'Seus dados são criptografados.' },
     { icon: 'refresh', title: cfg.guarantee, desc: 'Não gostou? Devolvemos seu dinheiro.' },
@@ -219,7 +245,7 @@ export function CheckoutView({ product, preview = false }) {
   /* Pix gerado */
   if (status === 'pix') {
     return (
-      <Frame preview={preview} styleVars={styleVars} showTimer={cfg.timer} mmss={mmss}>
+      <Frame preview={preview} styleVars={styleVars} showTimer={cfg.timer} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure}>
         <div className="ck-grid">
           <div className="card ck-pixbox">
             <span className="ck-badge"><span className="dot" />Aguardando pagamento</span>
@@ -244,7 +270,7 @@ export function CheckoutView({ product, preview = false }) {
   /* aprovado */
   if (status === 'paid') {
     return (
-      <Frame preview={preview} styleVars={styleVars} showTimer={false} mmss={mmss}>
+      <Frame preview={preview} styleVars={styleVars} showTimer={false} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure}>
         <div className="ck-done card">
           <div className="ck-done-ic"><Icon name="check" strokeWidth={3} /></div>
           <h2>Pagamento confirmado! 🎉</h2>

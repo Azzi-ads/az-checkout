@@ -1,15 +1,39 @@
+import { useEffect, useState } from 'react'
 import KPICard from '../components/KPICard.jsx'
 import DataTable from '../components/DataTable.jsx'
 import Icon from '../components/Icon.jsx'
 import { livexKpis, livexSessions, livexFunnel } from '../data.js'
+import { getLiveSessions } from '../liveTracker.js'
+
+function since(ms) {
+  const s = Math.max(0, Math.floor((Date.now() - ms) / 1000))
+  return s < 60 ? `${s}s` : `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, '0')}s`
+}
 
 export default function Livex({ live }) {
-  // Substitui os valores dinâmicos vindos do contador ao vivo.
+  const [sessions, setSessions] = useState([])
+
+  useEffect(() => {
+    const tick = () => setSessions(getLiveSessions())
+    tick()
+    const id = setInterval(tick, 2000)
+    window.addEventListener('storage', tick)
+    return () => { clearInterval(id); window.removeEventListener('storage', tick) }
+  }, [])
+
   const kpis = livexKpis.map((k) => {
     if (k.id === 'noCheckout') return { ...k, value: String(live.atCheckout) }
     if (k.id === 'emPagamento') return { ...k, value: String(live.atPayment) }
     return k
   })
+
+  const rows = sessions.map((s) => ({
+    visitor: `Visitante #${s.id}`,
+    product: s.product || '—',
+    step: { label: s.step || 'Dados', tone: s.step === 'Pagamento' ? 'pend' : 'pago' },
+    time: since(s.since),
+    value: s.value || '—',
+  }))
 
   return (
     <>
@@ -29,9 +53,7 @@ export default function Livex({ live }) {
       </div>
 
       <div className="grid kpis" style={{ marginTop: 16 }}>
-        {kpis.map((k) => (
-          <KPICard key={k.label} {...k} />
-        ))}
+        {kpis.map((k) => <KPICard key={k.label} {...k} />)}
       </div>
 
       <div className="grid row2">
@@ -40,10 +62,10 @@ export default function Livex({ live }) {
             <h3>Sessões ativas</h3>
             <span className="pill">Atualiza em tempo real</span>
           </div>
-          {livexSessions.rows.length === 0 ? (
-            <div className="empty"><Icon name="livex" /><p>Ninguém no checkout agora</p><span>As sessões ativas aparecem aqui em tempo real.</span></div>
+          {rows.length === 0 ? (
+            <div className="empty"><Icon name="livex" /><p>Ninguém no checkout agora</p><span>Abra um checkout (ex.: em outra aba) que a pessoa aparece aqui ao vivo.</span></div>
           ) : (
-            <DataTable columns={livexSessions.columns} rows={livexSessions.rows} caption="Sessões ativas no checkout" />
+            <DataTable columns={livexSessions.columns} rows={rows} caption="Sessões ativas no checkout" />
           )}
         </div>
         <div className="card">
@@ -52,9 +74,7 @@ export default function Livex({ live }) {
             {livexFunnel.map((step) => (
               <div className="step" key={step.name}>
                 <div className="nm">{step.name}</div>
-                <div className="bar">
-                  <div className="fill" style={{ width: `${step.width}%` }}>{step.value}</div>
-                </div>
+                <div className="bar"><div className="fill" style={{ width: `${step.width}%` }}>{step.value}</div></div>
               </div>
             ))}
           </div>

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Icon from '../components/Icon.jsx'
 import { formatBRL } from '../data.js'
-import { getProducts, saveProducts } from '../store.js'
+import { getProducts, saveProducts, getProfile } from '../store.js'
 import ProductForm from './ProductForm.jsx'
 
 function slugify(s) {
@@ -18,8 +18,10 @@ function uniqueSlug(base, products) {
 function CheckoutLinkRow({ slug }) {
   const [copied, setCopied] = useState(false)
   const origin = typeof window !== 'undefined' ? window.location.origin : ''
+  const domain = getProfile().domain
+  const base = domain ? `https://${domain.replace(/^https?:\/\//, '')}` : origin
   function copy() {
-    navigator.clipboard?.writeText(`${origin}/checkout/${slug}`)
+    navigator.clipboard?.writeText(`${base}/checkout/${slug}`)
     setCopied(true); setTimeout(() => setCopied(false), 2000)
   }
   return (
