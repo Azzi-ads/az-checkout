@@ -15,6 +15,24 @@ function uniqueSlug(base, products, ignore) {
   return slug
 }
 
+function CheckoutLinkRow({ slug }) {
+  const [copied, setCopied] = useState(false)
+  const origin = typeof window !== 'undefined' ? window.location.origin : ''
+  const url = `${origin}/checkout/${slug}`
+  function copy() {
+    navigator.clipboard?.writeText(url)
+    setCopied(true); setTimeout(() => setCopied(false), 2000)
+  }
+  return (
+    <div className="prod-foot">
+      <Link className="prod-link" to={`/checkout/${slug}`}>Ver checkout<Icon name="arrowLeft" strokeWidth={2.4} /></Link>
+      <button type="button" className="prod-copy" onClick={copy} title="Copiar link do checkout">
+        <Icon name={copied ? 'check' : 'copy'} />{copied ? 'Copiado!' : 'Copiar link'}
+      </button>
+    </div>
+  )
+}
+
 function ProductCard({ p, onEdit, onDelete }) {
   return (
     <div className="card prod">
@@ -32,7 +50,7 @@ function ProductCard({ p, onEdit, onDelete }) {
           <span className={`tag ${p.tone}`}><span className="d" />{p.status}</span>
           <span>{p.meta}</span>
         </div>
-        <Link className="prod-link" to={`/checkout/${p.slug}`}>Ver checkout<Icon name="arrowLeft" strokeWidth={2.4} /></Link>
+        <CheckoutLinkRow slug={p.slug} />
       </div>
     </div>
   )

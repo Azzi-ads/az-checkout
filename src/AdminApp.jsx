@@ -7,6 +7,7 @@ import Analises from './pages/Analises.jsx'
 import Custos from './pages/Custos.jsx'
 import Livex from './pages/Livex.jsx'
 import Produtos from './pages/Produtos.jsx'
+import Integracoes from './pages/Integracoes.jsx'
 import Vendas from './pages/Vendas.jsx'
 import Config from './pages/Config.jsx'
 import Planos from './pages/Planos.jsx'
@@ -21,6 +22,7 @@ import { themeVars } from './theme.js'
 const SIMPLE_PAGES = {
   analises: Analises,
   custos: Custos,
+  integracoes: Integracoes,
   vendas: Vendas,
   config: Config,
   planos: Planos,

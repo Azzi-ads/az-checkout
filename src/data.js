@@ -24,6 +24,7 @@ export const pageTitles = {
   planos: ['Planos', 'Escolha o melhor para o seu momento'],
   perfil: ['Perfil', 'Sua identidade na plataforma'],
   aparencia: ['Aparência', 'Personalize as cores e o tema do painel'],
+  integracoes: ['Integrações', 'Conecte seu gateway de pagamento'],
 }
 
 export const dashboardKpis = [

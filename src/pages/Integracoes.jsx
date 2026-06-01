@@ -1,0 +1,87 @@
+import { useState } from 'react'
+import Icon from '../components/Icon.jsx'
+
+const GATEWAYS = [
+  { key: 'bravopay', name: 'BravoPay', desc: 'Pix • cartão • boleto', status: 'connected', icon: 'bolt' },
+  { key: 'mercadopago', name: 'Mercado Pago', desc: 'Pix • cartão', status: 'soon', icon: 'card' },
+  { key: 'pagarme', name: 'Pagar.me', desc: 'Pix • cartão', status: 'soon', icon: 'card' },
+  { key: 'asaas', name: 'Asaas', desc: 'Pix • cartão • boleto', status: 'soon', icon: 'card' },
+]
+
+function CopyField({ label, value }) {
+  const [copied, setCopied] = useState(false)
+  function copy() {
+    navigator.clipboard?.writeText(value)
+    setCopied(true); setTimeout(() => setCopied(false), 2000)
+  }
+  return (
+    <div className="field">
+      <label>{label}</label>
+      <div className="copy-field">
+        <input value={value} readOnly />
+        <button type="button" className="btn btn-ghost" onClick={copy}>
+          <Icon name={copied ? 'check' : 'copy'} />{copied ? 'Copiado!' : 'Copiar'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+export default function Integracoes() {
+  const origin = typeof window !== 'undefined' ? window.location.origin : ''
+  const [test, setTest] = useState({ state: 'idle', msg: '' })
+
+  async function testar() {
+    setTest({ state: 'testing', msg: '' })
+    try {
+      const r = await fetch('/api/produtos-bravo')
+      const j = await r.json()
+      if (!r.ok) throw new Error(j.error || 'Falha ao conectar.')
+      const n = (j.products || []).length
+      setTest({ state: 'ok', msg: `Conexão OK — ${n} produto(s) na conta.` })
+    } catch (e) {
+      setTest({ state: 'err', msg: e.message })
+    }
+  }
+
+  return (
+    <>
+      <p className="area-intro">Conecte seu gateway de pagamento. O AZ é o checkout; quem processa o dinheiro é o gateway que você conectar aqui.</p>
+
+      <div className="grid integ-grid">
+        {GATEWAYS.map((g) => (
+          <div className={`card integ-card${g.status === 'connected' ? ' on' : ''}`} key={g.key}>
+            <div className="integ-top">
+              <div className="integ-ic"><Icon name={g.icon} /></div>
+              {g.status === 'connected'
+                ? <span className="integ-badge ok"><span className="dot" />Conectado</span>
+                : <span className="integ-badge soon">Em breve</span>}
+            </div>
+            <h3>{g.name}</h3>
+            <p>{g.desc}</p>
+            {g.status === 'connected'
+              ? <button type="button" className="btn btn-ghost" onClick={testar} disabled={test.state === 'testing'}>
+                  <Icon name="refresh" />{test.state === 'testing' ? 'Testando…' : 'Testar conexão'}
+                </button>
+              : <button type="button" className="btn btn-ghost" disabled>Conectar</button>}
+          </div>
+        ))}
+      </div>
+
+      {test.state !== 'idle' && test.state !== 'testing' && (
+        <div className={`integ-result ${test.state}`}>
+          <Icon name={test.state === 'ok' ? 'check' : 'close'} />{test.msg}
+        </div>
+      )}
+
+      <div className="card" style={{ marginTop: 16 }}>
+        <div className="card-head"><h3>BravoPay — configuração</h3></div>
+        <div className="integ-note">
+          <Icon name="lock" />
+          <span>A <b>chave secreta</b> fica guardada com segurança no servidor (variável de ambiente <code>BRAVOPAY_API_KEY</code> no Vercel) — nunca no navegador. Cada produto se liga a um produto do BravoPay em <b>Produtos → Editar</b>.</span>
+        </div>
+        <CopyField label="URL do webhook (cadastre no painel do BravoPay)" value={`${origin}/api/webhook`} />
+      </div>
+    </>
+  )
+}

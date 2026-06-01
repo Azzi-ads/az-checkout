@@ -806,3 +806,37 @@ body::before{
 .ck-intro{margin-bottom:2px}
 .ck-intro h2{font-size:22px;font-weight:800}
 .ck-intro p{color:var(--muted);font-size:13.5px;margin-top:5px;font-weight:500}
+
+/* ===== Link do checkout no card de produto ===== */
+.prod-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:14px}
+.prod-foot .prod-link{margin-top:0}
+.prod-copy{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:var(--muted);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;transition:.15s}
+.prod-copy:hover{background:var(--surface-3);color:var(--text)}
+.prod-copy svg{width:13px;height:13px}
+
+/* ===== Integrações ===== */
+.area-intro{color:var(--muted);font-size:13.5px;font-weight:500;margin-bottom:18px;max-width:660px;line-height:1.55}
+.integ-grid{grid-template-columns:repeat(2,1fr)}
+.integ-card{display:flex;flex-direction:column;gap:5px}
+.integ-card.on{border-color:var(--line-2)}
+.integ-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.integ-ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:var(--surface-3);color:var(--yellow)}
+.integ-ic svg{width:20px;height:20px}
+.integ-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;display:inline-flex;align-items:center;gap:6px}
+.integ-badge.ok{background:rgba(61,220,145,.12);color:var(--green)}
+.integ-badge.ok .dot{width:6px;height:6px;border-radius:99px;background:var(--green)}
+.integ-badge.soon{background:var(--surface-3);color:var(--muted-2)}
+.integ-card h3{font-size:15px;font-weight:700}
+.integ-card p{font-size:12.5px;color:var(--muted-2);font-weight:500}
+.integ-card .btn{margin-top:10px;align-self:flex-start}
+.integ-result{display:flex;align-items:center;gap:8px;margin-top:16px;padding:12px 14px;border-radius:11px;font-size:13px;font-weight:600}
+.integ-result.ok{background:rgba(61,220,145,.12);color:var(--green)}
+.integ-result.err{background:rgba(255,93,93,.12);color:var(--red)}
+.integ-result svg{width:16px;height:16px;flex:0 0 16px}
+.integ-note{display:flex;gap:10px;align-items:flex-start;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:13px 15px;margin-bottom:16px;font-size:13px;color:var(--muted);font-weight:500;line-height:1.55}
+.integ-note svg{width:18px;height:18px;color:var(--yellow);flex:0 0 18px;margin-top:1px}
+.integ-note code{background:var(--surface-3);padding:1px 6px;border-radius:6px;font-size:12px}
+.copy-field{display:flex;gap:8px}
+.copy-field input{flex:1;min-width:0;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;color:var(--text);font-family:inherit;font-size:13px;outline:none}
+.copy-field .btn{white-space:nowrap}
+@media(max-width:720px){.integ-grid{grid-template-columns:1fr}}
