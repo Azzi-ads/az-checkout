@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import PeriodTabs from '../components/PeriodTabs.jsx'
-import {
-  analyticsKpis, abandonedSeries,
-  checkoutJourney, operationHealth,
-} from '../data.js'
+import { abandonedSeries, checkoutJourney, operationHealth, formatBRL } from '../data.js'
+import { useSales, computeMetrics, DAY } from '../metrics.js'
+
+const WIN = { hoje: DAY, ontem: DAY, '7d': 7 * DAY, mes: 30 * DAY, ano: 365 * DAY }
 
 // Gráfico de linhas: abandonados vs finalizados.
 function AbandonedChart() {
@@ -40,6 +40,15 @@ function AbandonedChart() {
 
 export default function Analises() {
   const [period, setPeriod] = useState('hoje')
+  const sales = useSales()
+  const m = computeMetrics(sales, WIN[period] || DAY)
+  const kpis = [
+    { key: 'vendas', label: 'Vendas Geradas', value: formatBRL(m.receita), sub: `${m.pagos} pedidos`, highlight: true },
+    { key: 'receita', label: 'Receita Confirmada', value: formatBRL(m.receita), sub: `${m.pagos} pagos` },
+    { key: 'ticket', label: 'Ticket Médio', value: formatBRL(m.ticket) },
+    { key: 'conv', label: 'Conversão Checkout', value: `${m.conv}%`, sub: `${m.total} criados` },
+    { key: 'abandono', label: 'Carrinhos Abandonados', value: String(m.abandonos), sub: `${m.total ? Math.round((m.abandonos / m.total) * 100) : 0}% abandono` },
+  ]
 
   return (
     <>
@@ -48,7 +57,7 @@ export default function Analises() {
       </div>
 
       <div className="grid metrics">
-        {analyticsKpis.map((k) => (
+        {kpis.map((k) => (
           <div className={`card kpi${k.highlight ? ' kpi-hi' : ''}`} key={k.key}>
             <div className="lbl">{k.label}</div>
             <div className="val num">{k.value}</div>

@@ -2,6 +2,9 @@ import { useState } from 'react'
 import PeriodTabs from '../components/PeriodTabs.jsx'
 import Icon from '../components/Icon.jsx'
 import { costsBase, costsDefaults, formatBRL } from '../data.js'
+import { useSales, computeMetrics, DAY } from '../metrics.js'
+
+const WIN = { hoje: DAY, ontem: DAY, '7d': 7 * DAY, mes: 30 * DAY, ano: 365 * DAY }
 
 function CurrencyInput({ id, label, value, onChange }) {
   return (
@@ -28,7 +31,11 @@ export default function Custos() {
   const [gateway, setGateway] = useState(costsDefaults.gateway)
   const [outros, setOutros] = useState(costsDefaults.outros)
 
-  const { pedidos, faturamento, checkoutRate } = costsBase
+  const { checkoutRate } = costsBase
+  const sales = useSales()
+  const m = computeMetrics(sales, WIN[period] || 30 * DAY)
+  const faturamento = m.receita
+  const pedidos = m.pagos
   const checkoutFee = faturamento * checkoutRate
   const totalCustos = ads + gateway + outros + checkoutFee
   const lucro = faturamento - totalCustos

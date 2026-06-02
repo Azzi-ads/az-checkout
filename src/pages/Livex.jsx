@@ -3,7 +3,8 @@ import KPICard from '../components/KPICard.jsx'
 import DataTable from '../components/DataTable.jsx'
 import Icon from '../components/Icon.jsx'
 import { livexKpis, livexSessions, livexFunnel, formatBRL } from '../data.js'
-import { getLiveSessions, getEvents } from '../liveTracker.js'
+import { getLiveSessions } from '../liveTracker.js'
+import { useSales, computeMetrics } from '../metrics.js'
 
 const WINDOWS = [
   { key: '24h', label: '24h', ms: 864e5 },
@@ -18,11 +19,11 @@ function since(ms) {
 
 export default function Livex({ live }) {
   const [sessions, setSessions] = useState([])
-  const [events, setEvents] = useState([])
   const [period, setPeriod] = useState('24h')
+  const sales = useSales()
 
   useEffect(() => {
-    const tick = () => { setSessions(getLiveSessions()); setEvents(getEvents()) }
+    const tick = () => setSessions(getLiveSessions())
     tick()
     const id = setInterval(tick, 2000)
     window.addEventListener('storage', tick)
@@ -30,18 +31,13 @@ export default function Livex({ live }) {
   }, [])
 
   const win = WINDOWS.find((w) => w.key === period)
-  const cutoff = Date.now() - win.ms
-  const ev = events.filter((e) => (e.ts || 0) >= cutoff)
-  const pagos = ev.filter((e) => e.outcome === 'paid')
-  const visitantes = ev.length
-  const conv = visitantes ? Math.round((pagos.length / visitantes) * 100) : 0
-  const receita = pagos.reduce((s, e) => s + (e.amount || 0), 0)
+  const m = computeMetrics(sales, win.ms)
   const stats = [
-    { label: 'Visitantes', value: String(visitantes) },
-    { label: 'Pagos', value: String(pagos.length) },
-    { label: 'Abandonos', value: String(visitantes - pagos.length) },
-    { label: 'Conversão', value: `${conv}%` },
-    { label: 'Receita', value: formatBRL(receita) },
+    { label: 'Pedidos', value: String(m.total) },
+    { label: 'Pagos', value: String(m.pagos) },
+    { label: 'Abandonos', value: String(m.abandonos) },
+    { label: 'Conversão', value: `${m.conv}%` },
+    { label: 'Receita', value: formatBRL(m.receita) },
   ]
 
   const kpis = livexKpis.map((k) => {

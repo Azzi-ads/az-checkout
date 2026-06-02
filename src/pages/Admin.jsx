@@ -12,6 +12,7 @@ export default function Admin() {
   const [data, setData] = useState(null)
   const [err, setErr] = useState('')
   const [loading, setLoading] = useState(hasBackend)
+  const [refresh, setRefresh] = useState(0)
 
   useEffect(() => {
     if (!hasBackend) return
@@ -29,7 +30,19 @@ export default function Admin() {
     load()
     const id = setInterval(load, 8000)
     return () => { alive = false; clearInterval(id) }
-  }, [])
+  }, [refresh])
+
+  async function act(action, target, plan) {
+    if (action === 'delete' && !window.confirm(`Apagar a conta ${target}? Isso remove o login e os dados dela.`)) return
+    try {
+      const { data: sess } = await supabase.auth.getSession()
+      const token = sess?.session?.access_token
+      const r = await fetch('/api/admin', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token || ''}` }, body: JSON.stringify({ action, email: target, plan }) })
+      const j = await r.json()
+      if (!r.ok) { alert(j.error || 'Falha na ação.'); return }
+      setRefresh((n) => n + 1)
+    } catch { alert('Falha na ação.') }
+  }
 
   if (!hasBackend) {
     return <div className="admin-note"><Icon name="shield" /><span>Backend não conectado. Configure o Supabase para o painel do dono funcionar.</span></div>
@@ -54,16 +67,22 @@ export default function Admin() {
         ) : (
           <table className="tbl">
             <caption className="sr-only">Contas</caption>
-            <thead><tr><th>E-mail</th><th>Nome</th><th>Criada</th><th>AZ Security</th><th>Vendas</th><th>Receita</th></tr></thead>
+            <thead><tr><th>E-mail</th><th>Nome</th><th>Plano</th><th>Vendas</th><th>Receita</th><th>Ações</th></tr></thead>
             <tbody>
               {accounts.map((a) => (
                 <tr key={a.email}>
                   <td>{a.email}</td>
                   <td>{a.name || '—'}</td>
-                  <td>{fmtDate(a.created_at)}</td>
-                  <td>{a.security ? <span className="tag pago"><span className="d" />Ativa</span> : <span className="tag pend"><span className="d" />Inativa</span>}</td>
+                  <td>
+                    <select className="adm-plan" value={a.plan || 'start'} onChange={(e) => act('setPlan', a.email, e.target.value)}>
+                      <option value="start">Start</option>
+                      <option value="prime">Prime</option>
+                      <option value="elite">Elite</option>
+                    </select>
+                  </td>
                   <td className="num">{a.sales}</td>
                   <td className="num">{formatBRL(a.receita)}</td>
+                  <td><button type="button" className="prod-copy" onClick={() => act('delete', a.email)}><Icon name="trash" />Apagar</button></td>
                 </tr>
               ))}
             </tbody>

@@ -1,7 +1,10 @@
 import KPICard from '../components/KPICard.jsx'
 import Icon from '../components/Icon.jsx'
-import { dashboardKpis, recentSales, revenueChart, geoReach, newsWall, rewardJourney } from '../data.js'
+import { revenueChart, geoReach, newsWall, rewardJourney, formatBRL } from '../data.js'
 import { getUser } from '../auth.js'
+import { useSales, computeMetrics, DAY } from '../metrics.js'
+
+const ini = (n = '') => (n.trim().split(/\s+/).filter(Boolean).map((p) => p[0]).slice(0, 2).join('') || '?').toUpperCase()
 
 function greeting() {
   const h = new Date().getHours()
@@ -43,6 +46,19 @@ function RevenueChart() {
 
 export default function Dashboard({ profile }) {
   const name = profile?.name || getUser()?.name
+  const sales = useSales()
+  const hoje = computeMetrics(sales, DAY)
+  const tudo = computeMetrics(sales)
+  const kpis = [
+    { icon: 'revenue', label: 'Faturamento hoje', value: formatBRL(hoje.receita) },
+    { icon: 'bag', label: 'Pedidos pagos', value: String(tudo.pagos) },
+    { icon: 'lines', label: 'Ticket médio', value: formatBRL(tudo.ticket) },
+    { icon: 'chart', label: 'Taxa de conversão', value: `${tudo.conv}%` },
+  ]
+  const recent = [...sales]
+    .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+    .slice(0, 5)
+    .map((s) => ({ initials: ini(s.customer?.name), who: s.customer?.name || 'Cliente', what: s.items?.[0]?.name || 'Pedido', amount: formatBRL(s.total || 0) }))
   return (
     <>
       <div className="greeting">
@@ -71,7 +87,7 @@ export default function Dashboard({ profile }) {
       </div>
 
       <div className="grid kpis">
-        {dashboardKpis.map((k) => (
+        {kpis.map((k) => (
           <KPICard key={k.label} {...k} />
         ))}
       </div>
@@ -86,11 +102,11 @@ export default function Dashboard({ profile }) {
         </div>
         <div className="card">
           <div className="card-head"><h3>Vendas recentes</h3></div>
-          {recentSales.length === 0 ? (
+          {recent.length === 0 ? (
             <div className="empty"><Icon name="bag" /><p>Nenhuma venda ainda</p><span>Suas vendas aparecem aqui em tempo real.</span></div>
           ) : (
             <div className="feed">
-              {recentSales.map((s) => (
+              {recent.map((s) => (
                 <div className="it" key={s.who + s.what}>
                   <div className="av" aria-hidden="true">{s.initials}</div>
                   <div>
