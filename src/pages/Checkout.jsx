@@ -104,6 +104,7 @@ export function CheckoutView({ product, preview = false }) {
   const styleVars = themeVars({ accent: cfg.accent, mode: cfg.theme })
   const isRapido = cfg.model === 'rapido'
   const secure = (() => { try { return !!getProfile().security } catch { return false } })()
+  const gridClass = `ck-grid ck-lay-${cfg.layout || 'classico'}`
 
   const methods = useMemo(
     () => Object.keys(cfg.methods).filter((k) => cfg.methods[k]).map((k) => ({ key: k, ...METHOD_META[k] })),
@@ -273,7 +274,7 @@ export function CheckoutView({ product, preview = false }) {
   if (status === 'pix') {
     return (
       <Frame preview={preview} styleVars={styleVars} showTimer={cfg.timer} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure} bg={cfg.bg}>
-        <div className="ck-grid">
+        <div className={gridClass}>
           <div className="card ck-pixbox">
             <span className="ck-badge"><span className="dot" />Aguardando pagamento</span>
             <h2>Pague com Pix para liberar na hora</h2>
@@ -312,7 +313,7 @@ export function CheckoutView({ product, preview = false }) {
   /* formulário */
   return (
     <Frame preview={preview} styleVars={styleVars} showTimer={cfg.timer} mmss={mmss}>
-      <form className="ck-grid" onSubmit={pay}>
+      <form className={gridClass} onSubmit={pay}>
         <div className="ck-main">
           <div className="ck-intro">
             <h2>{cfg.title}</h2>

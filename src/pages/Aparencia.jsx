@@ -1,5 +1,5 @@
 import Icon from '../components/Icon.jsx'
-import { ACCENTS, MODES, DEFAULT_THEME } from '../theme.js'
+import { ACCENTS, MODES, DEFAULT_THEME, SITE_THEMES } from '../theme.js'
 
 // Personaliza o tema do SITE (painel). As mudanças aplicam ao vivo porque o
 // AdminApp injeta as variáveis CSS no contêiner .app.
@@ -8,6 +8,21 @@ export default function Aparencia({ theme, onChange }) {
 
   return (
     <div className="grid set-grid">
+      <div className="card" style={{ gridColumn: '1 / -1' }}>
+        <div className="card-head"><h3>Temas</h3><span className="pill">fundo + cor</span></div>
+        <div className="theme-grid">
+          {SITE_THEMES.map((t) => {
+            const on = (theme.bg || '') === t.bg && theme.accent.toLowerCase() === t.accent.toLowerCase()
+            return (
+              <button type="button" key={t.key} className={`theme-card${on ? ' on' : ''}`} onClick={() => onChange({ ...theme, accent: t.accent, mode: t.mode, bg: t.bg, preset: t.key })}>
+                <span className="theme-prev" style={{ background: t.bg || 'var(--bg)' }}><i style={{ background: t.accent }} /></span>
+                <b>{t.label}</b>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
       <div className="card">
         <div className="card-head"><h3>Modo</h3></div>
         <div className="appear-modes">

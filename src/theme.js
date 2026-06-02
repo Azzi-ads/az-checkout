@@ -18,7 +18,19 @@ export const MODES = [
   { key: 'light', label: 'Claro' },
 ]
 
-export const DEFAULT_THEME = { accent: '#ffd400', mode: 'dark', preset: 'amarelo' }
+export const DEFAULT_THEME = { accent: '#ffd400', mode: 'dark', preset: 'amarelo', bg: '' }
+
+// Temas prontos do SITE (painel): fundo + cor + modo.
+export const SITE_THEMES = [
+  { key: 'amarelo', label: 'Padrão', bg: '', accent: '#ffd400', mode: 'dark' },
+  { key: 'grafite', label: 'Grafite', bg: 'linear-gradient(160deg,#101116,#0a0a0d)', accent: '#ffd400', mode: 'dark' },
+  { key: 'aurora', label: 'Aurora', bg: 'radial-gradient(1000px 600px at 15% -10%, rgba(91,42,134,.5), transparent 60%), radial-gradient(900px 600px at 120% 10%, rgba(31,111,139,.4), transparent 55%), #0a0a12', accent: '#22d3ee', mode: 'dark' },
+  { key: 'neon', label: 'Neon', bg: 'radial-gradient(820px 600px at 85% -5%, rgba(139,92,246,.4), transparent 60%), #07070d', accent: '#a78bfa', mode: 'dark' },
+  { key: 'oceano', label: 'Oceano', bg: 'linear-gradient(160deg,#08233a,#06121d)', accent: '#3b82f6', mode: 'dark' },
+  { key: 'floresta', label: 'Floresta', bg: 'linear-gradient(160deg,#07251c,#05130e)', accent: '#3ddc91', mode: 'dark' },
+  { key: 'rose', label: 'Rosé', bg: 'linear-gradient(160deg,#2a0f1c,#150810)', accent: '#f472b6', mode: 'dark' },
+  { key: 'clean', label: 'Clean', bg: 'linear-gradient(160deg,#f6f7fa,#eceef3)', accent: '#7c3aed', mode: 'light' },
+]
 
 const LIGHT = {
   '--bg': '#f4f4f6',

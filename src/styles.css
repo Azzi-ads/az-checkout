@@ -865,6 +865,12 @@ body::before{
 .ck-secured{display:inline-flex;align-items:center;gap:6px;color:var(--green);font-weight:700}
 .ck-secured svg{width:14px;height:14px}
 
+/* ===== Variações de layout do checkout ===== */
+.ck-lay-centralizado{grid-template-columns:1fr;max-width:560px;margin-left:auto;margin-right:auto}
+.ck-lay-centralizado .ck-summary{position:static}
+.ck-lay-resumo-topo{grid-template-columns:1fr}
+.ck-lay-resumo-topo .ck-summary{order:-1;position:static}
+
 /* ===== Galeria de temas do checkout ===== */
 .theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .theme-card{appearance:none;background:none;border:0;padding:0;cursor:pointer;text-align:center}

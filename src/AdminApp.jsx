@@ -66,8 +66,10 @@ export default function AdminApp() {
     return <Page />
   }
 
+  const appStyle = { ...themeVars(theme), ...(theme.bg ? { background: theme.bg } : {}) }
+
   return (
-    <div className="app" style={themeVars(theme)}>
+    <div className="app" style={appStyle}>
       <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
       <Sidebar page={page} onSelect={setPage} liveCount={live.atCheckout} onLogout={handleLogout} profile={profile} />
       <main className="main" ref={mainRef}>

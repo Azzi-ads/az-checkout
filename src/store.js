@@ -18,7 +18,7 @@ function defaults() {
     // começa com os produtos de exemplo (o usuário pode apagar e criar os seus)
     products: seedProducts.filter((p) => p.slug),
     profile: { name: getUser()?.name || '', avatar: '', security: false, domain: '' },
-    theme: { accent: '#ffd400', mode: 'dark', preset: 'amarelo' },
+    theme: { accent: '#ffd400', mode: 'dark', preset: 'amarelo', bg: '' },
   }
 }
 

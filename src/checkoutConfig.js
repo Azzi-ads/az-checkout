@@ -1,6 +1,12 @@
 // Configuração do checkout por produto (modelo, cores, textos, campos…).
 // Tudo isto é salvo dentro do produto (product.checkout) no store por usuário.
 
+export const CHECKOUT_LAYOUTS = [
+  { key: 'classico', label: 'Clássico', desc: 'Formulário e resumo lado a lado.' },
+  { key: 'centralizado', label: 'Centralizado', desc: 'Coluna única e focada.' },
+  { key: 'resumo-topo', label: 'Resumo em destaque', desc: 'Resumo no topo, depois o formulário.' },
+]
+
 export const CHECKOUT_MODELS = [
   { key: 'infoproduto', label: 'Infoproduto', desc: 'Produto digital com acesso imediato.', icon: 'bag' },
   { key: 'drop', label: 'Drop / Físico', desc: 'Produto físico com endereço de entrega.', icon: 'produtos' },
@@ -63,6 +69,7 @@ export function defaultCheckout(model = 'infoproduto') {
   const t = TEXTS[model] || TEXTS.infoproduto
   return {
     model,
+    layout: 'classico',
     accent: '#ffd400',
     theme: 'dark',
     bg: '',

@@ -3,7 +3,7 @@ import Icon from '../components/Icon.jsx'
 import Toggle from '../components/Toggle.jsx'
 import { CheckoutView } from './Checkout.jsx'
 import { ACCENTS, MODES } from '../theme.js'
-import { CHECKOUT_MODELS, CHECKOUT_THEMES, FIELD_DEFS, METHOD_DEFS, applyModel, ensureCheckout } from '../checkoutConfig.js'
+import { CHECKOUT_MODELS, CHECKOUT_THEMES, CHECKOUT_LAYOUTS, FIELD_DEFS, METHOD_DEFS, applyModel, ensureCheckout } from '../checkoutConfig.js'
 import { getProducts, saveProducts } from '../store.js'
 
 /* ---------- editor de checkout de UM produto ---------- */
@@ -85,6 +85,17 @@ function CheckoutCustomizer({ product, onSave, onBack }) {
               {CHECKOUT_MODELS.map((m) => (
                 <button type="button" key={m.key} className={`model-card${cfg.model === m.key ? ' on' : ''}`} onClick={() => setDraft((d) => ({ ...d, checkout: applyModel(d.checkout, m.key) }))}>
                   <Icon name={m.icon} /><b>{m.label}</b><span>{m.desc}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section className="card">
+            <div className="card-head"><h3>Variação (layout)</h3></div>
+            <div className="model-cards">
+              {CHECKOUT_LAYOUTS.map((l) => (
+                <button type="button" key={l.key} className={`model-card${(cfg.layout || 'classico') === l.key ? ' on' : ''}`} onClick={() => setCfg({ layout: l.key })}>
+                  <Icon name="card" /><b>{l.label}</b><span>{l.desc}</span>
                 </button>
               ))}
             </div>
