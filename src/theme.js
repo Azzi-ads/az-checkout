@@ -11,7 +11,16 @@ export const ACCENTS = [
   { key: 'laranja', label: 'Laranja', color: '#fb923c' },
   { key: 'ciano', label: 'Ciano', color: '#22d3ee' },
   { key: 'vermelho', label: 'Vermelho', color: '#ff5d5d' },
+  { key: 'lima', label: 'Lima', color: '#a3e635' },
+  { key: 'teal', label: 'Teal', color: '#14b8a6' },
+  { key: 'indigo', label: 'Índigo', color: '#6366f1' },
+  { key: 'ambar', label: 'Âmbar', color: '#f59e0b' },
 ]
+
+// padrões de fundo (raio / cifrão) como SVG inline
+const pat = (svg) => `url("data:image/svg+xml,${encodeURIComponent(svg)}")`
+const BOLT = pat("<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><path d='M44 8 26 44h14l-4 28 22-40H44l4-24z' fill='rgba(255,212,0,0.06)'/></svg>")
+const DOLLAR = pat("<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><text x='40' y='54' font-size='40' text-anchor='middle' fill='rgba(61,220,145,0.07)' font-family='Arial'>$</text></svg>")
 
 export const MODES = [
   { key: 'dark', label: 'Escuro' },
@@ -29,6 +38,8 @@ export const SITE_THEMES = [
   { key: 'oceano', label: 'Oceano', bg: 'linear-gradient(160deg,#08233a,#06121d)', accent: '#3b82f6', mode: 'dark' },
   { key: 'floresta', label: 'Floresta', bg: 'linear-gradient(160deg,#07251c,#05130e)', accent: '#3ddc91', mode: 'dark' },
   { key: 'rose', label: 'Rosé', bg: 'linear-gradient(160deg,#2a0f1c,#150810)', accent: '#f472b6', mode: 'dark' },
+  { key: 'raio', label: 'Raio ⚡', bg: `${BOLT}, #060608`, accent: '#ffd400', mode: 'dark' },
+  { key: 'cifrao', label: 'Cifrão $', bg: `${DOLLAR}, #05080a`, accent: '#3ddc91', mode: 'dark' },
   { key: 'clean', label: 'Clean', bg: 'linear-gradient(160deg,#f6f7fa,#eceef3)', accent: '#7c3aed', mode: 'light' },
 ]
 

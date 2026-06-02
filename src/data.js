@@ -260,3 +260,15 @@ export const newsWall = [
 
 // Conta nova: ainda sem visitantes.
 export const geoReach = []
+
+// Jornada de premiação (0 → 100k). current vem zerado (conta nova).
+export const rewardJourney = {
+  goal: 100000,
+  current: 0,
+  milestones: [
+    { value: 10000, label: 'R$ 10k', prize: 'Selo Bronze' },
+    { value: 25000, label: 'R$ 25k', prize: 'Selo Prata' },
+    { value: 50000, label: 'R$ 50k', prize: 'Selo Ouro' },
+    { value: 100000, label: 'R$ 100k', prize: 'Placa 100K' },
+  ],
+}

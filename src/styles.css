@@ -1,15 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root{
-  --bg:#040405;
-  --surface:#0b0b0d;
-  --surface-2:#101013;
-  --surface-3:#17171b;
-  --line:#1e1e23;
-  --line-2:#2a2a31;
+  --bg:#020203;
+  --surface:#09090b;
+  --surface-2:#0d0d10;
+  --surface-3:#131317;
+  --line:#1b1b20;
+  --line-2:#26262c;
   --text:#ffffff;
   --muted:#a6a6ae;
-  --muted-2:#6e6e77;
+  --muted-2:#6b6b74;
   --yellow:#ffd400;
   --yellow-dim:#e6bf00;
   --yellow-soft:rgba(255,212,0,.12);
@@ -637,10 +637,10 @@ body::before{
    Densidade global — reduz ~7% o tamanho geral (fontes + espaçamentos).
    Compensa a altura para não sobrar faixa em branco no rodapé.
    =================================================================== */
-.app,.ck-page,.login{zoom:.87}
-.app{height:calc(100vh / .87)}
-.ck-page{height:calc(100vh / .87)}
-.login{height:calc(100vh / .87);min-height:0;overflow-y:auto}
+.app,.ck-page,.login{zoom:.82}
+.app{height:calc(100vh / .82)}
+.ck-page{height:calc(100vh / .82)}
+.login{height:calc(100vh / .82);min-height:0;overflow-y:auto}
 
 /* saudação do dashboard */
 .greeting{margin-bottom:20px}
@@ -671,7 +671,7 @@ body::before{
 
 /* modal (criar produto) — compensa o zoom .93 do .app */
 .modal-overlay{
-  position:fixed;top:0;left:0;width:calc(100vw / .87);height:calc(100vh / .87);
+  position:fixed;top:0;left:0;width:calc(100vw / .82);height:calc(100vh / .82);
   background:rgba(0,0,0,.62);display:grid;place-items:center;padding:24px;z-index:60;animation:fade .2s ease;
 }
 .modal{
@@ -940,6 +940,25 @@ body::before{
 .ck-lay-centralizado .ck-summary{position:static}
 .ck-lay-resumo-topo{grid-template-columns:1fr}
 .ck-lay-resumo-topo .ck-summary{order:-1;position:static}
+
+/* ===== Jornada de premiação (Dashboard) ===== */
+.journey-card{margin-bottom:16px}
+.journey-track{position:relative;height:8px;border-radius:99px;background:var(--surface-3);margin:18px 48px 64px}
+.journey-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--yellow-dim),var(--yellow));transition:width .6s ease}
+.journey-node{position:absolute;top:-11px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;width:104px}
+.journey-dot{width:30px;height:30px;border-radius:99px;display:grid;place-items:center;background:var(--surface-3);border:2px solid var(--line-2);color:var(--muted-2)}
+.journey-dot svg{width:15px;height:15px}
+.journey-dot.on{background:var(--yellow);border-color:var(--yellow);color:#000;box-shadow:0 0 14px rgba(255,212,0,.4)}
+.journey-node b{font-size:12.5px;font-weight:800;margin-top:9px}
+.journey-node>span{font-size:11px;color:var(--muted-2);font-weight:600;text-align:center}
+@media(max-width:720px){.journey-track{margin:18px 26px 60px}.journey-node{width:64px}.journey-node>span{display:none}}
+
+/* ===== Upsell / Downsell ===== */
+.ck-offer{max-width:480px;margin:24px auto;text-align:center;display:flex;flex-direction:column;align-items:center}
+.ck-offer h2{font-size:22px;font-weight:800;margin-top:10px}
+.ck-offer-price{font-family:'Bricolage Grotesque';font-weight:800;font-size:30px;color:var(--yellow);margin:14px 0}
+.ck-offer-yes{width:100%;justify-content:center}
+.ck-offer-no{width:100%;justify-content:center;margin-top:10px}
 
 /* ===== Modelos: identidades visuais distintas ===== */
 /* Vision — premium, resumo em destaque à esquerda */

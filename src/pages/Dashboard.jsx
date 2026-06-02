@@ -1,6 +1,6 @@
 import KPICard from '../components/KPICard.jsx'
 import Icon from '../components/Icon.jsx'
-import { dashboardKpis, recentSales, revenueChart, geoReach, newsWall } from '../data.js'
+import { dashboardKpis, recentSales, revenueChart, geoReach, newsWall, rewardJourney } from '../data.js'
 import { getUser } from '../auth.js'
 
 function greeting() {
@@ -48,6 +48,26 @@ export default function Dashboard({ profile }) {
       <div className="greeting">
         <h2>{greeting()}, {firstName(name)} 👋</h2>
         <p>Sua operação começa aqui. Crie um produto e compartilhe o checkout para ver os números aparecerem.</p>
+      </div>
+
+      <div className="card journey-card">
+        <div className="card-head">
+          <h3>Jornada de premiação</h3>
+          <span className="pill">R$ {Math.round(rewardJourney.current / 1000)}k / {Math.round(rewardJourney.goal / 1000)}k</span>
+        </div>
+        <div className="journey-track">
+          <div className="journey-fill" style={{ width: `${Math.min(100, (rewardJourney.current / rewardJourney.goal) * 100)}%` }} />
+          {rewardJourney.milestones.map((m) => {
+            const unlocked = rewardJourney.current >= m.value
+            return (
+              <div className="journey-node" key={m.value} style={{ left: `${(m.value / rewardJourney.goal) * 100}%` }}>
+                <span className={`journey-dot${unlocked ? ' on' : ''}`}><Icon name="bolt" /></span>
+                <b>{m.label}</b>
+                <span>{m.prize}</span>
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       <div className="grid kpis">

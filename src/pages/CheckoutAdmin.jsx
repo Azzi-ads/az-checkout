@@ -21,6 +21,7 @@ const WIDGETS = [
   { key: 'whatsapp', label: 'WhatsApp', icon: 'phone' },
   { key: 'depoimentos', label: 'Depoimentos', icon: 'user' },
   { key: 'frete', label: 'Frete', icon: 'produtos' },
+  { key: 'upsell', label: 'Upsell', icon: 'revenue' },
   { key: 'cores', label: 'Cores', icon: 'palette' },
 ]
 const FIELD_NAMES = { name: 'Nome', email: 'E-mail', phone: 'Celular / WhatsApp', cpf: 'CPF' }
@@ -195,6 +196,30 @@ function CheckoutBuilder({ product, onSave, onBack }) {
               </div>
             ))}
             <button type="button" className="btn btn-ghost" onClick={() => setShipOpts([...shipOpts, { label: 'Novo frete', price: 0 }])}><Icon name="plus" />Adicionar opção de frete</button>
+          </>
+        )}
+      </>
+    )
+    if (widget === 'upsell') return (
+      <>
+        <div className="field"><label>Back redirect (URL ao clicar em voltar)</label>
+          <input value={cfg.backRedirect || ''} onChange={(e) => setCfg({ backRedirect: e.target.value })} placeholder="https://sua-oferta.com" /></div>
+        <div className="wgroup">Upsell (após o pagamento)</div>
+        <Toggle title="Ativar upsell" on={cfg.upsell.enabled} onChange={(v) => setCfg({ upsell: { ...cfg.upsell, enabled: v } })} />
+        {cfg.upsell.enabled && (
+          <>
+            <div className="field"><label>Título</label><input value={cfg.upsell.title} onChange={(e) => setCfg({ upsell: { ...cfg.upsell, title: e.target.value } })} /></div>
+            <div className="field"><label>Descrição</label><input value={cfg.upsell.desc} onChange={(e) => setCfg({ upsell: { ...cfg.upsell, desc: e.target.value } })} /></div>
+            <div className="field"><label>Preço</label><input type="number" min="0" value={cfg.upsell.price} onChange={(e) => setCfg({ upsell: { ...cfg.upsell, price: Number(e.target.value) } })} /></div>
+          </>
+        )}
+        <div className="wgroup">Downsell (se recusar o upsell)</div>
+        <Toggle title="Ativar downsell" on={cfg.downsell.enabled} onChange={(v) => setCfg({ downsell: { ...cfg.downsell, enabled: v } })} />
+        {cfg.downsell.enabled && (
+          <>
+            <div className="field"><label>Título</label><input value={cfg.downsell.title} onChange={(e) => setCfg({ downsell: { ...cfg.downsell, title: e.target.value } })} /></div>
+            <div className="field"><label>Descrição</label><input value={cfg.downsell.desc} onChange={(e) => setCfg({ downsell: { ...cfg.downsell, desc: e.target.value } })} /></div>
+            <div className="field"><label>Preço</label><input type="number" min="0" value={cfg.downsell.price} onChange={(e) => setCfg({ downsell: { ...cfg.downsell, price: Number(e.target.value) } })} /></div>
           </>
         )}
       </>

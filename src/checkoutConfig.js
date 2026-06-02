@@ -90,6 +90,9 @@ export function defaultCheckout(model = 'padrao') {
     headline: { enabled: false, text: '🔥 Oferta por tempo limitado — aproveite!' },
     whatsapp: { enabled: false, number: '', text: 'Precisa de ajuda? Fale no WhatsApp' },
     testimonials: p.testimonials ? SAMPLE_TESTIMONIALS.map((t) => ({ ...t })) : [],
+    backRedirect: '',
+    upsell: { enabled: false, title: 'Leve também: Mentoria Express', desc: 'Acelere seus resultados com 4 aulas extras.', price: 97 },
+    downsell: { enabled: false, title: 'Última chance: E-book bônus', desc: 'Por um valor simbólico, leve o material complementar.', price: 19 },
   }
 }
 
@@ -130,6 +133,8 @@ export function ensureCheckout(product) {
     shipping: { ...base.shipping, ...c.shipping, options: (c.shipping?.options?.length ? c.shipping.options : base.shipping.options) },
     headline: { ...base.headline, ...(c.headline || c.banner) },
     whatsapp: { ...base.whatsapp, ...c.whatsapp },
+    upsell: { ...base.upsell, ...c.upsell },
+    downsell: { ...base.downsell, ...c.downsell },
     testimonials: c.testimonials || [],
   }
 }

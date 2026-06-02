@@ -222,7 +222,7 @@ export function CheckoutView({ product, preview = false }) {
       }
     } else {
       // Cartão/boleto ainda não integrados de verdade (a doc cobre PIX). Mock por enquanto.
-      setStatus('paid')
+      goPaid()
     }
   }
 
@@ -231,6 +231,20 @@ export function CheckoutView({ product, preview = false }) {
     if (code) navigator.clipboard?.writeText(code)
     setCopied(true); setTimeout(() => setCopied(false), 2000)
   }
+  // após confirmar pagamento: oferece upsell se houver, senão finaliza
+  function goPaid() {
+    if (cfg.upsell?.enabled) { setStatus('upsell'); window.scrollTo({ top: 0, behavior: 'smooth' }) }
+    else setStatus('paid')
+  }
+
+  // Back redirect: ao tentar voltar (botão voltar), redireciona para a URL configurada.
+  useEffect(() => {
+    if (preview || !cfg.backRedirect) return
+    try { window.history.pushState(null, '', window.location.href) } catch { /* ignore */ }
+    const onPop = () => { window.location.href = cfg.backRedirect }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [preview, cfg.backRedirect])
 
   // Polling: enquanto aguarda o Pix, consulta o status a cada 3s.
   useEffect(() => {
@@ -239,7 +253,7 @@ export function CheckoutView({ product, preview = false }) {
       try {
         const r = await fetch(`/api/status?id=${encodeURIComponent(pixData.id)}`)
         const j = await r.json()
-        if (j.status === 'PAID') { clearInterval(id); setStatus('paid') }
+        if (j.status === 'PAID') { clearInterval(id); goPaid() }
         else if (['EXPIRED', 'FAILED', 'CANCELED'].includes(j.status)) {
           clearInterval(id); setPayError(`Pagamento ${j.status.toLowerCase()}.`); setStatus('form'); setPixData(null)
         }
@@ -351,9 +365,27 @@ export function CheckoutView({ product, preview = false }) {
               <Icon name={copied ? 'check' : 'copy'} />{copied ? 'Código copiado!' : 'Copiar código Pix'}
             </button>
             <div className="ck-pixinfo"><span>Valor</span><b className="num">{formatBRL(total)}</b></div>
-            <button type="button" className="btn btn-ghost ck-paid-btn" onClick={() => setStatus('paid')}>Já fiz o pagamento</button>
+            <button type="button" className="btn btn-ghost ck-paid-btn" onClick={goPaid}>Já fiz o pagamento</button>
           </div>
           {Resumo}
+        </div>
+      </Frame>
+    )
+  }
+
+  /* upsell / downsell */
+  if (status === 'upsell' || status === 'downsell') {
+    const o = status === 'upsell' ? cfg.upsell : cfg.downsell
+    const decline = () => setStatus(status === 'upsell' && cfg.downsell?.enabled ? 'downsell' : 'paid')
+    return (
+      <Frame preview={preview} styleVars={styleVars} showTimer={false} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure} bg={cfg.bg} wa={cfg.whatsapp} tpl={cfg.model}>
+        <div className="ck-offer card">
+          <span className="ck-badge"><span className="dot" />{status === 'upsell' ? 'Oferta exclusiva' : 'Última chance'}</span>
+          <h2>{o.title}</h2>
+          <p className="ck-muted">{o.desc}</p>
+          <div className="ck-offer-price">{formatBRL(o.price)}</div>
+          <button type="button" className="btn btn-primary ck-offer-yes" onClick={() => setStatus('paid')}><Icon name="check" />Sim, adicionar por {formatBRL(o.price)}</button>
+          <button type="button" className="btn btn-ghost ck-offer-no" onClick={decline}>Não, obrigado</button>
         </div>
       </Frame>
     )
