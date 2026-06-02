@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import Icon from '../components/Icon.jsx'
 import { products as seedProducts, checkoutDescriptions, installments, formatBRL } from '../data.js'
-import { getProducts, getProfile } from '../store.js'
+import { getProducts, getProfile, fetchProductBySlug } from '../store.js'
 import { themeVars } from '../theme.js'
 import { ensureCheckout } from '../checkoutConfig.js'
 import { ping, leave, recordEvent } from '../liveTracker.js'
@@ -560,10 +560,23 @@ export function CheckoutView({ product, preview = false }) {
 /* Rota pública /checkout/:slug */
 export default function Checkout() {
   const { slug } = useParams()
-  const product = useMemo(() => {
-    const stored = getProducts().filter((p) => p.slug)
-    const list = stored.length ? stored : seedProducts.filter((p) => p.slug)
-    return list.find((p) => p.slug === slug) || list[0]
-  }, [slug])
+  const local = useMemo(() => getProducts().filter((p) => p.slug).find((p) => p.slug === slug) || null, [slug])
+  const [product, setProduct] = useState(local)
+  const [loading, setLoading] = useState(!local)
+
+  useEffect(() => {
+    if (local) { setProduct(local); setLoading(false); return }
+    let alive = true
+    setLoading(true)
+    fetchProductBySlug(slug).then((p) => {
+      if (!alive) return
+      setProduct(p || seedProducts.find((x) => x.slug === slug) || seedProducts.find((x) => x.slug) || null)
+      setLoading(false)
+    })
+    return () => { alive = false }
+  }, [slug, local])
+
+  if (loading) return <div className="boot"><span className="boot-spin" /></div>
+  if (!product) return <div className="boot"><p style={{ color: 'var(--muted)' }}>Produto não encontrado.</p></div>
   return <CheckoutView product={product} />
 }

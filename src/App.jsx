@@ -4,6 +4,7 @@ import AdminApp from './AdminApp.jsx'
 import Checkout from './pages/Checkout.jsx'
 import Login from './pages/Login.jsx'
 import { initAuth, isAuthed } from './auth.js'
+import { hydrate } from './store.js'
 
 function Protected({ children }) {
   return isAuthed() ? children : <Navigate to="/" replace />
@@ -14,7 +15,11 @@ export default function App() {
   const [, tick] = useState(0)
 
   useEffect(() => {
-    const unsub = initAuth(() => { setReady(true); tick((n) => n + 1) })
+    const onAuth = async () => {
+      if (isAuthed()) { try { await hydrate() } catch { /* segue local */ } }
+      setReady(true); tick((n) => n + 1)
+    }
+    const unsub = initAuth(onAuth)
     return unsub
   }, [])
 

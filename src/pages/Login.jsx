@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Navigate, Link } from 'react-router-dom'
 import Icon from '../components/Icon.jsx'
 import { isAuthed, login, signUp } from '../auth.js'
+import { hydrate } from '../store.js'
 
 function traduzErro(msg = '') {
   const m = msg.toLowerCase()
@@ -45,6 +46,7 @@ export default function Login() {
     setBusy(false)
     if (res.error) { setErr(traduzErro(res.error.message)); return }
     if (res.needsConfirm) { setErr('Conta criada! Confirme pelo e-mail para entrar.'); return }
+    try { await hydrate() } catch { /* segue local */ }
     navigate('/app')
   }
 
