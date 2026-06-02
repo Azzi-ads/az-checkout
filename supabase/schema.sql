@@ -66,21 +66,25 @@ alter table public.products enable row level security;
 alter table public.sales    enable row level security;
 alter table public.events   enable row level security;
 
-create policy "perfil próprio" on public.profiles
+drop policy if exists "perfil proprio" on public.profiles;
+create policy "perfil proprio" on public.profiles
   for all using (auth.uid() = id) with check (auth.uid() = id);
 
+drop policy if exists "produtos do dono" on public.products;
 create policy "produtos do dono" on public.products
   for all using (auth.uid() = owner) with check (auth.uid() = owner);
 
+drop policy if exists "vendas do dono" on public.sales;
 create policy "vendas do dono" on public.sales
   for all using (auth.uid() = owner) with check (auth.uid() = owner);
 
+drop policy if exists "eventos do dono" on public.events;
 create policy "eventos do dono" on public.events
   for all using (auth.uid() = owner) with check (auth.uid() = owner);
 
 -- Leitura pública de produtos para o checkout (página do comprador).
--- Permite ver o produto pelo slug sem login (só leitura).
-create policy "produtos públicos (checkout)" on public.products
+drop policy if exists "produtos publicos (checkout)" on public.products;
+create policy "produtos publicos (checkout)" on public.products
   for select using (true);
 
 -- OBS: o painel do DONO (ver todas as contas/faturamento) é feito por uma
