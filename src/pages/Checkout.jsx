@@ -74,14 +74,14 @@ function WaButton({ wa }) {
   )
 }
 
-function Frame({ children, preview, styleVars, showTimer, mmss, logo, brandName, secure, bg, wa }) {
+function Frame({ children, preview, styleVars, showTimer, mmss, logo, brandName, secure, bg, wa, tpl }) {
   const bgStyle = bg
     ? { background: `linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.6)), ${bg}`, backgroundSize: 'cover', backgroundPosition: 'center' }
     : {}
   const style = { ...styleVars, ...bgStyle }
   if (preview) {
     return (
-      <div className="ck-preview" style={style}>
+      <div className={`ck-preview ck-tpl-${tpl || 'padrao'}`} style={style}>
         <div className="ck-preview-top">
           <Brand logo={logo} name={brandName} />
           <span className="ck-safe"><Icon name="lock" />Compra segura</span>
@@ -92,7 +92,7 @@ function Frame({ children, preview, styleVars, showTimer, mmss, logo, brandName,
     )
   }
   return (
-    <div className="ck-page" style={style}>
+    <div className={`ck-page ck-tpl-${tpl || 'padrao'}`} style={style}>
       {showTimer && (
         <div className="ck-timer"><Icon name="bolt" /> Oferta por tempo limitado — expira em <b className="num">{mmss}</b></div>
       )}
@@ -337,7 +337,7 @@ export function CheckoutView({ product, preview = false }) {
   /* Pix gerado */
   if (status === 'pix') {
     return (
-      <Frame preview={preview} styleVars={styleVars} showTimer={cfg.timer} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure} bg={cfg.bg} wa={cfg.whatsapp}>
+      <Frame preview={preview} styleVars={styleVars} showTimer={cfg.timer} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure} bg={cfg.bg} wa={cfg.whatsapp} tpl={cfg.model}>
         <div className={gridClass}>
           <div className="card ck-pixbox">
             <span className="ck-badge"><span className="dot" />Aguardando pagamento</span>
@@ -362,7 +362,7 @@ export function CheckoutView({ product, preview = false }) {
   /* aprovado */
   if (status === 'paid') {
     return (
-      <Frame preview={preview} styleVars={styleVars} showTimer={false} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure} bg={cfg.bg} wa={cfg.whatsapp}>
+      <Frame preview={preview} styleVars={styleVars} showTimer={false} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure} bg={cfg.bg} wa={cfg.whatsapp} tpl={cfg.model}>
         <div className="ck-done card">
           <div className="ck-done-ic"><Icon name="check" strokeWidth={3} /></div>
           <h2>Pagamento confirmado! 🎉</h2>
@@ -461,7 +461,7 @@ export function CheckoutView({ product, preview = false }) {
   const stepLabel = (p) => (p === 'dados' ? 'Dados' : p === 'endereco' ? 'Endereço' : 'Pagamento')
 
   return (
-    <Frame preview={preview} styleVars={styleVars} showTimer={cfg.timer} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure} bg={cfg.bg} wa={cfg.whatsapp}>
+    <Frame preview={preview} styleVars={styleVars} showTimer={cfg.timer} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure} bg={cfg.bg} wa={cfg.whatsapp} tpl={cfg.model}>
       {cfg.bannerTop && <img className="ck-bannerimg" src={cfg.bannerTop} alt="" />}
       <form className={gridClass} onSubmit={pay}>
         <div className="ck-main">

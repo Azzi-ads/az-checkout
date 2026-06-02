@@ -1,15 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root{
-  --bg:#0a0a0b;
-  --surface:#131316;
-  --surface-2:#18181c;
-  --surface-3:#1f1f24;
-  --line:#27272d;
-  --line-2:#33333b;
-  --text:#f6f6f4;
-  --muted:#9a9aa2;
-  --muted-2:#6c6c75;
+  --bg:#040405;
+  --surface:#0b0b0d;
+  --surface-2:#101013;
+  --surface-3:#17171b;
+  --line:#1e1e23;
+  --line-2:#2a2a31;
+  --text:#ffffff;
+  --muted:#a6a6ae;
+  --muted-2:#6e6e77;
   --yellow:#ffd400;
   --yellow-dim:#e6bf00;
   --yellow-soft:rgba(255,212,0,.12);
@@ -637,10 +637,10 @@ body::before{
    Densidade global — reduz ~7% o tamanho geral (fontes + espaçamentos).
    Compensa a altura para não sobrar faixa em branco no rodapé.
    =================================================================== */
-.app,.ck-page,.login{zoom:.93}
-.app{height:calc(100vh / .93)}
-.ck-page{height:calc(100vh / .93)}
-.login{height:calc(100vh / .93);min-height:0;overflow-y:auto}
+.app,.ck-page,.login{zoom:.87}
+.app{height:calc(100vh / .87)}
+.ck-page{height:calc(100vh / .87)}
+.login{height:calc(100vh / .87);min-height:0;overflow-y:auto}
 
 /* saudação do dashboard */
 .greeting{margin-bottom:20px}
@@ -671,7 +671,7 @@ body::before{
 
 /* modal (criar produto) — compensa o zoom .93 do .app */
 .modal-overlay{
-  position:fixed;top:0;left:0;width:calc(100vw / .93);height:calc(100vh / .93);
+  position:fixed;top:0;left:0;width:calc(100vw / .87);height:calc(100vh / .87);
   background:rgba(0,0,0,.62);display:grid;place-items:center;padding:24px;z-index:60;animation:fade .2s ease;
 }
 .modal{
@@ -940,6 +940,37 @@ body::before{
 .ck-lay-centralizado .ck-summary{position:static}
 .ck-lay-resumo-topo{grid-template-columns:1fr}
 .ck-lay-resumo-topo .ck-summary{order:-1;position:static}
+
+/* ===== Modelos: identidades visuais distintas ===== */
+/* Vision — premium, resumo em destaque à esquerda */
+.ck-tpl-vision .ck-grid{grid-template-columns:360px 1fr}
+.ck-tpl-vision .ck-summary{order:-1;background:linear-gradient(180deg, var(--yellow-soft), var(--surface) 45%);border-color:var(--yellow)}
+.ck-tpl-vision .ck-prod-thumb{width:60px;height:60px;flex-basis:60px}
+.ck-tpl-vision .ck-intro h2{font-size:26px}
+@media(max-width:860px){.ck-tpl-vision .ck-grid{grid-template-columns:1fr}}
+
+/* Venda Rápida — express, enxuto */
+.ck-tpl-venda-rapida .ck-body,.ck-tpl-venda-rapida-drop .ck-body{max-width:540px}
+.ck-tpl-venda-rapida .ck-step,.ck-tpl-venda-rapida-drop .ck-step{padding:16px}
+.ck-tpl-venda-rapida .ck-intro h2,.ck-tpl-venda-rapida-drop .ck-intro h2{font-size:19px}
+.ck-tpl-venda-rapida .ck-trust,.ck-tpl-venda-rapida-drop .ck-trust{display:none}
+
+/* Pix na Hora — foco no Pix */
+.ck-tpl-pix-na-hora .ck-main .ck-step{border-color:var(--yellow)}
+.ck-tpl-pix-na-hora .ck-intro h2{color:var(--yellow)}
+
+/* Valor Livre — centrado no valor */
+.ck-tpl-valor-livre .ck-intro{text-align:center}
+.ck-tpl-valor-livre .ck-summary{text-align:center}
+.ck-tpl-valor-livre .ck-summary .ck-input input{font-size:20px;text-align:center}
+
+/* Renda Extra — urgência */
+.ck-tpl-renda-extra .ck-cta{animation:pulse 1.8s infinite}
+.ck-tpl-renda-extra .ck-intro h2{font-size:24px}
+
+/* Drop — destaque na entrega */
+.ck-tpl-drop .ck-summary{border-color:var(--line-2)}
+.ck-tpl-drop .ck-ship-opt.on{box-shadow:0 0 0 1px var(--yellow)}
 
 /* ===== Galeria de temas do checkout ===== */
 .theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
