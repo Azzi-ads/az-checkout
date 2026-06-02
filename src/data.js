@@ -27,6 +27,7 @@ export const pageTitles = {
   integracoes: ['Integrações', 'Conecte seu gateway de pagamento'],
   checkout: ['Checkout', 'Personalize o checkout dos seus produtos'],
   security: ['AZ Security', 'Proteção do checkout e dos dados'],
+  admin: ['Admin', 'Painel do dono — contas e faturamento'],
 }
 
 export const dashboardKpis = [

@@ -18,3 +18,13 @@ export function login(user) {
 export function logout() {
   try { localStorage.removeItem(KEY) } catch { /* ignore */ }
 }
+
+// Conta do dono (super admin), com plano máximo grátis.
+const OWNERS = ['enzoazzi76@gmail.com', 'enzozzi76@gmail.com']
+export function isOwner() {
+  const e = (getUser()?.email || '').trim().toLowerCase()
+  return OWNERS.includes(e)
+}
+export function planLabel() {
+  return isOwner() ? 'Plano Elite' : 'Plano Start'
+}

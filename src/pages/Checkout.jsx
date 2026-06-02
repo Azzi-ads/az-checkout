@@ -6,6 +6,7 @@ import { getProducts, getProfile } from '../store.js'
 import { themeVars } from '../theme.js'
 import { ensureCheckout } from '../checkoutConfig.js'
 import { ping, leave, recordEvent } from '../liveTracker.js'
+import { recordSale, updateSale, addSaleItem } from '../sales.js'
 
 /* máscaras */
 const d = (s) => s.replace(/\D/g, '')
@@ -137,6 +138,9 @@ export function CheckoutView({ product, preview = false }) {
   const [pixData, setPixData] = useState(null) // { id, qr_code, qr_code_image } do BravoPay
   const [loading, setLoading] = useState(false)
   const [payError, setPayError] = useState('')
+  const [saleId, setSaleId] = useState(null)
+  const [proofSent, setProofSent] = useState(false)
+  const proofRef = useRef(null)
   const [sid] = useState(() => Math.random().toString(36).slice(2, 8))
   const stepRef = useRef('Dados')
   stepRef.current = status === 'pix' ? 'Pagamento' : status === 'paid' ? 'Aprovado' : 'Dados'
@@ -213,6 +217,8 @@ export function CheckoutView({ product, preview = false }) {
         const json = await resp.json()
         if (!resp.ok) throw new Error(json.error || 'Não foi possível gerar o Pix.')
         setPixData(json)
+        const id = recordSale({ customer: buildCustomer(), items: buildItems(), total, method: 'pix', status: 'aguardando' })
+        setSaleId(id)
         setStatus('pix')
         window.scrollTo({ top: 0, behavior: 'smooth' })
       } catch (err) {
@@ -231,8 +237,20 @@ export function CheckoutView({ product, preview = false }) {
     if (code) navigator.clipboard?.writeText(code)
     setCopied(true); setTimeout(() => setCopied(false), 2000)
   }
-  // após confirmar pagamento: oferece upsell se houver, senão finaliza
+  function buildCustomer() {
+    const c = { name: data.name, email: data.email, phone: d(data.phone), cpf: d(data.cpf) }
+    if (addressOn) c.address = `${addr.rua}, ${addr.numero} — ${addr.cidade}/${addr.uf} (${addr.cep})`
+    return c
+  }
+  function buildItems() {
+    const items = [{ name: product.name, kind: 'Front', amount: baseAmount }]
+    if (bump && cfg.bump.enabled) items.push({ name: cfg.bump.title, kind: 'Order bump', amount: cfg.bump.amount })
+    return items
+  }
+  // após confirmar pagamento: registra/atualiza a venda e oferece upsell se houver
   function goPaid() {
+    if (saleId) updateSale(saleId, { status: 'pago' })
+    else if (!preview) { const id = recordSale({ customer: buildCustomer(), items: buildItems(), total, method, status: 'pago' }); setSaleId(id) }
     if (cfg.upsell?.enabled) { setStatus('upsell'); window.scrollTo({ top: 0, behavior: 'smooth' }) }
     else setStatus('paid')
   }
@@ -365,6 +383,10 @@ export function CheckoutView({ product, preview = false }) {
               <Icon name={copied ? 'check' : 'copy'} />{copied ? 'Código copiado!' : 'Copiar código Pix'}
             </button>
             <div className="ck-pixinfo"><span>Valor</span><b className="num">{formatBRL(total)}</b></div>
+            <input ref={proofRef} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => { if (saleId) updateSale(saleId, { proof: String(r.result) }); setProofSent(true) }; r.readAsDataURL(f) }} />
+            <button type="button" className={`btn ${proofSent ? 'btn-ghost' : 'btn-primary'} ck-paid-btn`} onClick={() => proofRef.current?.click()}>
+              <Icon name={proofSent ? 'check' : 'camera'} />{proofSent ? 'Comprovante enviado!' : 'Enviar comprovante'}
+            </button>
             <button type="button" className="btn btn-ghost ck-paid-btn" onClick={goPaid}>Já fiz o pagamento</button>
           </div>
           {Resumo}
@@ -384,7 +406,7 @@ export function CheckoutView({ product, preview = false }) {
           <h2>{o.title}</h2>
           <p className="ck-muted">{o.desc}</p>
           <div className="ck-offer-price">{formatBRL(o.price)}</div>
-          <button type="button" className="btn btn-primary ck-offer-yes" onClick={() => setStatus('paid')}><Icon name="check" />Sim, adicionar por {formatBRL(o.price)}</button>
+          <button type="button" className="btn btn-primary ck-offer-yes" onClick={() => { if (saleId) addSaleItem(saleId, { name: o.title, kind: status === 'upsell' ? 'Upsell' : 'Downsell', amount: o.price }); setStatus('paid') }}><Icon name="check" />Sim, adicionar por {formatBRL(o.price)}</button>
           <button type="button" className="btn btn-ghost ck-offer-no" onClick={decline}>Não, obrigado</button>
         </div>
       </Frame>

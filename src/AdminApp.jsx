@@ -15,6 +15,7 @@ import Planos from './pages/Planos.jsx'
 import Perfil from './pages/Perfil.jsx'
 import Aparencia from './pages/Aparencia.jsx'
 import AZSecurity from './pages/AZSecurity.jsx'
+import Admin from './pages/Admin.jsx'
 import useLiveCount from './useLiveCount.js'
 import { pageTitles } from './data.js'
 import { logout } from './auth.js'
@@ -26,6 +27,7 @@ const SIMPLE_PAGES = {
   custos: Custos,
   checkout: CheckoutAdmin,
   integracoes: Integracoes,
+  admin: Admin,
   vendas: Vendas,
   config: Config,
   planos: Planos,

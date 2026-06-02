@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Icon from './Icon.jsx'
-import { getUser } from '../auth.js'
+import { getUser, isOwner, planLabel } from '../auth.js'
 
 function initialsOf(name = '') {
   const parts = name.trim().split(/\s+/).filter(Boolean)
@@ -104,7 +104,7 @@ export default function Sidebar({ page, onSelect, liveCount, onLogout, profile }
         </span>
         <span className="store-meta">
           <b>{name}</b>
-          <span>Plano Start</span>
+          <span>{planLabel()}</span>
         </span>
         <Icon name="chevron" />
       </button>
@@ -120,6 +120,12 @@ export default function Sidebar({ page, onSelect, liveCount, onLogout, profile }
             )}
           </div>
         ))}
+        {isOwner() && (
+          <div>
+            <div className="nav-label">Dono</div>
+            <NavItem item={{ id: 'admin', label: 'Admin', icon: 'shield' }} page={page} onSelect={onSelect} />
+          </div>
+        )}
       </nav>
 
       <div className="side-foot">

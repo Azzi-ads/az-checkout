@@ -637,10 +637,10 @@ body::before{
    Densidade global — reduz ~7% o tamanho geral (fontes + espaçamentos).
    Compensa a altura para não sobrar faixa em branco no rodapé.
    =================================================================== */
-.app,.ck-page,.login{zoom:.82}
-.app{height:calc(100vh / .82)}
-.ck-page{height:calc(100vh / .82)}
-.login{height:calc(100vh / .82);min-height:0;overflow-y:auto}
+.app,.ck-page,.login{zoom:.78}
+.app{height:calc(100vh / .78)}
+.ck-page{height:calc(100vh / .78)}
+.login{height:calc(100vh / .78);min-height:0;overflow-y:auto}
 
 /* saudação do dashboard */
 .greeting{margin-bottom:20px}
@@ -671,7 +671,7 @@ body::before{
 
 /* modal (criar produto) — compensa o zoom .93 do .app */
 .modal-overlay{
-  position:fixed;top:0;left:0;width:calc(100vw / .82);height:calc(100vh / .82);
+  position:fixed;top:0;left:0;width:calc(100vw / .78);height:calc(100vh / .78);
   background:rgba(0,0,0,.62);display:grid;place-items:center;padding:24px;z-index:60;animation:fade .2s ease;
 }
 .modal{
@@ -943,15 +943,41 @@ body::before{
 
 /* ===== Jornada de premiação (Dashboard) ===== */
 .journey-card{margin-bottom:16px}
-.journey-track{position:relative;height:8px;border-radius:99px;background:var(--surface-3);margin:18px 48px 64px}
+.journey-track{position:relative;height:6px;border-radius:99px;background:var(--surface-3);margin:12px 42px 48px}
 .journey-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--yellow-dim),var(--yellow));transition:width .6s ease}
-.journey-node{position:absolute;top:-11px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;width:104px}
-.journey-dot{width:30px;height:30px;border-radius:99px;display:grid;place-items:center;background:var(--surface-3);border:2px solid var(--line-2);color:var(--muted-2)}
-.journey-dot svg{width:15px;height:15px}
-.journey-dot.on{background:var(--yellow);border-color:var(--yellow);color:#000;box-shadow:0 0 14px rgba(255,212,0,.4)}
-.journey-node b{font-size:12.5px;font-weight:800;margin-top:9px}
-.journey-node>span{font-size:11px;color:var(--muted-2);font-weight:600;text-align:center}
-@media(max-width:720px){.journey-track{margin:18px 26px 60px}.journey-node{width:64px}.journey-node>span{display:none}}
+.journey-node{position:absolute;top:-9px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;width:88px}
+.journey-dot{width:24px;height:24px;border-radius:99px;display:grid;place-items:center;background:var(--surface-3);border:2px solid var(--line-2);color:var(--muted-2)}
+.journey-dot svg{width:12px;height:12px}
+.journey-dot.on{background:var(--yellow);border-color:var(--yellow);color:#000;box-shadow:0 0 12px rgba(255,212,0,.4)}
+.journey-node b{font-size:11.5px;font-weight:800;margin-top:7px}
+.journey-node>span{font-size:10.5px;color:var(--muted-2);font-weight:600;text-align:center}
+@media(max-width:720px){.journey-track{margin:12px 24px 46px}.journey-node{width:60px}.journey-node>span{display:none}}
+
+/* ===== Vendas: clientes e comprovantes ===== */
+.cli-card{display:flex;flex-direction:column;gap:12px}
+.cli-head{display:flex;align-items:center;gap:11px}
+.cli-av{width:40px;height:40px;flex:0 0 40px;border-radius:10px;display:grid;place-items:center;background:var(--surface-3);color:var(--yellow);font-weight:800;font-size:14px}
+.cli-head b{display:block;font-size:14px;font-weight:700}
+.cli-head>div>span{font-size:12px;color:var(--muted-2)}
+.cli-data{display:flex;flex-direction:column;gap:7px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:11px 0}
+.cli-data>div{display:flex;justify-content:space-between;gap:10px;font-size:12.5px}
+.cli-data span{color:var(--muted-2);font-weight:600}
+.cli-data b{font-weight:700;text-align:right;word-break:break-word}
+.cli-stats{display:flex;gap:10px}
+.cli-stats>div{flex:1;text-align:center;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:9px}
+.cli-stats b{display:block;font-family:'Bricolage Grotesque';font-size:16px;font-weight:800}
+.cli-stats>div span{font-size:10.5px;color:var(--muted-2);font-weight:600}
+.comp-card{padding:0;overflow:hidden}
+.comp-card>a{display:block}
+.comp-card img{width:100%;height:150px;object-fit:cover;display:block;background:var(--surface-2)}
+.comp-info{padding:12px;display:flex;flex-direction:column;gap:4px}
+.comp-info b{font-size:13.5px;font-weight:700}
+.comp-info>span{font-size:12px;color:var(--muted-2)}
+.comp-info .tag{align-self:flex-start;margin-top:2px}
+
+/* ===== Admin do dono ===== */
+.admin-note{display:flex;gap:10px;align-items:flex-start;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:16px;font-size:13px;color:var(--muted);font-weight:500;line-height:1.55}
+.admin-note svg{width:18px;height:18px;color:var(--yellow);flex:0 0 18px;margin-top:1px}
 
 /* ===== Upsell / Downsell ===== */
 .ck-offer{max-width:480px;margin:24px auto;text-align:center;display:flex;flex-direction:column;align-items:center}
