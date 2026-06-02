@@ -35,7 +35,7 @@ export default function Login() {
   return (
     <div className="login">
       <section className="login-hero">
-        <img className="login-logo" src="/logo-wide.png" alt="AZ Checkout" width="1921" height="819" />
+        <img className="login-logo" src="/logo-wide.png" alt="AZ Checkout" width="430" height="96" />
         <h1>A plataforma de checkout<br /> que <b>vende mais</b>.</h1>
         <p>Crie checkouts de alta conversão para seus infoprodutos — com Pix na hora, cartão em 12x e tudo personalizável.</p>
         <ul className="login-feats">

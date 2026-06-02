@@ -95,7 +95,7 @@ export default function Sidebar({ page, onSelect, liveCount, onLogout, profile }
   return (
     <aside className="sidebar">
       <div className="brand">
-        <img className="brand-logo" src="/logo-wide.png" alt="AZ Checkout" width="1921" height="819" />
+        <img className="brand-logo" src="/logo-wide.png" alt="AZ Checkout" width="430" height="96" />
       </div>
 
       <button type="button" className="store-switch" aria-label="Trocar de loja" onClick={() => onSelect('perfil')}>
