@@ -59,26 +59,35 @@ const SAMPLE_TESTIMONIALS = [
   { name: 'Rafael P.', text: 'Acesso na hora e suporte rápido. Recomendo demais.' },
 ]
 
+export const DEFAULT_FIELD_ORDER = ['name', 'email', 'phone', 'cpf']
+export const DEFAULT_FIELD_LABELS = { name: 'Nome completo', email: 'E-mail', phone: 'Celular / WhatsApp', cpf: 'CPF' }
+
 export function defaultCheckout(model = 'padrao') {
   const p = PRESETS[model] || PRESETS['padrao']
   return {
     model,
     layout: p.layout,
+    steps: 1, // 1 = página única, 2 = dados→pagamento, 3 = dados→endereço→pagamento
     accent: '#ffd400',
     theme: 'dark',
     bg: '',
     logo: '',
+    bannerTop: '',
+    bannerBottom: '',
     title: p.title,
     subtitle: p.subtitle,
     ctaText: p.ctaText,
     guarantee: 'Garantia de 7 dias',
     fields: { ...p.fields },
+    fieldOrder: [...DEFAULT_FIELD_ORDER],
+    fieldLabels: { ...DEFAULT_FIELD_LABELS },
     methods: { ...p.methods },
     bump: { enabled: p.bump, title: 'Pack de Templates Bônus', desc: 'Leve 50+ templates prontos por um preço único.', amount: 27, oldAmount: 89 },
     timer: p.timer,
     valorLivre: p.valorLivre,
-    frete: { enabled: p.frete, label: 'Frete grátis', price: 0 },
-    banner: { enabled: false, text: '🔥 Oferta por tempo limitado — aproveite!' },
+    quantity: { enabled: false, max: 10 },
+    shipping: { enabled: p.frete, options: [{ label: 'Padrão', price: 0 }] },
+    headline: { enabled: false, text: '🔥 Oferta por tempo limitado — aproveite!' },
     whatsapp: { enabled: false, number: '', text: 'Precisa de ajuda? Fale no WhatsApp' },
     testimonials: p.testimonials ? SAMPLE_TESTIMONIALS.map((t) => ({ ...t })) : [],
   }
@@ -99,7 +108,7 @@ export function applyModel(cfg, model) {
     timer: p.timer,
     valorLivre: p.valorLivre,
     bump: { ...cfg.bump, enabled: p.bump },
-    frete: { ...(cfg.frete || { label: 'Frete grátis', price: 0 }), enabled: p.frete },
+    shipping: { ...(cfg.shipping || { options: [{ label: 'Padrão', price: 0 }] }), enabled: p.frete },
     testimonials: p.testimonials && (!cfg.testimonials || cfg.testimonials.length === 0) ? SAMPLE_TESTIMONIALS.map((t) => ({ ...t })) : (cfg.testimonials || []),
   }
 }
@@ -113,10 +122,13 @@ export function ensureCheckout(product) {
     ...base,
     ...c,
     fields: { ...base.fields, ...c.fields },
+    fieldOrder: c.fieldOrder && c.fieldOrder.length ? c.fieldOrder : base.fieldOrder,
+    fieldLabels: { ...base.fieldLabels, ...c.fieldLabels },
     methods: { ...base.methods, ...c.methods },
     bump: { ...base.bump, ...c.bump },
-    frete: { ...base.frete, ...c.frete },
-    banner: { ...base.banner, ...c.banner },
+    quantity: { ...base.quantity, ...c.quantity },
+    shipping: { ...base.shipping, ...c.shipping, options: (c.shipping?.options?.length ? c.shipping.options : base.shipping.options) },
+    headline: { ...base.headline, ...(c.headline || c.banner) },
     whatsapp: { ...base.whatsapp, ...c.whatsapp },
     testimonials: c.testimonials || [],
   }

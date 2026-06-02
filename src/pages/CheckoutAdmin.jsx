@@ -4,20 +4,30 @@ import Toggle from '../components/Toggle.jsx'
 import { CheckoutView } from './Checkout.jsx'
 import { ACCENTS, MODES } from '../theme.js'
 import {
-  CHECKOUT_MODELS, CHECKOUT_THEMES, CHECKOUT_LAYOUTS,
-  FIELD_DEFS, METHOD_DEFS, applyModel, ensureCheckout,
+  CHECKOUT_MODELS, CHECKOUT_THEMES, CHECKOUT_LAYOUTS, METHOD_DEFS,
+  applyModel, ensureCheckout,
 } from '../checkoutConfig.js'
 import { getProducts, saveProducts } from '../store.js'
 
 const WIDGETS = [
   { key: 'geral', label: 'Geral', icon: 'config' },
+  { key: 'campos', label: 'Campos', icon: 'lines' },
+  { key: 'etapas', label: 'Etapas', icon: 'chart' },
   { key: 'contador', label: 'Contador', icon: 'bolt' },
   { key: 'capa', label: 'Capa', icon: 'camera' },
+  { key: 'headline', label: 'Headline', icon: 'megaphone' },
+  { key: 'banners', label: 'Banners', icon: 'p-grid' },
+  { key: 'quantidade', label: 'Quantidade', icon: 'bag' },
   { key: 'whatsapp', label: 'WhatsApp', icon: 'phone' },
-  { key: 'banner', label: 'Banner', icon: 'megaphone' },
   { key: 'depoimentos', label: 'Depoimentos', icon: 'user' },
   { key: 'frete', label: 'Frete', icon: 'produtos' },
   { key: 'cores', label: 'Cores', icon: 'palette' },
+]
+const FIELD_NAMES = { name: 'Nome', email: 'E-mail', phone: 'Celular / WhatsApp', cpf: 'CPF' }
+const STEPS = [
+  { n: 1, l: '1 etapa', d: 'Tudo em uma página.' },
+  { n: 2, l: '2 etapas', d: 'Dados → Pagamento.' },
+  { n: 3, l: '3 etapas', d: 'Dados → Endereço → Pagamento.' },
 ]
 
 function CheckoutBuilder({ product, onSave, onBack }) {
@@ -28,33 +38,34 @@ function CheckoutBuilder({ product, onSave, onBack }) {
   const setField = (k, v) => setCfg({ fields: { ...cfg.fields, [k]: v } })
   const setMethod = (k, v) => setCfg({ methods: { ...cfg.methods, [k]: v } })
   const setBump = (patch) => setCfg({ bump: { ...cfg.bump, ...patch } })
-  const logoRef = useRef(null)
-  const bgRef = useRef(null)
-  const readImg = (e, cb) => {
-    const f = e.target.files?.[0]; if (!f) return
-    const r = new FileReader(); r.onload = () => cb(String(r.result)); r.readAsDataURL(f)
+  const logoRef = useRef(null); const bgRef = useRef(null); const topRef = useRef(null); const botRef = useRef(null)
+  const readImg = (e, cb) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => cb(String(r.result)); r.readAsDataURL(f) }
+
+  // campos
+  const order = cfg.fieldOrder && cfg.fieldOrder.length ? cfg.fieldOrder : ['name', 'email', 'phone', 'cpf']
+  const moveField = (i, dir) => {
+    const arr = [...order]; const j = i + dir; if (j < 0 || j >= arr.length) return
+    const t = arr[i]; arr[i] = arr[j]; arr[j] = t; setCfg({ fieldOrder: arr })
   }
+  const setLabel = (k, v) => setCfg({ fieldLabels: { ...cfg.fieldLabels, [k]: v } })
+  // frete (múltiplo)
+  const shipOpts = cfg.shipping?.options || []
+  const setShipOpts = (opts) => setCfg({ shipping: { ...cfg.shipping, options: opts } })
   // depoimentos
   const tList = cfg.testimonials || []
   const setT = (list) => setCfg({ testimonials: list })
-  const addT = () => setT([...tList, { name: '', text: '' }])
-  const updT = (i, patch) => setT(tList.map((t, idx) => (idx === i ? { ...t, ...patch } : t)))
-  const delT = (i) => setT(tList.filter((_, idx) => idx !== i))
 
   function Controls() {
     if (widget === 'geral') return (
       <>
         <div className="field"><label>Layout</label>
           <select value={cfg.layout} onChange={(e) => setCfg({ layout: e.target.value })}>
-            {CHECKOUT_LAYOUTS.map((l) => <option key={l.key} value={l.key}>{l.label}</option>)}
-          </select></div>
+            {CHECKOUT_LAYOUTS.map((l) => <option key={l.key} value={l.key}>{l.label}</option>)}</select></div>
         <div className="field"><label>Título</label><input value={cfg.title} onChange={(e) => setCfg({ title: e.target.value })} /></div>
         <div className="field"><label>Subtítulo</label><input value={cfg.subtitle} onChange={(e) => setCfg({ subtitle: e.target.value })} /></div>
         <div className="field"><label>Texto do botão</label><input value={cfg.ctaText} onChange={(e) => setCfg({ ctaText: e.target.value })} /></div>
         <div className="field"><label>Selo de garantia</label><input value={cfg.guarantee} onChange={(e) => setCfg({ guarantee: e.target.value })} /></div>
-        <div className="wgroup">Campos do formulário</div>
-        {FIELD_DEFS.map((f) => <Toggle key={f.key} title={f.label} on={!!cfg.fields[f.key]} onChange={(v) => setField(f.key, v)} />)}
-        <div className="wgroup">Formas de pagamento</div>
+        <div className="wgroup">Pagamentos</div>
         {METHOD_DEFS.map((m) => <Toggle key={m.key} title={m.label} on={!!cfg.methods[m.key]} onChange={(v) => setMethod(m.key, v)} />)}
         <div className="wgroup">Order bump</div>
         <Toggle title="Mostrar order bump" on={cfg.bump.enabled} onChange={(v) => setBump({ enabled: v })} />
@@ -71,8 +82,38 @@ function CheckoutBuilder({ product, onSave, onBack }) {
         <Toggle title="Valor livre" desc="Cliente escolhe quanto pagar." on={cfg.valorLivre} onChange={(v) => setCfg({ valorLivre: v })} />
       </>
     )
+    if (widget === 'campos') return (
+      <>
+        <p className="profile-hint" style={{ marginBottom: 12 }}>Reordene (↑/↓), renomeie e ative/desative cada campo.</p>
+        {order.map((key, i) => (
+          <div className="fld-row" key={key}>
+            <div className="fld-move">
+              <button type="button" disabled={i === 0} onClick={() => moveField(i, -1)} aria-label="Subir">↑</button>
+              <button type="button" disabled={i === order.length - 1} onClick={() => moveField(i, 1)} aria-label="Descer">↓</button>
+            </div>
+            <input value={cfg.fieldLabels?.[key] || FIELD_NAMES[key]} onChange={(e) => setLabel(key, e.target.value)} />
+            {(key === 'phone' || key === 'cpf')
+              ? <button type="button" className={`fld-tog${cfg.fields[key] ? ' on' : ''}`} onClick={() => setField(key, !cfg.fields[key])}>{cfg.fields[key] ? 'Ativo' : 'Off'}</button>
+              : <span className="fld-req">fixo</span>}
+          </div>
+        ))}
+      </>
+    )
+    if (widget === 'etapas') return (
+      <>
+        <div className="model-cards">
+          {STEPS.map((s) => (
+            <button type="button" key={s.n} className={`model-card${(cfg.steps || 1) === s.n ? ' on' : ''}`} onClick={() => setCfg({ steps: s.n })}>
+              <Icon name="chart" /><b>{s.l}</b><span>{s.d}</span>
+            </button>
+          ))}
+        </div>
+        <div className="wgroup">Endereço</div>
+        <Toggle title="Pedir endereço de entrega" desc="No modo 3 etapas o endereço já é pedido." on={!!cfg.fields.address} onChange={(v) => setField('address', v)} />
+      </>
+    )
     if (widget === 'contador') return (
-      <Toggle title="Cronômetro de escassez" desc="Mostra contagem regressiva no topo do checkout." on={cfg.timer} onChange={(v) => setCfg({ timer: v })} />
+      <Toggle title="Cronômetro de escassez" desc="Contagem regressiva no topo." on={cfg.timer} onChange={(v) => setCfg({ timer: v })} />
     )
     if (widget === 'capa') return (
       <div className="profile-photo">
@@ -83,13 +124,43 @@ function CheckoutBuilder({ product, onSave, onBack }) {
           <button type="button" className="btn btn-ghost" onClick={() => logoRef.current?.click()}><Icon name="camera" />Logo do checkout</button>
           {cfg.logo && <button type="button" className="btn btn-ghost" onClick={() => setCfg({ logo: '' })}><Icon name="trash" />Remover</button>}
           <input ref={logoRef} type="file" accept="image/*" hidden onChange={(e) => readImg(e, (v) => setCfg({ logo: v }))} />
-          <p className="profile-hint">Sem logo, mostramos o nome do produto. A logo da AZ não aparece.</p>
+          <p className="profile-hint">Sem logo, mostramos o nome do produto.</p>
         </div>
       </div>
     )
+    if (widget === 'headline') return (
+      <>
+        <Toggle title="Headline no topo" desc="Frase de destaque acima do checkout." on={cfg.headline.enabled} onChange={(v) => setCfg({ headline: { ...cfg.headline, enabled: v } })} />
+        {cfg.headline.enabled && <div className="field"><label>Texto</label><input value={cfg.headline.text} onChange={(e) => setCfg({ headline: { ...cfg.headline, text: e.target.value } })} /></div>}
+      </>
+    )
+    if (widget === 'banners') return (
+      <>
+        <div className="wgroup">Banner do topo (imagem)</div>
+        <div className="profile-photo-actions">
+          <button type="button" className="btn btn-ghost" onClick={() => topRef.current?.click()}><Icon name="camera" />Enviar imagem</button>
+          {cfg.bannerTop && <button type="button" className="btn btn-ghost" onClick={() => setCfg({ bannerTop: '' })}><Icon name="trash" />Remover</button>}
+          <input ref={topRef} type="file" accept="image/*" hidden onChange={(e) => readImg(e, (v) => setCfg({ bannerTop: v }))} />
+        </div>
+        {cfg.bannerTop && <img className="banner-prev" src={cfg.bannerTop} alt="" />}
+        <div className="wgroup">Banner do rodapé (imagem)</div>
+        <div className="profile-photo-actions">
+          <button type="button" className="btn btn-ghost" onClick={() => botRef.current?.click()}><Icon name="camera" />Enviar imagem</button>
+          {cfg.bannerBottom && <button type="button" className="btn btn-ghost" onClick={() => setCfg({ bannerBottom: '' })}><Icon name="trash" />Remover</button>}
+          <input ref={botRef} type="file" accept="image/*" hidden onChange={(e) => readImg(e, (v) => setCfg({ bannerBottom: v }))} />
+        </div>
+        {cfg.bannerBottom && <img className="banner-prev" src={cfg.bannerBottom} alt="" />}
+      </>
+    )
+    if (widget === 'quantidade') return (
+      <>
+        <Toggle title="Permitir escolher quantidade" on={cfg.quantity.enabled} onChange={(v) => setCfg({ quantity: { ...cfg.quantity, enabled: v } })} />
+        {cfg.quantity.enabled && <div className="field"><label>Quantidade máxima</label><input type="number" min="1" value={cfg.quantity.max} onChange={(e) => setCfg({ quantity: { ...cfg.quantity, max: Number(e.target.value) } })} /></div>}
+      </>
+    )
     if (widget === 'whatsapp') return (
       <>
-        <Toggle title="Botão de WhatsApp" desc="Botão flutuante de suporte no checkout." on={cfg.whatsapp.enabled} onChange={(v) => setCfg({ whatsapp: { ...cfg.whatsapp, enabled: v } })} />
+        <Toggle title="Botão de WhatsApp" desc="Botão flutuante de suporte." on={cfg.whatsapp.enabled} onChange={(v) => setCfg({ whatsapp: { ...cfg.whatsapp, enabled: v } })} />
         {cfg.whatsapp.enabled && (
           <>
             <div className="field"><label>Número (com DDI)</label><input value={cfg.whatsapp.number} onChange={(e) => setCfg({ whatsapp: { ...cfg.whatsapp, number: e.target.value } })} placeholder="5511999999999" /></div>
@@ -98,33 +169,33 @@ function CheckoutBuilder({ product, onSave, onBack }) {
         )}
       </>
     )
-    if (widget === 'banner') return (
-      <>
-        <Toggle title="Banner no topo" desc="Faixa de aviso no topo do checkout." on={cfg.banner.enabled} onChange={(v) => setCfg({ banner: { ...cfg.banner, enabled: v } })} />
-        {cfg.banner.enabled && <div className="field"><label>Texto do banner</label><input value={cfg.banner.text} onChange={(e) => setCfg({ banner: { ...cfg.banner, text: e.target.value } })} /></div>}
-      </>
-    )
     if (widget === 'depoimentos') return (
       <>
-        <p className="profile-hint" style={{ marginBottom: 12 }}>Mostre provas sociais no checkout para aumentar a confiança.</p>
+        <p className="profile-hint" style={{ marginBottom: 12 }}>Provas sociais no checkout aumentam a confiança.</p>
         {tList.map((t, i) => (
           <div className="t-edit" key={i}>
-            <div className="field"><label>Nome</label><input value={t.name} onChange={(e) => updT(i, { name: e.target.value })} placeholder="Ex.: Ana S." /></div>
-            <div className="field"><label>Depoimento</label><input value={t.text} onChange={(e) => updT(i, { text: e.target.value })} placeholder="O que essa pessoa disse" /></div>
-            <button type="button" className="btn btn-ghost" onClick={() => delT(i)}><Icon name="trash" />Remover</button>
+            <div className="field"><label>Nome</label><input value={t.name} onChange={(e) => setT(tList.map((x, idx) => idx === i ? { ...x, name: e.target.value } : x))} /></div>
+            <div className="field"><label>Depoimento</label><input value={t.text} onChange={(e) => setT(tList.map((x, idx) => idx === i ? { ...x, text: e.target.value } : x))} /></div>
+            <button type="button" className="btn btn-ghost" onClick={() => setT(tList.filter((_, idx) => idx !== i))}><Icon name="trash" />Remover</button>
           </div>
         ))}
-        <button type="button" className="btn btn-ghost" onClick={addT}><Icon name="plus" />Adicionar depoimento</button>
+        <button type="button" className="btn btn-ghost" onClick={() => setT([...tList, { name: '', text: '' }])}><Icon name="plus" />Adicionar depoimento</button>
       </>
     )
     if (widget === 'frete') return (
       <>
-        <Toggle title="Mostrar frete" desc="Linha de frete no resumo (para produtos físicos)." on={cfg.frete.enabled} onChange={(v) => setCfg({ frete: { ...cfg.frete, enabled: v } })} />
-        {cfg.frete.enabled && (
-          <div className="ck-row">
-            <div className="field"><label>Rótulo</label><input value={cfg.frete.label} onChange={(e) => setCfg({ frete: { ...cfg.frete, label: e.target.value } })} /></div>
-            <div className="field"><label>Valor (0 = grátis)</label><input type="number" min="0" value={cfg.frete.price} onChange={(e) => setCfg({ frete: { ...cfg.frete, price: Number(e.target.value) } })} /></div>
-          </div>
+        <Toggle title="Mostrar frete (cliente escolhe)" on={cfg.shipping.enabled} onChange={(v) => setCfg({ shipping: { ...cfg.shipping, enabled: v } })} />
+        {cfg.shipping.enabled && (
+          <>
+            {shipOpts.map((o, i) => (
+              <div className="ship-edit" key={i}>
+                <div className="field"><label>Nome do frete</label><input value={o.label} onChange={(e) => setShipOpts(shipOpts.map((x, idx) => idx === i ? { ...x, label: e.target.value } : x))} /></div>
+                <div className="field"><label>Preço (0 = grátis)</label><input type="number" min="0" value={o.price} onChange={(e) => setShipOpts(shipOpts.map((x, idx) => idx === i ? { ...x, price: Number(e.target.value) } : x))} /></div>
+                {shipOpts.length > 1 && <button type="button" className="btn btn-ghost" onClick={() => setShipOpts(shipOpts.filter((_, idx) => idx !== i))}><Icon name="trash" />Remover</button>}
+              </div>
+            ))}
+            <button type="button" className="btn btn-ghost" onClick={() => setShipOpts([...shipOpts, { label: 'Novo frete', price: 0 }])}><Icon name="plus" />Adicionar opção de frete</button>
+          </>
         )}
       </>
     )
@@ -221,11 +292,9 @@ export default function CheckoutAdmin() {
 
   return (
     <>
-      <p className="area-intro">Escolha um produto para abrir o Checkout Builder e personalizar tudo: modelo, widgets, cores e fundo.</p>
+      <p className="area-intro">Escolha um produto para abrir o Checkout Builder e personalizar tudo.</p>
       {products.length === 0 ? (
-        <div className="card empty">
-          <Icon name="card" /><p>Nenhum produto ainda</p><span>Crie um produto na aba Produtos para personalizar o checkout.</span>
-        </div>
+        <div className="card empty"><Icon name="card" /><p>Nenhum produto ainda</p><span>Crie um produto na aba Produtos.</span></div>
       ) : (
         <div className="grid pick-grid">
           {products.map((p) => (

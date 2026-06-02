@@ -899,6 +899,42 @@ body::before{
 .ck-preview{position:relative}
 .ck-preview .ck-wa{position:absolute}
 
+/* ===== Etapas (multi-step) ===== */
+.ck-stepper{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2px}
+.ck-stp{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--muted-2);background:var(--surface-2);border:1px solid var(--line);border-radius:99px;padding:6px 12px}
+.ck-stp span{width:18px;height:18px;border-radius:99px;display:grid;place-items:center;background:var(--surface-3);font-size:11px}
+.ck-stp.on{color:var(--text);border-color:var(--yellow)}
+.ck-stp.on span{background:var(--yellow);color:#000}
+.ck-stp.done span{background:var(--green);color:#000}
+.ck-nav{display:flex;gap:10px;margin-top:4px}
+.ck-continue{flex:1;justify-content:center}
+
+/* ===== Quantidade + frete (resumo) ===== */
+.ck-qty{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);font-size:13.5px;font-weight:600;color:var(--muted)}
+.ck-qty-ctrl{display:flex;align-items:center;gap:12px}
+.ck-qty-ctrl button{width:30px;height:30px;border-radius:8px;background:var(--surface-2);border:1px solid var(--line);color:var(--text);font-size:18px;font-weight:700;line-height:1;display:grid;place-items:center}
+.ck-qty-ctrl b{min-width:20px;text-align:center;font-size:15px}
+.ck-ship{display:flex;flex-direction:column;gap:8px;padding:4px 0}
+.ck-ship-title{font-size:12px;font-weight:700;color:var(--muted-2)}
+.ck-ship-opt{display:flex;align-items:center;gap:9px;border:1.5px solid var(--line);border-radius:10px;padding:9px 11px;cursor:pointer;font-size:13px;font-weight:600}
+.ck-ship-opt.on{border-color:var(--yellow);background:var(--yellow-soft)}
+.ck-ship-opt input{accent-color:var(--yellow)}
+.ck-ship-opt b{margin-left:auto}
+.ck-bannerimg{display:block;width:100%;border-radius:14px;margin-bottom:16px}
+.ck-preview .ck-bannerimg{border-radius:10px;margin-bottom:12px}
+
+/* ===== Builder: campos, frete, banners ===== */
+.fld-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.fld-move{display:flex;flex-direction:column;gap:2px}
+.fld-move button{width:22px;height:18px;border-radius:5px;background:var(--surface-2);border:1px solid var(--line);color:var(--muted);font-size:11px;line-height:1;display:grid;place-items:center}
+.fld-move button:disabled{opacity:.35}
+.fld-row>input{flex:1;min-width:0;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;color:var(--text);font-family:inherit;font-size:13px;outline:none}
+.fld-tog{padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);font-weight:700;font-size:12px;white-space:nowrap}
+.fld-tog.on{background:var(--yellow);color:#000;border-color:var(--yellow)}
+.fld-req{font-size:11px;color:var(--muted-2);font-weight:600;white-space:nowrap}
+.ship-edit{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.banner-prev{display:block;width:100%;border-radius:10px;margin-top:10px;border:1px solid var(--line)}
+
 /* ===== Variações de layout do checkout ===== */
 .ck-lay-centralizado{grid-template-columns:1fr;max-width:560px;margin-left:auto;margin-right:auto}
 .ck-lay-centralizado .ck-summary{position:static}

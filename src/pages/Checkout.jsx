@@ -128,6 +128,9 @@ export function CheckoutView({ product, preview = false }) {
   const [card, setCard] = useState({ number: '', name: '', exp: '', cvv: '', parc: 1 })
   const [bump, setBump] = useState(false)
   const [freeAmount, setFreeAmount] = useState('')
+  const [qty, setQty] = useState(1)
+  const [ship, setShip] = useState(0)
+  const [phase, setPhase] = useState(0)
   const [status, setStatus] = useState('form')
   const [copied, setCopied] = useState(false)
   const [secs, setSecs] = useState(9 * 60 + 59)
@@ -149,16 +152,31 @@ export function CheckoutView({ product, preview = false }) {
   const mmss = `${String(Math.floor(secs / 60)).padStart(2, '0')}:${String(secs % 60).padStart(2, '0')}`
 
   const description = checkoutDescriptions[product.slug] || product.desc || 'Acesso imediato após o pagamento'
-  const baseAmount = cfg.valorLivre ? (Number(freeAmount) || 0) : product.amount
-  const freteVal = cfg.frete?.enabled ? (cfg.frete.price || 0) : 0
-  const total = baseAmount + (bump && cfg.bump.enabled ? cfg.bump.amount : 0) + freteVal
+  const stepsN = cfg.steps || 1
+  const addressOn = cfg.fields.address || stepsN >= 3
+  const qtyVal = cfg.quantity?.enabled && !cfg.valorLivre ? Math.max(1, qty) : 1
+  const unit = cfg.valorLivre ? (Number(freeAmount) || 0) : product.amount
+  const baseAmount = unit * qtyVal
+  const shipOpts = cfg.shipping?.options || []
+  const shipSel = cfg.shipping?.enabled ? (shipOpts[ship] || shipOpts[0]) : null
+  const shipPrice = shipSel?.price || 0
+  const total = baseAmount + (bump && cfg.bump.enabled ? cfg.bump.amount : 0) + shipPrice
   const parcelas = useMemo(() => installments(total), [total])
 
   const emailOk = /\S+@\S+\.\S+/.test(data.email)
+  const nameOk = data.name.trim().length > 2
   const cpfOk = !cfg.fields.cpf || data.cpf.length >= 14
-  const addrOk = !cfg.fields.address || (addr.cep.length >= 9 && addr.rua && addr.numero && addr.cidade && addr.uf)
-  const cardOk = isRapido || method !== 'card' || (card.number.length >= 18 && card.name.trim() && card.exp.length === 5 && card.cvv.length >= 3)
-  const canPay = emailOk && (isRapido || data.name.trim().length > 2) && cpfOk && addrOk && cardOk && (!cfg.valorLivre || baseAmount > 0)
+  const addrOk = !addressOn || (addr.cep.length >= 9 && addr.rua && addr.numero && addr.cidade && addr.uf)
+  const cardOk = method !== 'card' || (card.number.length >= 18 && card.name.trim() && card.exp.length === 5 && card.cvv.length >= 3)
+  const valorOk = !cfg.valorLivre || baseAmount > 0
+  const canPay = emailOk && nameOk && cpfOk && addrOk && cardOk && valorOk
+
+  // etapas (multi-step)
+  const phases = stepsN >= 3 ? ['dados', 'endereco', 'pagamento'] : stepsN === 2 ? ['dados', 'pagamento'] : ['single']
+  const ph = Math.min(phase, phases.length - 1)
+  const phaseKey = phases[ph]
+  const dadosOk = nameOk && emailOk && cpfOk && valorOk && (stepsN === 2 && cfg.fields.address ? addrOk : true)
+  const phaseValid = phaseKey === 'dados' ? dadosOk : phaseKey === 'endereco' ? addrOk : true
 
   const set = (k) => (e) => setData((s) => ({ ...s, [k]: e.target.value }))
   const setA = (k) => (e) => setAddr((s) => ({ ...s, [k]: e.target.value }))
@@ -166,6 +184,7 @@ export function CheckoutView({ product, preview = false }) {
   async function pay(e) {
     e.preventDefault()
     if (!canPay || loading) return
+    if (stepsN > 1 && ph < phases.length - 1) return
     const goPix = isRapido || method === 'pix'
 
     // Preview do editor: não chama o gateway de verdade (usa mock visual).
@@ -274,6 +293,16 @@ export function CheckoutView({ product, preview = false }) {
         </div>
         <div><h3>{product.name}</h3><p>{description}</p></div>
       </div>
+      {cfg.quantity?.enabled && !cfg.valorLivre && (
+        <div className="ck-qty">
+          <span>Quantidade</span>
+          <div className="ck-qty-ctrl">
+            <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="Diminuir">–</button>
+            <b className="num">{qtyVal}</b>
+            <button type="button" onClick={() => setQty((q) => Math.min(cfg.quantity.max || 10, q + 1))} aria-label="Aumentar">+</button>
+          </div>
+        </div>
+      )}
       <div className="ck-lines">
         {cfg.valorLivre ? (
           <div className="ck-field" style={{ marginBottom: 2 }}>
@@ -282,10 +311,21 @@ export function CheckoutView({ product, preview = false }) {
               <input id="ck-valor" type="number" min="0" step="0.01" value={freeAmount} onChange={(e) => setFreeAmount(e.target.value)} placeholder="0,00" /></div>
           </div>
         ) : (
-          <div className="ck-line"><span>{product.name}</span><span className="num">{product.oldAmount && <s>{formatBRL(product.oldAmount)}</s>} {formatBRL(product.amount)}</span></div>
+          <div className="ck-line"><span>{product.name}{qtyVal > 1 ? ` × ${qtyVal}` : ''}</span><span className="num">{product.oldAmount && qtyVal === 1 && <s>{formatBRL(product.oldAmount)}</s>} {formatBRL(baseAmount)}</span></div>
         )}
         {bump && cfg.bump.enabled && <div className="ck-line"><span>+ {cfg.bump.title}</span><span className="num">{formatBRL(cfg.bump.amount)}</span></div>}
-        {cfg.frete?.enabled && <div className="ck-line"><span>{cfg.frete.label || 'Frete'}</span><span className="num">{cfg.frete.price ? formatBRL(cfg.frete.price) : 'Grátis'}</span></div>}
+        {cfg.shipping?.enabled && shipOpts.length > 0 && (
+          <div className="ck-ship">
+            <span className="ck-ship-title">Escolha o frete</span>
+            {shipOpts.map((o, i) => (
+              <label key={i} className={`ck-ship-opt${ship === i ? ' on' : ''}`}>
+                <input type="radio" name="ckship" checked={ship === i} onChange={() => setShip(i)} />
+                <span>{o.label || `Opção ${i + 1}`}</span>
+                <b className="num">{o.price ? formatBRL(o.price) : 'Grátis'}</b>
+              </label>
+            ))}
+          </div>
+        )}
         <div className="ck-line ck-total"><span>Total</span><span className="num">{formatBRL(total)}</span></div>
       </div>
       <ul className="ck-trust">
@@ -335,109 +375,130 @@ export function CheckoutView({ product, preview = false }) {
   }
 
   /* formulário */
+  const fieldNode = (key) => {
+    const label = (cfg.fieldLabels && cfg.fieldLabels[key]) || key
+    if (key === 'name') return <Field key="name" id="ck-name" label={label} icon="user" placeholder="Seu nome" value={data.name} onChange={set('name')} autoComplete="name" />
+    if (key === 'email') return <Field key="email" id="ck-email" label={label} icon="mail" type="email" placeholder="voce@email.com" value={data.email} onChange={set('email')} autoComplete="email" hint="O acesso é enviado para este e-mail." />
+    if (key === 'phone') return cfg.fields.phone ? <Field key="phone" id="ck-phone" label={label} icon="phone" inputMode="tel" placeholder="(11) 90000-0000" value={data.phone} onChange={(e) => setData((s) => ({ ...s, phone: maskPhone(e.target.value) }))} /> : null
+    if (key === 'cpf') return cfg.fields.cpf ? <Field key="cpf" id="ck-cpf" label={label} icon="lock" inputMode="numeric" placeholder="000.000.000-00" value={data.cpf} onChange={(e) => setData((s) => ({ ...s, cpf: maskCPF(e.target.value) }))} /> : null
+    return null
+  }
+  const orderKeys = cfg.fieldOrder && cfg.fieldOrder.length ? cfg.fieldOrder : ['name', 'email', 'phone', 'cpf']
+
+  const dadosSection = (
+    <section className="card ck-step" key="dados">
+      <header className="ck-step-head"><span className="ck-num">1</span><h2>Seus dados</h2></header>
+      {orderKeys.map(fieldNode)}
+    </section>
+  )
+  const enderecoSection = (
+    <section className="card ck-step" key="end">
+      <header className="ck-step-head"><span className="ck-num">2</span><h2>Endereço de entrega</h2></header>
+      <div className="ck-row">
+        <Field id="ck-cep" label="CEP" inputMode="numeric" placeholder="00000-000" value={addr.cep} onChange={(e) => setAddr((s) => ({ ...s, cep: maskCEP(e.target.value) }))} />
+        <Field id="ck-cidade" label="Cidade" placeholder="Cidade" value={addr.cidade} onChange={setA('cidade')} />
+      </div>
+      <Field id="ck-rua" label="Endereço" placeholder="Rua, avenida…" value={addr.rua} onChange={setA('rua')} />
+      <div className="ck-row">
+        <Field id="ck-num" label="Número" placeholder="123" value={addr.numero} onChange={setA('numero')} />
+        <Field id="ck-uf" label="Estado (UF)" placeholder="SP" value={addr.uf} onChange={setA('uf')} />
+      </div>
+    </section>
+  )
+  const pagamentoSection = (
+    <section className="card ck-step" key="pag">
+      <header className="ck-step-head"><span className="ck-num">{stepsN === 1 ? (addressOn ? 3 : 2) : ph + 1}</span><h2>Pagamento</h2></header>
+      <div className="ck-methods" role="tablist" aria-label="Forma de pagamento">
+        {methods.map((m) => (
+          <button type="button" key={m.key} role="tab" aria-selected={method === m.key} className={`ck-method${method === m.key ? ' on' : ''}`} onClick={() => setMethod(m.key)}>
+            <Icon name={m.icon} /><b>{m.label}</b><span>{m.note}</span>
+          </button>
+        ))}
+      </div>
+      {method === 'pix' && <div className="ck-pane"><p className="ck-pane-info"><Icon name="bolt" /> Pagamento aprovado na hora.</p></div>}
+      {method === 'boleto' && <div className="ck-pane"><p className="ck-pane-info"><Icon name="barcode" /> Compensa em 1-2 dias úteis.</p></div>}
+      {method === 'card' && (
+        <div className="ck-pane">
+          <Field id="ck-cardnum" label="Número do cartão" icon="card" inputMode="numeric" placeholder="0000 0000 0000 0000" value={card.number} onChange={(e) => setCard((c) => ({ ...c, number: maskCard(e.target.value) }))} />
+          <Field id="ck-cardname" label="Nome impresso no cartão" placeholder="Como está no cartão" value={card.name} onChange={(e) => setCard((c) => ({ ...c, name: e.target.value }))} />
+          <div className="ck-row">
+            <Field id="ck-exp" label="Validade" inputMode="numeric" placeholder="MM/AA" value={card.exp} onChange={(e) => setCard((c) => ({ ...c, exp: maskExp(e.target.value) }))} />
+            <Field id="ck-cvv" label="CVV" inputMode="numeric" placeholder="123" value={card.cvv} onChange={(e) => setCard((c) => ({ ...c, cvv: maskCVV(e.target.value) }))} />
+          </div>
+          <div className="ck-field">
+            <label htmlFor="ck-parc">Parcelas</label>
+            <div className="ck-input"><select id="ck-parc" value={card.parc} onChange={(e) => setCard((c) => ({ ...c, parc: Number(e.target.value) }))}>
+              {parcelas.map((p) => <option key={p.n} value={p.n}>{p.label}</option>)}</select></div>
+          </div>
+        </div>
+      )}
+    </section>
+  )
+  const bumpNode = cfg.bump.enabled ? (
+    <button type="button" key="bump" className={`ck-bump${bump ? ' on' : ''}`} onClick={() => setBump((b) => !b)} aria-pressed={bump}>
+      <span className="ck-bump-check" aria-hidden="true">{bump && <Icon name="check" strokeWidth={3} />}</span>
+      <div className="ck-bump-body">
+        <span className="ck-bump-badge">OFERTA ÚNICA</span>
+        <b>{cfg.bump.title}</b><p>{cfg.bump.desc}</p>
+        <span className="ck-bump-price"><s>{formatBRL(cfg.bump.oldAmount)}</s> {formatBRL(cfg.bump.amount)}</span>
+      </div>
+    </button>
+  ) : null
+  const testsNode = tList.length > 0 ? (
+    <div className="card ck-tests" key="tests">
+      <div className="card-head"><h3 style={{ fontSize: 15 }}>Quem já comprou</h3></div>
+      {tList.map((t, i) => (<div className="ck-test" key={i}><div className="ck-test-stars">★★★★★</div><p>“{t.text}”</p><b>{t.name}</b></div>))}
+    </div>
+  ) : null
+
+  let phaseContent
+  if (stepsN === 1) phaseContent = <>{dadosSection}{addressOn && enderecoSection}{pagamentoSection}{bumpNode}{testsNode}</>
+  else if (phaseKey === 'dados') phaseContent = <>{dadosSection}{stepsN === 2 && cfg.fields.address && enderecoSection}</>
+  else if (phaseKey === 'endereco') phaseContent = enderecoSection
+  else phaseContent = <>{pagamentoSection}{bumpNode}{testsNode}</>
+
+  const isLast = stepsN === 1 || ph === phases.length - 1
+  const stepLabel = (p) => (p === 'dados' ? 'Dados' : p === 'endereco' ? 'Endereço' : 'Pagamento')
+
   return (
-    <Frame preview={preview} styleVars={styleVars} showTimer={cfg.timer} mmss={mmss}>
+    <Frame preview={preview} styleVars={styleVars} showTimer={cfg.timer} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure} bg={cfg.bg} wa={cfg.whatsapp}>
+      {cfg.bannerTop && <img className="ck-bannerimg" src={cfg.bannerTop} alt="" />}
       <form className={gridClass} onSubmit={pay}>
         <div className="ck-main">
-          {cfg.banner?.enabled && cfg.banner.text && <div className="ck-banner">{cfg.banner.text}</div>}
-          <div className="ck-intro">
-            <h2>{cfg.title}</h2>
-            <p>{cfg.subtitle}</p>
-          </div>
+          {cfg.headline?.enabled && cfg.headline.text && <div className="ck-banner">{cfg.headline.text}</div>}
+          <div className="ck-intro"><h2>{cfg.title}</h2><p>{cfg.subtitle}</p></div>
 
-          <section className="card ck-step">
-            <header className="ck-step-head"><span className="ck-num">1</span><h2>Seus dados</h2></header>
-            {!isRapido && (
-              <Field id="ck-name" label="Nome completo" icon="user" placeholder="Como no seu documento" value={data.name} onChange={set('name')} autoComplete="name" />
-            )}
-            <div className={cfg.fields.phone ? 'ck-row' : ''}>
-              <Field id="ck-email" label="E-mail" icon="mail" type="email" placeholder="voce@email.com" value={data.email} onChange={set('email')} autoComplete="email" hint="O acesso é enviado para este e-mail." />
-              {cfg.fields.phone && (
-                <Field id="ck-phone" label="Celular / WhatsApp" icon="phone" inputMode="tel" placeholder="(11) 90000-0000" value={data.phone} onChange={(e) => setData((s) => ({ ...s, phone: maskPhone(e.target.value) }))} />
-              )}
-            </div>
-            {cfg.fields.cpf && (
-              <Field id="ck-cpf" label="CPF" icon="lock" inputMode="numeric" placeholder="000.000.000-00" value={data.cpf} onChange={(e) => setData((s) => ({ ...s, cpf: maskCPF(e.target.value) }))} />
-            )}
-          </section>
-
-          {cfg.fields.address && (
-            <section className="card ck-step">
-              <header className="ck-step-head"><span className="ck-num">2</span><h2>Endereço de entrega</h2></header>
-              <div className="ck-row">
-                <Field id="ck-cep" label="CEP" inputMode="numeric" placeholder="00000-000" value={addr.cep} onChange={(e) => setAddr((s) => ({ ...s, cep: maskCEP(e.target.value) }))} />
-                <Field id="ck-cidade" label="Cidade" placeholder="Cidade" value={addr.cidade} onChange={setA('cidade')} />
-              </div>
-              <Field id="ck-rua" label="Endereço" placeholder="Rua, avenida…" value={addr.rua} onChange={setA('rua')} />
-              <div className="ck-row">
-                <Field id="ck-num" label="Número" placeholder="123" value={addr.numero} onChange={setA('numero')} />
-                <Field id="ck-uf" label="Estado (UF)" placeholder="SP" value={addr.uf} onChange={setA('uf')} />
-              </div>
-            </section>
-          )}
-
-          {!isRapido && (
-            <section className="card ck-step">
-              <header className="ck-step-head"><span className="ck-num">{cfg.fields.address ? 3 : 2}</span><h2>Pagamento</h2></header>
-              <div className="ck-methods" role="tablist" aria-label="Forma de pagamento">
-                {methods.map((m) => (
-                  <button type="button" key={m.key} role="tab" aria-selected={method === m.key} className={`ck-method${method === m.key ? ' on' : ''}`} onClick={() => setMethod(m.key)}>
-                    <Icon name={m.icon} /><b>{m.label}</b><span>{m.note}</span>
-                  </button>
-                ))}
-              </div>
-              {method === 'pix' && <div className="ck-pane"><p className="ck-pane-info"><Icon name="bolt" /> Pagamento aprovado na hora.</p></div>}
-              {method === 'boleto' && <div className="ck-pane"><p className="ck-pane-info"><Icon name="barcode" /> Compensa em 1-2 dias úteis.</p></div>}
-              {method === 'card' && (
-                <div className="ck-pane">
-                  <Field id="ck-cardnum" label="Número do cartão" icon="card" inputMode="numeric" placeholder="0000 0000 0000 0000" value={card.number} onChange={(e) => setCard((c) => ({ ...c, number: maskCard(e.target.value) }))} />
-                  <Field id="ck-cardname" label="Nome impresso no cartão" placeholder="Como está no cartão" value={card.name} onChange={(e) => setCard((c) => ({ ...c, name: e.target.value }))} />
-                  <div className="ck-row">
-                    <Field id="ck-exp" label="Validade" inputMode="numeric" placeholder="MM/AA" value={card.exp} onChange={(e) => setCard((c) => ({ ...c, exp: maskExp(e.target.value) }))} />
-                    <Field id="ck-cvv" label="CVV" inputMode="numeric" placeholder="123" value={card.cvv} onChange={(e) => setCard((c) => ({ ...c, cvv: maskCVV(e.target.value) }))} />
-                  </div>
-                  <div className="ck-field">
-                    <label htmlFor="ck-parc">Parcelas</label>
-                    <div className="ck-input"><select id="ck-parc" value={card.parc} onChange={(e) => setCard((c) => ({ ...c, parc: Number(e.target.value) }))}>
-                      {parcelas.map((p) => <option key={p.n} value={p.n}>{p.label}</option>)}</select></div>
-                  </div>
-                </div>
-              )}
-            </section>
-          )}
-
-          {cfg.bump.enabled && (
-            <button type="button" className={`ck-bump${bump ? ' on' : ''}`} onClick={() => setBump((b) => !b)} aria-pressed={bump}>
-              <span className="ck-bump-check" aria-hidden="true">{bump && <Icon name="check" strokeWidth={3} />}</span>
-              <div className="ck-bump-body">
-                <span className="ck-bump-badge">OFERTA ÚNICA</span>
-                <b>{cfg.bump.title}</b><p>{cfg.bump.desc}</p>
-                <span className="ck-bump-price"><s>{formatBRL(cfg.bump.oldAmount)}</s> {formatBRL(cfg.bump.amount)}</span>
-              </div>
-            </button>
-          )}
-
-          {tList.length > 0 && (
-            <div className="card ck-tests">
-              <div className="card-head"><h3 style={{ fontSize: 15 }}>Quem já comprou</h3></div>
-              {tList.map((t, i) => (
-                <div className="ck-test" key={i}>
-                  <div className="ck-test-stars">★★★★★</div>
-                  <p>“{t.text}”</p>
-                  <b>{t.name}</b>
+          {stepsN > 1 && (
+            <div className="ck-stepper">
+              {phases.map((p, i) => (
+                <div key={p} className={`ck-stp${i === ph ? ' on' : ''}${i < ph ? ' done' : ''}`}>
+                  <span>{i < ph ? '✓' : i + 1}</span>{stepLabel(p)}
                 </div>
               ))}
             </div>
           )}
 
+          {phaseContent}
+
           {payError && <div className="ck-error"><Icon name="close" />{payError}</div>}
-          <button type="submit" className="btn btn-primary ck-cta" disabled={!canPay || loading}>
-            <Icon name="lock" />{loading ? 'Gerando Pix…' : `${cfg.ctaText} ${formatBRL(total)}`}
-          </button>
-          <p className="ck-secure"><Icon name="shield" /> Ambiente seguro e criptografado · AZ Checkout</p>
+
+          {isLast ? (
+            <>
+              <button type="submit" className="btn btn-primary ck-cta" disabled={!canPay || loading}>
+                <Icon name="lock" />{loading ? 'Gerando Pix…' : `${cfg.ctaText} ${formatBRL(total)}`}
+              </button>
+              <p className="ck-secure"><Icon name="shield" /> Ambiente seguro e criptografado</p>
+            </>
+          ) : (
+            <div className="ck-nav">
+              {ph > 0 && <button type="button" className="btn btn-ghost" onClick={() => setPhase(ph - 1)}>Voltar</button>}
+              <button type="button" className="btn btn-primary ck-continue" disabled={!phaseValid} onClick={() => setPhase(ph + 1)}>Continuar</button>
+            </div>
+          )}
         </div>
         {Resumo}
       </form>
+      {cfg.bannerBottom && <img className="ck-bannerimg" src={cfg.bannerBottom} alt="" />}
     </Frame>
   )
 }
