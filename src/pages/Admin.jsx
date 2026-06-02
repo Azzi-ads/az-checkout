@@ -13,6 +13,9 @@ export default function Admin() {
   const [err, setErr] = useState('')
   const [loading, setLoading] = useState(hasBackend)
   const [refresh, setRefresh] = useState(0)
+  const [nt, setNt] = useState('')
+  const [nb, setNb] = useState('')
+  const [ntag, setNtag] = useState('Novidade')
 
   useEffect(() => {
     if (!hasBackend) return
@@ -32,16 +35,24 @@ export default function Admin() {
     return () => { alive = false; clearInterval(id) }
   }, [refresh])
 
-  async function act(action, target, plan) {
-    if (action === 'delete' && !window.confirm(`Apagar a conta ${target}? Isso remove o login e os dados dela.`)) return
+  async function callAdmin(payload) {
     try {
       const { data: sess } = await supabase.auth.getSession()
       const token = sess?.session?.access_token
-      const r = await fetch('/api/admin', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token || ''}` }, body: JSON.stringify({ action, email: target, plan }) })
+      const r = await fetch('/api/admin', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token || ''}` }, body: JSON.stringify(payload) })
       const j = await r.json()
-      if (!r.ok) { alert(j.error || 'Falha na ação.'); return }
-      setRefresh((n) => n + 1)
-    } catch { alert('Falha na ação.') }
+      if (!r.ok) { alert(j.error || 'Falha na ação.'); return false }
+      setRefresh((n) => n + 1); return true
+    } catch { alert('Falha na ação.'); return false }
+  }
+  function act(action, target, plan) {
+    if (action === 'delete' && !window.confirm(`Apagar a conta ${target}? Isso remove o login e os dados dela.`)) return
+    callAdmin({ action, email: target, plan })
+  }
+  async function postNews() {
+    if (!nt.trim()) return
+    const ok = await callAdmin({ action: 'novidade', title: nt.trim(), body: nb.trim(), tag: ntag || 'Novidade' })
+    if (ok) { setNt(''); setNb('') }
   }
 
   if (!hasBackend) {
@@ -53,6 +64,16 @@ export default function Admin() {
   const accounts = data?.accounts || []
   return (
     <>
+      <div className="card" style={{ marginBottom: 16 }}>
+        <div className="card-head"><h3>Postar novidade</h3><span className="pill">aparece em tempo real pra todos</span></div>
+        <div className="ck-row">
+          <div className="field"><label>Tag</label><input value={ntag} onChange={(e) => setNtag(e.target.value)} placeholder="Novidade" /></div>
+          <div className="field"><label>Título</label><input value={nt} onChange={(e) => setNt(e.target.value)} placeholder="Ex.: Novo recurso disponível" /></div>
+        </div>
+        <div className="field"><label>Descrição (opcional)</label><input value={nb} onChange={(e) => setNb(e.target.value)} placeholder="Detalhe da novidade" /></div>
+        <button type="button" className="btn btn-primary" onClick={postNews} disabled={!nt.trim()}><Icon name="megaphone" />Publicar</button>
+      </div>
+
       <div className="grid metrics">
         <div className="card kpi kpi-hi"><div className="lbl">Contas</div><div className="val num">{data.totalContas}</div></div>
         <div className="card kpi"><div className="lbl">Vendas</div><div className="val num">{data.totalVendas}</div></div>

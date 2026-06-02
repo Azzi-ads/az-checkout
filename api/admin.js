@@ -23,7 +23,14 @@ export default async function handler(req, res) {
   // ---- editar conta ----
   if (req.method === 'POST') {
     try {
-      const { action, email: target, plan } = req.body || {}
+      const body = req.body || {}
+      if (body.action === 'novidade') {
+        if (!body.title) return res.status(400).json({ error: 'Título obrigatório.' })
+        const { error } = await sb.from('announcements').insert({ title: body.title, body: body.body || '', tag: body.tag || 'Novidade' })
+        if (error) return res.status(500).json({ error: error.message })
+        return res.status(200).json({ ok: true })
+      }
+      const { action, email: target, plan } = body
       const { data: prof } = await sb.from('profiles').select('id,email').eq('email', target).limit(1)
       const id = prof?.[0]?.id
       if (!id) return res.status(404).json({ error: 'Conta não encontrada.' })

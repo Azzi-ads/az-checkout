@@ -3,8 +3,19 @@ import Icon from '../components/Icon.jsx'
 import { revenueChart, geoReach, newsWall, rewardJourney, formatBRL } from '../data.js'
 import { getUser } from '../auth.js'
 import { useSales, computeMetrics, DAY } from '../metrics.js'
+import { supabase, hasBackend } from '../supabase.js'
+import { useEffect, useState } from 'react'
 
 const ini = (n = '') => (n.trim().split(/\s+/).filter(Boolean).map((p) => p[0]).slice(0, 2).join('') || '?').toUpperCase()
+function relTime(iso) {
+  const diff = Date.now() - new Date(iso).getTime()
+  const min = Math.floor(diff / 60000)
+  if (min < 1) return 'agora'
+  if (min < 60) return `há ${min} min`
+  const h = Math.floor(min / 60)
+  if (h < 24) return `há ${h}h`
+  return `há ${Math.floor(h / 24)}d`
+}
 
 function greeting() {
   const h = new Date().getHours()
@@ -59,6 +70,20 @@ export default function Dashboard({ profile }) {
     .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
     .slice(0, 5)
     .map((s) => ({ initials: ini(s.customer?.name), who: s.customer?.name || 'Cliente', what: s.items?.[0]?.name || 'Pedido', amount: formatBRL(s.total || 0) }))
+
+  const [news, setNews] = useState(newsWall)
+  useEffect(() => {
+    if (!hasBackend) return
+    let alive = true
+    const load = async () => {
+      const { data } = await supabase.from('announcements').select('*').order('created_at', { ascending: false }).limit(8)
+      if (alive && data && data.length) setNews(data.map((r) => ({ tag: r.tag, title: r.title, desc: r.body || '', time: relTime(r.created_at) })))
+    }
+    load()
+    const ch = supabase.channel('novidades-rt').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'announcements' }, load).subscribe()
+    return () => { alive = false; supabase.removeChannel(ch) }
+  }, [])
+
   return (
     <>
       <div className="greeting">
@@ -144,7 +169,7 @@ export default function Dashboard({ profile }) {
         <div className="card">
           <div className="card-head"><h3>Mural de novidades</h3></div>
           <div className="news">
-            {newsWall.map((n) => (
+            {news.map((n) => (
               <div className={`news-it${n.desc ? ' news-feat' : ''}`} key={n.title}>
                 {n.desc ? (
                   <>

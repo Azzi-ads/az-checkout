@@ -91,6 +91,20 @@ create policy "produtos publicos (checkout)" on public.products
 -- função serverless usando a service_role key (bypassa a RLS com segurança),
 -- nunca no navegador.
 
+-- Mural de novidades (announcements) — leitura pública, em tempo real
+create table if not exists public.announcements (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  body text default '',
+  tag text default 'Novidade',
+  created_at timestamptz default now()
+);
+alter table public.announcements enable row level security;
+drop policy if exists "novidades leitura" on public.announcements;
+create policy "novidades leitura" on public.announcements for select using (true);
+-- ligar Realtime (rode uma vez; se já estiver, ignore o erro):
+-- alter publication supabase_realtime add table public.announcements;
+
 -- Cria o perfil automaticamente quando um usuário se cadastra
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer as $$
