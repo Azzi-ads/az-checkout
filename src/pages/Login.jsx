@@ -1,7 +1,16 @@
 import { useState } from 'react'
 import { useNavigate, Navigate, Link } from 'react-router-dom'
 import Icon from '../components/Icon.jsx'
-import { isAuthed, login } from '../auth.js'
+import { isAuthed, login, signUp } from '../auth.js'
+
+function traduzErro(msg = '') {
+  const m = msg.toLowerCase()
+  if (m.includes('invalid login')) return 'E-mail ou senha incorretos.'
+  if (m.includes('already registered') || m.includes('already been registered')) return 'Esse e-mail já tem uma conta. Faça login.'
+  if (m.includes('at least 6')) return 'A senha precisa ter pelo menos 6 caracteres.'
+  if (m.includes('email') && m.includes('valid')) return 'Digite um e-mail válido.'
+  return msg || 'Algo deu errado. Tente de novo.'
+}
 
 const FEATURES = [
   'Checkout de alta conversão em Pix, cartão e boleto',
@@ -20,15 +29,22 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
   const [mode, setMode] = useState('login') // login | signup
+  const [err, setErr] = useState('')
+  const [busy, setBusy] = useState(false)
 
   // Já logado? vai direto pro painel.
   if (isAuthed()) return <Navigate to="/app" replace />
 
-  function submit(e) {
+  async function submit(e) {
     e.preventDefault()
     if (!email || !pass || (mode === 'signup' && !name)) return
-    const displayName = mode === 'signup' && name ? name.trim() : nameFromEmail(email)
-    login({ name: displayName, email: email.trim() })
+    setBusy(true); setErr('')
+    const res = mode === 'signup'
+      ? await signUp(name.trim() || nameFromEmail(email), email.trim(), pass)
+      : await login(email.trim(), pass)
+    setBusy(false)
+    if (res.error) { setErr(traduzErro(res.error.message)); return }
+    if (res.needsConfirm) { setErr('Conta criada! Confirme pelo e-mail para entrar.'); return }
     navigate('/app')
   }
 
@@ -76,8 +92,10 @@ export default function Login() {
 
           {mode === 'login' && <a className="login-forgot" href="#recuperar" onClick={(e) => e.preventDefault()}>Esqueci minha senha</a>}
 
-          <button type="submit" className="btn btn-primary login-btn">
-            {mode === 'login' ? 'Entrar' : 'Criar conta e entrar'}
+          {err && <p className="login-err">{err}</p>}
+
+          <button type="submit" className="btn btn-primary login-btn" disabled={busy}>
+            {busy ? 'Aguarde…' : (mode === 'login' ? 'Entrar' : 'Criar conta e entrar')}
           </button>
 
           <p className="login-alt">
