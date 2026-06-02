@@ -7,6 +7,18 @@ import { themeVars } from '../theme.js'
 import { ensureCheckout } from '../checkoutConfig.js'
 import { ping, leave, recordEvent } from '../liveTracker.js'
 import { recordSale, updateSale, addSaleItem } from '../sales.js'
+import { hasBackend } from '../supabase.js'
+
+async function apiRegistrarVenda(payload) {
+  try {
+    const r = await fetch('/api/registrar-venda', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+    const j = await r.json(); return j.id || null
+  } catch { return null }
+}
+function apiAtualizarVenda(id, patch) {
+  if (!id) return
+  try { fetch('/api/atualizar-venda', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, patch }) }) } catch { /* */ }
+}
 
 /* máscaras */
 const d = (s) => s.replace(/\D/g, '')
@@ -217,7 +229,8 @@ export function CheckoutView({ product, preview = false }) {
         const json = await resp.json()
         if (!resp.ok) throw new Error(json.error || 'Não foi possível gerar o Pix.')
         setPixData(json)
-        const id = recordSale({ customer: buildCustomer(), items: buildItems(), total, method: 'pix', status: 'aguardando' })
+        const venda = { slug: product.slug, customer: buildCustomer(), items: buildItems(), total, method: 'pix', status: 'aguardando' }
+        const id = hasBackend ? await apiRegistrarVenda(venda) : recordSale(venda)
         setSaleId(id)
         setStatus('pix')
         window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -249,8 +262,13 @@ export function CheckoutView({ product, preview = false }) {
   }
   // após confirmar pagamento: registra/atualiza a venda e oferece upsell se houver
   function goPaid() {
-    if (saleId) updateSale(saleId, { status: 'pago' })
-    else if (!preview) { const id = recordSale({ customer: buildCustomer(), items: buildItems(), total, method, status: 'pago' }); setSaleId(id) }
+    if (!preview) {
+      if (hasBackend) {
+        if (saleId) apiAtualizarVenda(saleId, { status: 'pago' })
+        else apiRegistrarVenda({ slug: product.slug, customer: buildCustomer(), items: buildItems(), total, method, status: 'pago' }).then(setSaleId)
+      } else if (saleId) updateSale(saleId, { status: 'pago' })
+      else { const id = recordSale({ customer: buildCustomer(), items: buildItems(), total, method, status: 'pago' }); setSaleId(id) }
+    }
     if (cfg.upsell?.enabled) { setStatus('upsell'); window.scrollTo({ top: 0, behavior: 'smooth' }) }
     else setStatus('paid')
   }
@@ -383,7 +401,7 @@ export function CheckoutView({ product, preview = false }) {
               <Icon name={copied ? 'check' : 'copy'} />{copied ? 'Código copiado!' : 'Copiar código Pix'}
             </button>
             <div className="ck-pixinfo"><span>Valor</span><b className="num">{formatBRL(total)}</b></div>
-            <input ref={proofRef} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => { if (saleId) updateSale(saleId, { proof: String(r.result) }); setProofSent(true) }; r.readAsDataURL(f) }} />
+            <input ref={proofRef} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => { const url = String(r.result); if (hasBackend) apiAtualizarVenda(saleId, { proof: url }); else if (saleId) updateSale(saleId, { proof: url }); setProofSent(true) }; r.readAsDataURL(f) }} />
             <button type="button" className={`btn ${proofSent ? 'btn-ghost' : 'btn-primary'} ck-paid-btn`} onClick={() => proofRef.current?.click()}>
               <Icon name={proofSent ? 'check' : 'camera'} />{proofSent ? 'Comprovante enviado!' : 'Enviar comprovante'}
             </button>
@@ -406,7 +424,7 @@ export function CheckoutView({ product, preview = false }) {
           <h2>{o.title}</h2>
           <p className="ck-muted">{o.desc}</p>
           <div className="ck-offer-price">{formatBRL(o.price)}</div>
-          <button type="button" className="btn btn-primary ck-offer-yes" onClick={() => { if (saleId) addSaleItem(saleId, { name: o.title, kind: status === 'upsell' ? 'Upsell' : 'Downsell', amount: o.price }); setStatus('paid') }}><Icon name="check" />Sim, adicionar por {formatBRL(o.price)}</button>
+          <button type="button" className="btn btn-primary ck-offer-yes" onClick={() => { if (!hasBackend && saleId) addSaleItem(saleId, { name: o.title, kind: status === 'upsell' ? 'Upsell' : 'Downsell', amount: o.price }); setStatus('paid') }}><Icon name="check" />Sim, adicionar por {formatBRL(o.price)}</button>
           <button type="button" className="btn btn-ghost ck-offer-no" onClick={decline}>Não, obrigado</button>
         </div>
       </Frame>

@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Icon from '../components/Icon.jsx'
 import { formatBRL } from '../data.js'
-import { getSales, getClientes, getComprovantes } from '../sales.js'
+import { getSales } from '../sales.js'
+import { supabase, hasBackend } from '../supabase.js'
 
 const SUBTABS = [
   { k: 'pedidos', l: 'Pedidos' },
@@ -9,20 +10,40 @@ const SUBTABS = [
   { k: 'comprovantes', l: 'Comprovantes' },
 ]
 const initials = (n = '') => (n.trim().split(/\s+/).filter(Boolean).map((p) => p[0]).slice(0, 2).join('') || '?').toUpperCase()
+const shortId = (id) => String(id || '').replace(/-/g, '').slice(0, 8).toUpperCase()
 
 export default function Vendas() {
   const [tab, setTab] = useState('pedidos')
-  const [, force] = useState(0)
+  const [sales, setSales] = useState([])
+
   useEffect(() => {
-    const tick = () => force((n) => n + 1)
-    const id = setInterval(tick, 2500)
-    window.addEventListener('storage', tick)
-    return () => { clearInterval(id); window.removeEventListener('storage', tick) }
+    let alive = true
+    const load = async () => {
+      if (hasBackend) {
+        const { data } = await supabase.from('sales').select('*').order('created_at', { ascending: false })
+        if (alive) setSales(data || [])
+      } else {
+        setSales(getSales())
+      }
+    }
+    load()
+    const id = setInterval(load, 4000)
+    window.addEventListener('storage', load)
+    return () => { alive = false; clearInterval(id); window.removeEventListener('storage', load) }
   }, [])
 
-  const sales = getSales()
-  const clientes = getClientes()
-  const comps = getComprovantes()
+  const clientes = useMemo(() => {
+    const map = {}
+    for (const s of sales) {
+      const k = (s.customer?.email || s.customer?.name || s.id || '').toLowerCase()
+      if (!map[k]) map[k] = { customer: s.customer || {}, sales: 0, items: 0, total: 0 }
+      map[k].sales += 1
+      map[k].items += (s.items || []).length
+      if (s.status === 'pago') map[k].total += Number(s.total || 0)
+    }
+    return Object.values(map)
+  }, [sales])
+  const comps = useMemo(() => sales.filter((s) => s.proof), [sales])
 
   return (
     <>
@@ -43,7 +64,7 @@ export default function Vendas() {
               <tbody>
                 {sales.map((s) => (
                   <tr key={s.id}>
-                    <td className="id">#{s.id}</td>
+                    <td className="id">#{shortId(s.id)}</td>
                     <td>{s.customer?.name || '—'}</td>
                     <td>{(s.items || []).map((i) => i.name).join(', ') || '—'}</td>
                     <td className="num">{formatBRL(s.total || 0)}</td>
@@ -93,10 +114,10 @@ export default function Vendas() {
           <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))' }}>
             {comps.map((s) => (
               <div className="card comp-card" key={s.id}>
-                <a href={s.proof} target="_blank" rel="noreferrer"><img src={s.proof} alt={`Comprovante ${s.id}`} /></a>
+                <a href={s.proof} target="_blank" rel="noreferrer"><img src={s.proof} alt={`Comprovante ${shortId(s.id)}`} /></a>
                 <div className="comp-info">
                   <b>{s.customer?.name || '—'}</b>
-                  <span>#{s.id} · {formatBRL(s.total || 0)}</span>
+                  <span>#{shortId(s.id)} · {formatBRL(s.total || 0)}</span>
                   <span className={`tag ${s.status === 'pago' ? 'pago' : 'pend'}`}><span className="d" />{s.status}</span>
                 </div>
               </div>
