@@ -1,5 +1,5 @@
-// Configuração do checkout por produto (modelo, cores, textos, campos…).
-// Tudo isto é salvo dentro do produto (product.checkout) no store por usuário.
+// Configuração do checkout por produto (modelo, layout, widgets, cores…).
+// Salvo dentro do produto (product.checkout) no store por usuário.
 
 export const CHECKOUT_LAYOUTS = [
   { key: 'classico', label: 'Clássico', desc: 'Formulário e resumo lado a lado.' },
@@ -7,10 +7,16 @@ export const CHECKOUT_LAYOUTS = [
   { key: 'resumo-topo', label: 'Resumo em destaque', desc: 'Resumo no topo, depois o formulário.' },
 ]
 
+// Modelos (nomes adaptados — inspirados em builders do mercado).
 export const CHECKOUT_MODELS = [
-  { key: 'infoproduto', label: 'Infoproduto', desc: 'Produto digital com acesso imediato.', icon: 'bag' },
-  { key: 'drop', label: 'Drop / Físico', desc: 'Produto físico com endereço de entrega.', icon: 'produtos' },
-  { key: 'rapido', label: 'Checkout rápido (Pix)', desc: 'Vai direto para o QR Code do Pix.', icon: 'bolt' },
+  { key: 'padrao', label: 'Padrão', desc: 'Completo e equilibrado.', icon: 'bag' },
+  { key: 'renda-extra', label: 'Renda Extra', desc: 'Foco em oferta e order bump.', icon: 'revenue' },
+  { key: 'pix-na-hora', label: 'Pix na Hora', desc: 'Só Pix, aprovação imediata.', icon: 'pix' },
+  { key: 'drop', label: 'Drop / Físico', desc: 'Produto físico com entrega.', icon: 'produtos' },
+  { key: 'venda-rapida', label: 'Venda Rápida', desc: 'Poucos campos, alta conversão.', icon: 'bolt' },
+  { key: 'venda-rapida-drop', label: 'Venda Rápida Drop', desc: 'Rápido + entrega física.', icon: 'produtos' },
+  { key: 'vision', label: 'Vision', desc: 'Premium com depoimentos.', icon: 'chart' },
+  { key: 'valor-livre', label: 'Valor Livre', desc: 'Cliente escolhe quanto pagar.', icon: 'lines' },
 ]
 
 export const FIELD_DEFS = [
@@ -18,15 +24,12 @@ export const FIELD_DEFS = [
   { key: 'cpf', label: 'CPF' },
   { key: 'address', label: 'Endereço de entrega' },
 ]
-
 export const METHOD_DEFS = [
   { key: 'pix', label: 'Pix' },
   { key: 'card', label: 'Cartão de crédito' },
   { key: 'boleto', label: 'Boleto' },
 ]
 
-// Temas prontos do checkout (fundo + cor de destaque + modo).
-// O "fundo" é um valor CSS (gradiente ou url de imagem).
 export const CHECKOUT_THEMES = [
   { key: 'padrao', label: 'Padrão', bg: '', accent: '#ffd400', mode: 'dark' },
   { key: 'aurora', label: 'Aurora', bg: 'radial-gradient(900px 520px at 18% -10%, #5b2a86, transparent 60%), radial-gradient(820px 600px at 120% 15%, #1f6f8b, transparent 55%), #0a0a12', accent: '#22d3ee', mode: 'dark' },
@@ -39,70 +42,82 @@ export const CHECKOUT_THEMES = [
   { key: 'clean', label: 'Clean', bg: 'linear-gradient(160deg, #ffffff, #eceef3)', accent: '#7c3aed', mode: 'light' },
 ]
 
-// Comportamento padrão por modelo (campos/pagamentos/bump/timer).
-function modelBehavior(model) {
-  if (model === 'drop') return {
-    fields: { phone: true, cpf: true, address: true },
-    methods: { pix: true, card: true, boleto: true },
-    bumpEnabled: true, timer: true,
-  }
-  if (model === 'rapido') return {
-    fields: { phone: false, cpf: false, address: false },
-    methods: { pix: true, card: false, boleto: false },
-    bumpEnabled: false, timer: false,
-  }
-  return { // infoproduto
-    fields: { phone: true, cpf: true, address: false },
-    methods: { pix: true, card: true, boleto: true },
-    bumpEnabled: true, timer: true,
-  }
+// Comportamento + textos por modelo.
+const PRESETS = {
+  'padrao': { layout: 'classico', fields: { phone: true, cpf: true, address: false }, methods: { pix: true, card: true, boleto: true }, bump: true, timer: true, valorLivre: false, testimonials: false, frete: false, title: 'Finalize sua compra', subtitle: 'Preencha seus dados para liberar o acesso na hora.', ctaText: 'Pagar agora' },
+  'renda-extra': { layout: 'classico', fields: { phone: true, cpf: false, address: false }, methods: { pix: true, card: true, boleto: true }, bump: true, timer: true, valorLivre: false, testimonials: false, frete: false, title: 'Garanta sua vaga', subtitle: 'Oferta especial — aproveite antes que acabe.', ctaText: 'Quero agora' },
+  'pix-na-hora': { layout: 'centralizado', fields: { phone: false, cpf: true, address: false }, methods: { pix: true, card: false, boleto: false }, bump: false, timer: true, valorLivre: false, testimonials: false, frete: false, title: 'Pague com Pix', subtitle: 'Aprovação na hora, acesso imediato.', ctaText: 'Gerar Pix' },
+  'drop': { layout: 'classico', fields: { phone: true, cpf: true, address: true }, methods: { pix: true, card: true, boleto: true }, bump: true, timer: true, valorLivre: false, testimonials: false, frete: true, title: 'Finalize seu pedido', subtitle: 'Preencha seus dados e o endereço de entrega.', ctaText: 'Comprar agora' },
+  'venda-rapida': { layout: 'centralizado', fields: { phone: false, cpf: false, address: false }, methods: { pix: true, card: true, boleto: false }, bump: false, timer: false, valorLivre: false, testimonials: false, frete: false, title: 'Compre em segundos', subtitle: 'Só o essencial para finalizar.', ctaText: 'Finalizar' },
+  'venda-rapida-drop': { layout: 'centralizado', fields: { phone: false, cpf: false, address: true }, methods: { pix: true, card: true, boleto: false }, bump: false, timer: false, valorLivre: false, testimonials: false, frete: true, title: 'Compre em segundos', subtitle: 'Dados de entrega e pronto.', ctaText: 'Finalizar pedido' },
+  'vision': { layout: 'classico', fields: { phone: true, cpf: true, address: false }, methods: { pix: true, card: true, boleto: true }, bump: true, timer: true, valorLivre: false, testimonials: true, frete: false, title: 'Falta pouco!', subtitle: 'Junte-se a milhares de alunos satisfeitos.', ctaText: 'Comprar agora' },
+  'valor-livre': { layout: 'centralizado', fields: { phone: false, cpf: true, address: false }, methods: { pix: true, card: false, boleto: false }, bump: false, timer: false, valorLivre: true, testimonials: false, frete: false, title: 'Contribua com o valor que quiser', subtitle: 'Escolha quanto deseja pagar.', ctaText: 'Pagar' },
 }
 
-const TEXTS = {
-  infoproduto: { title: 'Finalize sua compra', subtitle: 'Preencha seus dados para liberar o acesso na hora.', ctaText: 'Pagar agora' },
-  drop: { title: 'Finalize seu pedido', subtitle: 'Preencha seus dados e o endereço de entrega.', ctaText: 'Comprar agora' },
-  rapido: { title: 'Pague com Pix', subtitle: 'Rápido e aprovado na hora.', ctaText: 'Gerar Pix' },
-}
+const SAMPLE_TESTIMONIALS = [
+  { name: 'Ana S.', text: 'Melhor compra que fiz! Conteúdo direto ao ponto.' },
+  { name: 'Rafael P.', text: 'Acesso na hora e suporte rápido. Recomendo demais.' },
+]
 
-export function defaultCheckout(model = 'infoproduto') {
-  const b = modelBehavior(model)
-  const t = TEXTS[model] || TEXTS.infoproduto
+export function defaultCheckout(model = 'padrao') {
+  const p = PRESETS[model] || PRESETS['padrao']
   return {
     model,
-    layout: 'classico',
+    layout: p.layout,
     accent: '#ffd400',
     theme: 'dark',
     bg: '',
-    title: t.title,
-    subtitle: t.subtitle,
-    ctaText: t.ctaText,
+    logo: '',
+    title: p.title,
+    subtitle: p.subtitle,
+    ctaText: p.ctaText,
     guarantee: 'Garantia de 7 dias',
-    fields: b.fields,
-    methods: b.methods,
-    bump: { enabled: b.bumpEnabled, title: 'Pack de Templates Bônus', desc: 'Leve 50+ templates prontos por um preço único.', amount: 27, oldAmount: 89 },
-    timer: b.timer,
+    fields: { ...p.fields },
+    methods: { ...p.methods },
+    bump: { enabled: p.bump, title: 'Pack de Templates Bônus', desc: 'Leve 50+ templates prontos por um preço único.', amount: 27, oldAmount: 89 },
+    timer: p.timer,
+    valorLivre: p.valorLivre,
+    frete: { enabled: p.frete, label: 'Frete grátis', price: 0 },
+    banner: { enabled: false, text: '🔥 Oferta por tempo limitado — aproveite!' },
+    whatsapp: { enabled: false, number: '', text: 'Precisa de ajuda? Fale no WhatsApp' },
+    testimonials: p.testimonials ? SAMPLE_TESTIMONIALS.map((t) => ({ ...t })) : [],
   }
 }
 
-// Ao trocar o modelo num produto existente: aplica o comportamento do modelo
-// mas preserva cores/textos que o usuário já tenha ajustado.
+// Troca o modelo preservando cores/marca/textos personalizados.
 export function applyModel(cfg, model) {
-  const b = modelBehavior(model)
-  const t = TEXTS[model] || TEXTS.infoproduto
+  const p = PRESETS[model] || PRESETS['padrao']
   return {
     ...cfg,
     model,
-    title: t.title,
-    subtitle: t.subtitle,
-    ctaText: t.ctaText,
-    fields: b.fields,
-    methods: b.methods,
-    timer: b.timer,
-    bump: { ...cfg.bump, enabled: b.bumpEnabled },
+    layout: p.layout,
+    title: p.title,
+    subtitle: p.subtitle,
+    ctaText: p.ctaText,
+    fields: { ...p.fields },
+    methods: { ...p.methods },
+    timer: p.timer,
+    valorLivre: p.valorLivre,
+    bump: { ...cfg.bump, enabled: p.bump },
+    frete: { ...(cfg.frete || { label: 'Frete grátis', price: 0 }), enabled: p.frete },
+    testimonials: p.testimonials && (!cfg.testimonials || cfg.testimonials.length === 0) ? SAMPLE_TESTIMONIALS.map((t) => ({ ...t })) : (cfg.testimonials || []),
   }
 }
 
-// Garante que um produto antigo (sem config) tenha um checkout válido.
+// Garante que um produto antigo tenha um checkout completo e válido.
 export function ensureCheckout(product) {
-  return product?.checkout || defaultCheckout('infoproduto')
+  const base = defaultCheckout('padrao')
+  const c = product?.checkout
+  if (!c) return base
+  return {
+    ...base,
+    ...c,
+    fields: { ...base.fields, ...c.fields },
+    methods: { ...base.methods, ...c.methods },
+    bump: { ...base.bump, ...c.bump },
+    frete: { ...base.frete, ...c.frete },
+    banner: { ...base.banner, ...c.banner },
+    whatsapp: { ...base.whatsapp, ...c.whatsapp },
+    testimonials: c.testimonials || [],
+  }
 }

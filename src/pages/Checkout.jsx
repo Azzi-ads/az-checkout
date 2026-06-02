@@ -65,7 +65,16 @@ function Brand({ logo, name }) {
   return <span />
 }
 
-function Frame({ children, preview, styleVars, showTimer, mmss, logo, brandName, secure, bg }) {
+function WaButton({ wa }) {
+  if (!wa?.enabled || !wa.number) return null
+  return (
+    <a className="ck-wa" href={`https://wa.me/${String(wa.number).replace(/\D/g, '')}`} target="_blank" rel="noreferrer">
+      <Icon name="phone" />{wa.text || 'WhatsApp'}
+    </a>
+  )
+}
+
+function Frame({ children, preview, styleVars, showTimer, mmss, logo, brandName, secure, bg, wa }) {
   const bgStyle = bg
     ? { background: `linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.6)), ${bg}`, backgroundSize: 'cover', backgroundPosition: 'center' }
     : {}
@@ -78,6 +87,7 @@ function Frame({ children, preview, styleVars, showTimer, mmss, logo, brandName,
           <span className="ck-safe"><Icon name="lock" />Compra segura</span>
         </div>
         <div className="ck-preview-body">{children}</div>
+        <WaButton wa={wa} />
       </div>
     )
   }
@@ -95,6 +105,7 @@ function Frame({ children, preview, styleVars, showTimer, mmss, logo, brandName,
         {secure && <span className="ck-secured"><Icon name="shield" />Protegido por AZ Security</span>}
         <span>Pagamento processado com segurança</span>
       </footer>
+      <WaButton wa={wa} />
     </div>
   )
 }
@@ -105,6 +116,7 @@ export function CheckoutView({ product, preview = false }) {
   const isRapido = cfg.model === 'rapido'
   const secure = (() => { try { return !!getProfile().security } catch { return false } })()
   const gridClass = `ck-grid ck-lay-${cfg.layout || 'classico'}`
+  const tList = cfg.testimonials || []
 
   const methods = useMemo(
     () => Object.keys(cfg.methods).filter((k) => cfg.methods[k]).map((k) => ({ key: k, ...METHOD_META[k] })),
@@ -115,6 +127,7 @@ export function CheckoutView({ product, preview = false }) {
   const [addr, setAddr] = useState({ cep: '', rua: '', numero: '', bairro: '', cidade: '', uf: '' })
   const [card, setCard] = useState({ number: '', name: '', exp: '', cvv: '', parc: 1 })
   const [bump, setBump] = useState(false)
+  const [freeAmount, setFreeAmount] = useState('')
   const [status, setStatus] = useState('form')
   const [copied, setCopied] = useState(false)
   const [secs, setSecs] = useState(9 * 60 + 59)
@@ -136,14 +149,16 @@ export function CheckoutView({ product, preview = false }) {
   const mmss = `${String(Math.floor(secs / 60)).padStart(2, '0')}:${String(secs % 60).padStart(2, '0')}`
 
   const description = checkoutDescriptions[product.slug] || product.desc || 'Acesso imediato após o pagamento'
-  const total = product.amount + (bump && cfg.bump.enabled ? cfg.bump.amount : 0)
+  const baseAmount = cfg.valorLivre ? (Number(freeAmount) || 0) : product.amount
+  const freteVal = cfg.frete?.enabled ? (cfg.frete.price || 0) : 0
+  const total = baseAmount + (bump && cfg.bump.enabled ? cfg.bump.amount : 0) + freteVal
   const parcelas = useMemo(() => installments(total), [total])
 
   const emailOk = /\S+@\S+\.\S+/.test(data.email)
   const cpfOk = !cfg.fields.cpf || data.cpf.length >= 14
   const addrOk = !cfg.fields.address || (addr.cep.length >= 9 && addr.rua && addr.numero && addr.cidade && addr.uf)
   const cardOk = isRapido || method !== 'card' || (card.number.length >= 18 && card.name.trim() && card.exp.length === 5 && card.cvv.length >= 3)
-  const canPay = emailOk && (isRapido || data.name.trim().length > 2) && cpfOk && addrOk && cardOk
+  const canPay = emailOk && (isRapido || data.name.trim().length > 2) && cpfOk && addrOk && cardOk && (!cfg.valorLivre || baseAmount > 0)
 
   const set = (k) => (e) => setData((s) => ({ ...s, [k]: e.target.value }))
   const setA = (k) => (e) => setAddr((s) => ({ ...s, [k]: e.target.value }))
@@ -260,8 +275,17 @@ export function CheckoutView({ product, preview = false }) {
         <div><h3>{product.name}</h3><p>{description}</p></div>
       </div>
       <div className="ck-lines">
-        <div className="ck-line"><span>{product.name}</span><span className="num">{product.oldAmount && <s>{formatBRL(product.oldAmount)}</s>} {formatBRL(product.amount)}</span></div>
+        {cfg.valorLivre ? (
+          <div className="ck-field" style={{ marginBottom: 2 }}>
+            <label htmlFor="ck-valor">Quanto deseja pagar?</label>
+            <div className="ck-input"><span style={{ color: 'var(--muted-2)', fontWeight: 700 }}>R$</span>
+              <input id="ck-valor" type="number" min="0" step="0.01" value={freeAmount} onChange={(e) => setFreeAmount(e.target.value)} placeholder="0,00" /></div>
+          </div>
+        ) : (
+          <div className="ck-line"><span>{product.name}</span><span className="num">{product.oldAmount && <s>{formatBRL(product.oldAmount)}</s>} {formatBRL(product.amount)}</span></div>
+        )}
         {bump && cfg.bump.enabled && <div className="ck-line"><span>+ {cfg.bump.title}</span><span className="num">{formatBRL(cfg.bump.amount)}</span></div>}
+        {cfg.frete?.enabled && <div className="ck-line"><span>{cfg.frete.label || 'Frete'}</span><span className="num">{cfg.frete.price ? formatBRL(cfg.frete.price) : 'Grátis'}</span></div>}
         <div className="ck-line ck-total"><span>Total</span><span className="num">{formatBRL(total)}</span></div>
       </div>
       <ul className="ck-trust">
@@ -273,7 +297,7 @@ export function CheckoutView({ product, preview = false }) {
   /* Pix gerado */
   if (status === 'pix') {
     return (
-      <Frame preview={preview} styleVars={styleVars} showTimer={cfg.timer} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure} bg={cfg.bg}>
+      <Frame preview={preview} styleVars={styleVars} showTimer={cfg.timer} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure} bg={cfg.bg} wa={cfg.whatsapp}>
         <div className={gridClass}>
           <div className="card ck-pixbox">
             <span className="ck-badge"><span className="dot" />Aguardando pagamento</span>
@@ -298,7 +322,7 @@ export function CheckoutView({ product, preview = false }) {
   /* aprovado */
   if (status === 'paid') {
     return (
-      <Frame preview={preview} styleVars={styleVars} showTimer={false} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure} bg={cfg.bg}>
+      <Frame preview={preview} styleVars={styleVars} showTimer={false} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure} bg={cfg.bg} wa={cfg.whatsapp}>
         <div className="ck-done card">
           <div className="ck-done-ic"><Icon name="check" strokeWidth={3} /></div>
           <h2>Pagamento confirmado! 🎉</h2>
@@ -315,6 +339,7 @@ export function CheckoutView({ product, preview = false }) {
     <Frame preview={preview} styleVars={styleVars} showTimer={cfg.timer} mmss={mmss}>
       <form className={gridClass} onSubmit={pay}>
         <div className="ck-main">
+          {cfg.banner?.enabled && cfg.banner.text && <div className="ck-banner">{cfg.banner.text}</div>}
           <div className="ck-intro">
             <h2>{cfg.title}</h2>
             <p>{cfg.subtitle}</p>
@@ -390,6 +415,19 @@ export function CheckoutView({ product, preview = false }) {
                 <span className="ck-bump-price"><s>{formatBRL(cfg.bump.oldAmount)}</s> {formatBRL(cfg.bump.amount)}</span>
               </div>
             </button>
+          )}
+
+          {tList.length > 0 && (
+            <div className="card ck-tests">
+              <div className="card-head"><h3 style={{ fontSize: 15 }}>Quem já comprou</h3></div>
+              {tList.map((t, i) => (
+                <div className="ck-test" key={i}>
+                  <div className="ck-test-stars">★★★★★</div>
+                  <p>“{t.text}”</p>
+                  <b>{t.name}</b>
+                </div>
+              ))}
+            </div>
           )}
 
           {payError && <div className="ck-error"><Icon name="close" />{payError}</div>}
