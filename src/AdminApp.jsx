@@ -23,6 +23,7 @@ import { logout, getUser } from './auth.js'
 import { getProfile, saveProfile, getTheme, saveTheme } from './store.js'
 import { themeVars } from './theme.js'
 import { supabase, hasBackend } from './supabase.js'
+import { subscribeToPush } from './push.js'
 
 const SIMPLE_PAGES = {
   analises: Analises,
@@ -75,7 +76,11 @@ export default function AdminApp() {
   }, [])
 
   async function askNotif() {
-    try { const p = await Notification.requestPermission(); setNotifPerm(p) } catch { /* */ }
+    try {
+      const p = await Notification.requestPermission()
+      setNotifPerm(p)
+      if (p === 'granted') { const u = getUser(); if (u?.id) subscribeToPush(u.id) }
+    } catch { /* */ }
   }
 
   function handleLogout() {
