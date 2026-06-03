@@ -228,7 +228,7 @@ export function CheckoutView({ product, preview = false }) {
           }),
         })
         const json = await resp.json()
-        if (!resp.ok) throw new Error(json.error || 'Não foi possível gerar o Pix.')
+        if (!resp.ok) throw new Error(json.shape ? `${json.error} → ${JSON.stringify(json.shape)}` : (json.error || 'Não foi possível gerar o Pix.'))
         setPixData(json)
         const id = json.saleId || (!hasBackend ? recordSale({ customer: buildCustomer(), items: buildItems(), total, method: 'pix', status: 'aguardando' }) : null)
         setSaleId(id)
