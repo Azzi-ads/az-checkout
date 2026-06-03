@@ -21,10 +21,11 @@ function MetaBar() {
   )
 }
 
-export default function Topbar({ title, sub }) {
+export default function Topbar({ title, sub, onMenu }) {
   const searchId = useId()
   return (
     <header className="topbar">
+      <button type="button" className="menu-btn" onClick={onMenu} aria-label="Abrir menu"><Icon name="lines" /></button>
       <div>
         <h1 id="page-title">{title}</h1>
         <div className="sub">{sub}</div>

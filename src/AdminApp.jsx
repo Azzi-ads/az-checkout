@@ -45,7 +45,10 @@ export default function AdminApp() {
   const navigate = useNavigate()
   const [title, sub] = pageTitles[page]
   const [toast, setToast] = useState('')
+  const [menuOpen, setMenuOpen] = useState(false)
   const [notifPerm, setNotifPerm] = useState(typeof Notification !== 'undefined' ? Notification.permission : 'denied')
+
+  function selectPage(id) { setPage(id); setMenuOpen(false) }
 
   useEffect(() => {
     mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
@@ -110,9 +113,10 @@ export default function AdminApp() {
   return (
     <div className="app" style={appStyle}>
       <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
-      <Sidebar page={page} onSelect={setPage} liveCount={live.atCheckout} onLogout={handleLogout} profile={profile} />
+      <Sidebar page={page} onSelect={selectPage} liveCount={live.atCheckout} onLogout={handleLogout} profile={profile} open={menuOpen} />
+      {menuOpen && <div className="app-overlay" onClick={() => setMenuOpen(false)} />}
       <main className="main" ref={mainRef}>
-        <Topbar title={title} sub={sub} />
+        <Topbar title={title} sub={sub} onMenu={() => setMenuOpen(true)} />
         <section className="page page-enter" id="conteudo" key={page} tabIndex={-1} aria-labelledby="page-title">
           {renderPage()}
         </section>

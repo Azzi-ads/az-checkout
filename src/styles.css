@@ -240,8 +240,6 @@ body::before{
   .row2,.set-grid,.plans,.prod-grid{grid-template-columns:1fr}
 }
 @media(max-width:720px){
-  :root{--sidebar:0px}
-  .sidebar{display:none}
   .topbar{padding:16px}.page{padding:18px}
   .kpis{grid-template-columns:1fr}.search{display:none}
 }
@@ -1079,3 +1077,42 @@ body::before{
 .sec-chip.on .d{background:var(--green)}
 @media(max-width:900px){.sec-hero{grid-template-columns:1fr}.sec-checks{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.sec-checks{grid-template-columns:1fr}}
+
+/* ===================================================================
+   Mobile — menu gaveta, zoom normal, tabelas roláveis
+   =================================================================== */
+.menu-btn{display:none;width:38px;height:38px;flex:0 0 38px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);color:var(--text);align-items:center;justify-content:center;cursor:pointer}
+.menu-btn svg{width:20px;height:20px}
+.app-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:39}
+
+@media(max-width:860px){
+  /* zoom volta ao normal no celular (o .82 era pra desktop) */
+  .app{zoom:1;height:100vh}
+  .ck-page{zoom:1;height:100vh}
+  .login{zoom:1;height:auto;min-height:100vh;overflow:visible}
+
+  .menu-btn{display:inline-flex}
+  .sidebar{
+    position:fixed;top:0;left:0;bottom:0;z-index:40;width:264px;height:100vh;
+    transform:translateX(-100%);transition:transform .25s ease;box-shadow:0 0 50px rgba(0,0,0,.6);
+  }
+  .sidebar.open{transform:none}
+  .main{width:100%}
+  .topbar{gap:12px;padding:14px 16px}
+  .topbar h1{font-size:18px}
+  .page{padding:16px 14px 70px}
+  .meta-bar{display:none}
+
+  /* tabelas roláveis na horizontal */
+  .tbl{display:block;overflow-x:auto;white-space:nowrap}
+
+  /* builder do checkout empilha no celular */
+  .builder-grid{grid-template-columns:1fr}
+  .builder-nav{display:flex;flex-wrap:wrap;gap:6px}
+  .wnav-item{width:auto}
+  .builder-preview{position:static}
+}
+@media(max-width:560px){
+  .kpis,.metrics{grid-template-columns:1fr 1fr}
+  .login-hero{display:none}
+}

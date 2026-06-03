@@ -87,13 +87,13 @@ function NavGroup({ item, page, onSelect }) {
   )
 }
 
-export default function Sidebar({ page, onSelect, liveCount, onLogout, profile }) {
+export default function Sidebar({ page, onSelect, liveCount, onLogout, profile, open }) {
   const name = profile?.name || getUser()?.name || 'Você'
   const avatar = profile?.avatar
   const initials = initialsOf(name)
   const email = getUser()?.email || 'Plano Start'
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar${open ? ' open' : ''}`}>
       <div className="brand">
         <img className="brand-logo" src="/logo-wide.png" alt="AZ Checkout" width="430" height="96" />
       </div>
