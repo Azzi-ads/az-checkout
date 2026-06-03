@@ -222,15 +222,15 @@ export function CheckoutView({ product, preview = false }) {
           body: JSON.stringify({
             product_id: product.bravoProductId,
             amount_cents: Math.round(total * 100),
-            customer: { name: data.name, email: data.email, phone: d(data.phone), cpf: d(data.cpf) },
+            customer: buildCustomer(),
+            slug: product.slug, items: buildItems(), total,
             ...getTracking(),
           }),
         })
         const json = await resp.json()
         if (!resp.ok) throw new Error(json.error || 'Não foi possível gerar o Pix.')
         setPixData(json)
-        const venda = { slug: product.slug, customer: buildCustomer(), items: buildItems(), total, method: 'pix', status: 'aguardando' }
-        const id = hasBackend ? await apiRegistrarVenda(venda) : recordSale(venda)
+        const id = json.saleId || (!hasBackend ? recordSale({ customer: buildCustomer(), items: buildItems(), total, method: 'pix', status: 'aguardando' }) : null)
         setSaleId(id)
         setStatus('pix')
         window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -264,8 +264,11 @@ export function CheckoutView({ product, preview = false }) {
   function goPaid() {
     if (!preview) {
       if (hasBackend) {
-        if (saleId) apiAtualizarVenda(saleId, { status: 'pago' })
-        else apiRegistrarVenda({ slug: product.slug, customer: buildCustomer(), items: buildItems(), total, method, status: 'pago' }).then(setSaleId)
+        // Pix: a confirmação é feita pelo webhook do BravoPay (server-side, confiável).
+        // Cartão/boleto (mock, sem webhook): registramos como pago para o teste aparecer.
+        if (method && method !== 'pix') {
+          apiRegistrarVenda({ slug: product.slug, customer: buildCustomer(), items: buildItems(), total, method, status: 'pago' })
+        }
       } else if (saleId) updateSale(saleId, { status: 'pago' })
       else { const id = recordSale({ customer: buildCustomer(), items: buildItems(), total, method, status: 'pago' }); setSaleId(id) }
     }
