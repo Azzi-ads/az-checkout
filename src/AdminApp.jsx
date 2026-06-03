@@ -17,10 +17,12 @@ import Aparencia from './pages/Aparencia.jsx'
 import AZSecurity from './pages/AZSecurity.jsx'
 import Admin from './pages/Admin.jsx'
 import useLiveCount from './useLiveCount.js'
-import { pageTitles } from './data.js'
-import { logout } from './auth.js'
+import Icon from './components/Icon.jsx'
+import { pageTitles, formatBRL } from './data.js'
+import { logout, getUser } from './auth.js'
 import { getProfile, saveProfile, getTheme, saveTheme } from './store.js'
 import { themeVars } from './theme.js'
+import { supabase, hasBackend } from './supabase.js'
 
 const SIMPLE_PAGES = {
   analises: Analises,
@@ -41,10 +43,40 @@ export default function AdminApp() {
   const mainRef = useRef(null)
   const navigate = useNavigate()
   const [title, sub] = pageTitles[page]
+  const [toast, setToast] = useState('')
+  const [notifPerm, setNotifPerm] = useState(typeof Notification !== 'undefined' ? Notification.permission : 'denied')
 
   useEffect(() => {
     mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
   }, [page])
+
+  // Notificação de venda em tempo real (PWA): avisa quando uma venda é paga.
+  useEffect(() => {
+    if (!hasBackend) return
+    const u = getUser()
+    if (!u?.id) return
+    const ch = supabase
+      .channel('sales-notify')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'sales', filter: `owner=eq.${u.id}` }, (payload) => {
+        const s = payload.new
+        if (s && s.status === 'pago') {
+          const txt = `Venda aprovada — ${formatBRL(s.total || 0)}`
+          setToast(txt)
+          setTimeout(() => setToast(''), 6000)
+          try {
+            if ('Notification' in window && Notification.permission === 'granted') {
+              new Notification('Venda aprovada! 🎉', { body: `${s.customer?.name || 'Cliente'} · ${formatBRL(s.total || 0)}`, icon: '/icon-192.png' })
+            }
+          } catch { /* ignore */ }
+        }
+      })
+      .subscribe()
+    return () => supabase.removeChannel(ch)
+  }, [])
+
+  async function askNotif() {
+    try { const p = await Notification.requestPermission(); setNotifPerm(p) } catch { /* */ }
+  }
 
   function handleLogout() {
     logout()
@@ -80,6 +112,13 @@ export default function AdminApp() {
           {renderPage()}
         </section>
       </main>
+
+      {hasBackend && notifPerm === 'default' && (
+        <button type="button" className="notif-prompt" onClick={askNotif}>
+          <Icon name="bolt" />Ativar avisos de venda
+        </button>
+      )}
+      {toast && <div className="sale-toast"><Icon name="revenue" />{toast}</div>}
     </div>
   )
 }
