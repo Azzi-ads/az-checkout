@@ -1,6 +1,7 @@
 // Cria a transação PIX no BravoPay, extrai o QR (em qualquer formato de resposta)
 // e registra a venda no banco com o tx_id (para o webhook confirmar depois).
 import { createClient } from '@supabase/supabase-js'
+import { sendPushToOwner, brl } from '../lib/push.js'
 
 const BASE = 'https://bravopay.solutions/api/v1'
 const SB_URL = 'https://wgzihgfavsboezhrgqck.supabase.co'
@@ -78,6 +79,7 @@ export default async function handler(req, res) {
           items: items || [], total: total || (amount_cents / 100), method: 'pix', status: 'aguardando',
         }).select('id').single()
         saleId = sale?.id || null
+        if (owner) await sendPushToOwner(sb, owner, { title: 'Novo Pix gerado ⏳', body: `${customer?.name || 'Cliente'} · ${brl(total || amount_cents / 100)} — aguardando pagamento`, url: '/app' })
       } catch { /* segue sem saleId */ }
     }
 

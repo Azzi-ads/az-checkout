@@ -63,16 +63,11 @@ export default function AdminApp() {
       .channel('sales-notify')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'sales', filter: `owner=eq.${u.id}` }, (payload) => {
         const s = payload.new
-        if (s && s.status === 'pago') {
-          const txt = `Venda aprovada — ${formatBRL(s.total || 0)}`
-          setToast(txt)
-          setTimeout(() => setToast(''), 6000)
-          try {
-            if ('Notification' in window && Notification.permission === 'granted') {
-              new Notification('Venda aprovada! 🎉', { body: `${s.customer?.name || 'Cliente'} · ${formatBRL(s.total || 0)}`, icon: '/icon-192.png' })
-            }
-          } catch { /* ignore */ }
-        }
+        if (!s) return
+        let txt = ''
+        if (payload.eventType === 'INSERT' && s.status === 'aguardando') txt = `Pix gerado — ${formatBRL(s.total || 0)} (pendente)`
+        else if (s.status === 'pago') txt = `Venda aprovada — ${formatBRL(s.total || 0)} 🎉`
+        if (txt) { setToast(txt); setTimeout(() => setToast(''), 6000) }
       })
       .subscribe()
     return () => supabase.removeChannel(ch)

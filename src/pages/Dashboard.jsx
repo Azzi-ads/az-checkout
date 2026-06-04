@@ -70,6 +70,10 @@ export default function Dashboard({ profile }) {
     .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
     .slice(0, 5)
     .map((s) => ({ initials: ini(s.customer?.name), who: s.customer?.name || 'Cliente', what: s.items?.[0]?.name || 'Pedido', amount: formatBRL(s.total || 0) }))
+  const pendentes = [...sales]
+    .filter((s) => s.status === 'aguardando')
+    .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+    .slice(0, 6)
 
   const [news, setNews] = useState(newsWall)
   useEffect(() => {
@@ -144,6 +148,26 @@ export default function Dashboard({ profile }) {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="card" style={{ marginTop: 16 }}>
+        <div className="card-head"><h3>Vendas pendentes</h3><span className="pill">{pendentes.length}</span></div>
+        {pendentes.length === 0 ? (
+          <div className="empty"><Icon name="bag" /><p>Nenhuma venda pendente</p><span>Pix gerados que ainda não foram pagos aparecem aqui.</span></div>
+        ) : (
+          <div className="feed">
+            {pendentes.map((s) => (
+              <div className="it" key={s.id}>
+                <div className="av" aria-hidden="true">{ini(s.customer?.name)}</div>
+                <div>
+                  <div className="who">{s.customer?.name || 'Cliente'}</div>
+                  <div className="what">{s.items?.[0]?.name || 'Pedido'} · aguardando pagamento</div>
+                </div>
+                <div className="amt num">{formatBRL(s.total || 0)}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid row2">
