@@ -458,8 +458,18 @@ export function CheckoutView({ product, preview = false }) {
         <div className="ck-done card">
           <div className="ck-done-ic"><Icon name="check" strokeWidth={3} /></div>
           <h2>Pagamento confirmado! 🎉</h2>
-          <p className="ck-muted">Enviamos o acesso de <b>{product.name}</b> para <b>{data.email || 'seu e-mail'}</b>.</p>
+          <p className="ck-muted">Sua compra de <b>{product.name}</b> foi aprovada.</p>
           <div className="ck-done-val"><span>Total pago</span><b className="num">{formatBRL(total)}</b></div>
+          {(() => {
+            const ent = product.entrega || {}
+            if (ent.tipo === 'link' && ent.url) return (
+              <a className="btn btn-primary ck-deliver-btn" href={ent.url} target="_blank" rel="noopener noreferrer"><Icon name="bolt" />Acessar meu produto</a>
+            )
+            if (ent.tipo === 'conteudo' && ent.conteudo) return (
+              <div className="ck-deliver"><div className="ck-deliver-h"><Icon name="lock" />Seu acesso</div><p>{ent.conteudo}</p></div>
+            )
+            return <p className="ck-muted">Enviamos o acesso para <b>{data.email || 'seu e-mail'}</b>.</p>
+          })()}
           <p className="ck-muted">Você já pode fechar esta página.</p>
         </div>
       </Frame>

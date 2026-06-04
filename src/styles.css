@@ -199,8 +199,9 @@ body::before{
 .set-grid{grid-template-columns:repeat(2,1fr)}
 .field{margin-bottom:14px}
 .field label{display:block;font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:6px}
-.field input,.field select{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;color:var(--text);font-family:inherit;font-size:13.5px;outline:none;transition:.15s}
-.field input:focus,.field select:focus{border-color:var(--yellow)}
+.field input,.field select,.field textarea{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;color:var(--text);font-family:inherit;font-size:13.5px;outline:none;transition:.15s}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--yellow)}
+.field textarea{resize:vertical;line-height:1.5}
 .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-top:1px solid var(--line)}
 .toggle-row:first-child{border-top:0}
 .toggle-row .t b{font-size:14px;font-weight:700}
@@ -448,6 +449,11 @@ body::before{
 .ck-done h2{font-size:23px;font-weight:800}
 .ck-done-val{display:flex;align-items:center;justify-content:space-between;width:100%;margin:20px 0;padding:14px 16px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;font-weight:700}
 .ck-done-val b{font-family:'Bricolage Grotesque';font-size:20px}
+.ck-deliver-btn{width:100%;justify-content:center;margin-bottom:12px;text-decoration:none}
+.ck-deliver{width:100%;text-align:left;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.ck-deliver-h{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13px;margin-bottom:8px}
+.ck-deliver-h svg{width:16px;height:16px;color:var(--accent,var(--yellow))}
+.ck-deliver p{font-size:13.5px;line-height:1.55;color:var(--text);white-space:pre-wrap;word-break:break-word;margin:0}
 
 @media(max-width:860px){
   .ck-grid{grid-template-columns:1fr}

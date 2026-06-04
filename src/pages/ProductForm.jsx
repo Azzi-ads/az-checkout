@@ -16,7 +16,7 @@ const bvName = (p) => p.name || p.title || p.description || bvId(p)
 const bvCents = (p) => (p.amount_cents != null ? p.amount_cents : (p.price != null ? Math.round(p.price * 100) : null))
 
 function newDraft() {
-  return { icon: 'p-video', name: '', amount: 0, oldAmount: 0, status: 'Ativo', desc: '', image: '', bravoProductId: '', checkout: defaultCheckout('infoproduto') }
+  return { icon: 'p-video', name: '', amount: 0, oldAmount: 0, status: 'Ativo', desc: '', image: '', bravoProductId: '', entrega: { tipo: 'email', url: '', conteudo: '' }, checkout: defaultCheckout('infoproduto') }
 }
 
 export default function ProductForm({ product, onSave, onClose }) {
@@ -116,6 +116,32 @@ export default function ProductForm({ product, onSave, onClose }) {
           )}
           {listError && <small style={{ color: 'var(--red)', display: 'block', marginTop: 6 }}>{listError}</small>}
         </div>
+
+        {/* entrega após o pagamento */}
+        {(() => {
+          const ent = draft.entrega || { tipo: 'email', url: '', conteudo: '' }
+          const setEnt = (patch) => set({ entrega: { ...ent, ...patch } })
+          return (
+            <>
+              <div className="field">
+                <label htmlFor="pf-entrega">Entrega após o pagamento</label>
+                <select id="pf-entrega" value={ent.tipo} onChange={(e) => setEnt({ tipo: e.target.value })}>
+                  <option value="email">Só confirmar (cliente recebe por e-mail)</option>
+                  <option value="link">Liberar um link de acesso</option>
+                  <option value="conteudo">Mostrar um conteúdo (chave, instruções)</option>
+                </select>
+              </div>
+              {ent.tipo === 'link' && (
+                <div className="field"><label htmlFor="pf-ent-url">Link de acesso</label>
+                  <input id="pf-ent-url" value={ent.url} onChange={(e) => setEnt({ url: e.target.value })} placeholder="https://sua-area-de-membros.com/..." /></div>
+              )}
+              {ent.tipo === 'conteudo' && (
+                <div className="field"><label htmlFor="pf-ent-cont">Conteúdo liberado</label>
+                  <textarea id="pf-ent-cont" rows={4} value={ent.conteudo} onChange={(e) => setEnt({ conteudo: e.target.value })} placeholder="Ex.: link do grupo VIP, chave de acesso, instruções de download…" /></div>
+              )}
+            </>
+          )
+        })()}
 
         <div className="modal-foot">
           <button type="button" className="btn btn-ghost" onClick={onClose}>Cancelar</button>
