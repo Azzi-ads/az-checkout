@@ -22,6 +22,35 @@ function apiAtualizarVenda(id, patch) {
   try { fetch('/api/atualizar-venda', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, patch }) }) } catch { /* */ }
 }
 
+// comprime a foto do comprovante no próprio celular (reduz tamanho antes de subir)
+function fileToCompressedDataUrl(file, max = 1280, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader()
+    r.onload = () => {
+      const img = new Image()
+      img.onload = () => {
+        const scale = Math.min(1, max / Math.max(img.width, img.height))
+        const w = Math.max(1, Math.round(img.width * scale))
+        const h = Math.max(1, Math.round(img.height * scale))
+        const c = document.createElement('canvas')
+        c.width = w; c.height = h
+        c.getContext('2d').drawImage(img, 0, 0, w, h)
+        try { resolve(c.toDataURL('image/jpeg', quality)) } catch { resolve(String(r.result)) }
+      }
+      img.onerror = () => resolve(String(r.result))
+      img.src = String(r.result)
+    }
+    r.onerror = reject
+    r.readAsDataURL(file)
+  })
+}
+
+// sobe o comprovante pro Storage (via API com service_role) e devolve a URL pública
+function apiUploadProof(saleId, dataUrl) {
+  return fetch('/api/upload-proof', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ saleId, dataUrl }) })
+    .then((r) => r.json()).catch(() => null)
+}
+
 /* máscaras */
 const d = (s) => s.replace(/\D/g, '')
 const maskCPF = (s) => d(s).slice(0, 11).replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2')
@@ -439,7 +468,15 @@ export function CheckoutView({ product, preview = false }) {
               <Icon name={copied ? 'check' : 'copy'} />{copied ? 'Código copiado!' : 'Copiar código Pix'}
             </button>
             <div className="ck-pixinfo"><span>Valor</span><b className="num">{formatBRL(total)}</b></div>
-            <input ref={proofRef} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; if (!f) return; const r = new FileReader(); r.onload = () => { const url = String(r.result); if (hasBackend) apiAtualizarVenda(saleId, { proof: url }); else if (saleId) updateSale(saleId, { proof: url }); setProofSent(true) }; r.readAsDataURL(f) }} />
+            <input ref={proofRef} type="file" accept="image/*" hidden onChange={async (e) => {
+              const f = e.target.files?.[0]; if (!f) return
+              try {
+                const url = await fileToCompressedDataUrl(f)
+                if (hasBackend && saleId) await apiUploadProof(saleId, url)
+                else if (saleId) updateSale(saleId, { proof: url })
+              } catch { /* ignora */ }
+              setProofSent(true)
+            }} />
             <button type="button" className={`btn ${proofSent ? 'btn-ghost' : 'btn-primary'} ck-paid-btn`} onClick={() => proofRef.current?.click()}>
               <Icon name={proofSent ? 'check' : 'camera'} />{proofSent ? 'Comprovante enviado!' : 'Enviar comprovante'}
             </button>
