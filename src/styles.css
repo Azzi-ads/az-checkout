@@ -849,6 +849,13 @@ body::before{
 .integ-note{display:flex;gap:10px;align-items:flex-start;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:13px 15px;margin-bottom:16px;font-size:13px;color:var(--muted);font-weight:500;line-height:1.55}
 .integ-note svg{width:18px;height:18px;color:var(--yellow);flex:0 0 18px;margin-top:1px}
 .integ-note code{background:var(--surface-3);padding:1px 6px;border-radius:6px;font-size:12px}
+.bill-plan{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.bill-plan-name{display:flex;align-items:center;gap:9px;font-weight:800;font-size:16px}
+.bill-plan-name svg{width:18px;height:18px;color:var(--yellow)}
+.bill-card{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.bill-card-face{display:flex;align-items:center;gap:10px;font-weight:800;font-size:15px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;width:100%}
+.bill-card-face svg{width:20px;height:20px;color:var(--yellow)}
+.pill.ok{background:rgba(61,220,145,.15);color:var(--green);border-color:rgba(61,220,145,.3)}
 .dom-steps{margin:4px 0 14px;padding-left:20px;font-size:13.5px;color:var(--muted);line-height:1.7}
 .dom-steps b{color:var(--text)}
 .dom-steps code{background:var(--surface-3);padding:1px 6px;border-radius:6px;font-size:12px}

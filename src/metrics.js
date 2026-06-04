@@ -15,7 +15,7 @@ export function useSales() {
     let alive = true
     const load = async () => {
       if (hasBackend) {
-        const { data } = await supabase.from('sales').select('total,status,created_at,items,customer')
+        const { data } = await supabase.from('sales').select('id,total,status,created_at,items,customer,fee_charged')
         if (alive) setSales(data || [])
       } else {
         setSales(getSales())

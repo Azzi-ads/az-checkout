@@ -22,6 +22,7 @@ export const pageTitles = {
   vendas: ['Vendas', 'Histórico de pedidos'],
   config: ['Configurações', 'Ajustes da sua conta e checkout'],
   planos: ['Planos', 'Escolha o melhor para o seu momento'],
+  cobrancas: ['Cobranças', 'Taxa do plano e cobrança no cartão'],
   perfil: ['Perfil', 'Sua identidade na plataforma'],
   aparencia: ['Aparência', 'Personalize as cores e o tema do painel'],
   integracoes: ['Integrações', 'Conecte seu gateway de pagamento'],

@@ -13,6 +13,7 @@ import Vendas from './pages/Vendas.jsx'
 import Config from './pages/Config.jsx'
 import Planos from './pages/Planos.jsx'
 import Perfil from './pages/Perfil.jsx'
+import Cobrancas from './pages/Cobrancas.jsx'
 import Aparencia from './pages/Aparencia.jsx'
 import AZSecurity from './pages/AZSecurity.jsx'
 import Admin from './pages/Admin.jsx'
@@ -129,6 +130,7 @@ export default function AdminApp() {
     if (page === 'perfil') return <Perfil profile={profile} onSave={handleProfileSave} />
     if (page === 'aparencia') return <Aparencia theme={theme} onChange={handleThemeChange} />
     if (page === 'security') return <AZSecurity profile={profile} onSave={handleProfileSave} />
+    if (page === 'cobrancas') return <Cobrancas profile={profile} onGoPlanos={() => selectPage('planos')} />
     const Page = SIMPLE_PAGES[page]
     return <Page />
   }

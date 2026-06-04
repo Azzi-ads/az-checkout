@@ -35,6 +35,7 @@ const SECTIONS = [
       { id: 'perfil', label: 'Perfil', icon: 'user' },
       { id: 'aparencia', label: 'Aparência', icon: 'palette' },
       { id: 'security', label: 'AZ Security', icon: 'shield' },
+      { id: 'cobrancas', label: 'Cobranças', icon: 'revenue' },
       { id: 'planos', label: 'Planos', icon: 'planos' },
     ],
   },
