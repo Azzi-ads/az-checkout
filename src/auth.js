@@ -11,7 +11,15 @@ let cached = null // { id, email, name }
 function mapSession(session) {
   const u = session?.user
   if (!u) return null
-  return { id: u.id, email: u.email, name: u.user_metadata?.name || (u.email || '').split('@')[0] }
+  const md = u.user_metadata || {}
+  return {
+    id: u.id,
+    email: u.email,
+    name: md.name || (u.email || '').split('@')[0],
+    phone: md.phone || '',
+    cpf: md.cpf || '',
+    emailConfirmed: !!(u.email_confirmed_at || u.confirmed_at),
+  }
 }
 function lsGet() { try { const r = localStorage.getItem(LS_KEY); return r ? JSON.parse(r) : null } catch { return null } }
 
@@ -29,9 +37,9 @@ export async function login(email, password) {
   if (!error) cached = mapSession(data.session)
   return { error }
 }
-export async function signUp(name, email, password) {
-  if (!hasBackend) { try { localStorage.setItem(LS_KEY, JSON.stringify({ name, email })) } catch { /* */ } return { error: null } }
-  const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name } } })
+export async function signUp({ name, email, password, phone = '', cpf = '' }) {
+  if (!hasBackend) { try { localStorage.setItem(LS_KEY, JSON.stringify({ name, email, phone, cpf })) } catch { /* */ } return { error: null } }
+  const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name, phone, cpf } } })
   if (!error && data.session) cached = mapSession(data.session)
   return { error, needsConfirm: !error && !data.session }
 }

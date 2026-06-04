@@ -11,6 +11,8 @@ export default function Perfil({ profile, onSave }) {
   const email = getUser()?.email || ''
   const [name, setName] = useState(profile?.name || '')
   const [avatar, setAvatar] = useState(profile?.avatar || '')
+  const cpf = profile?.cpf || getUser()?.cpf || ''
+  const phone = profile?.phone || getUser()?.phone || ''
   const [saved, setSaved] = useState(false)
   const fileRef = useRef(null)
 
@@ -65,6 +67,19 @@ export default function Perfil({ profile, onSave }) {
             O e-mail é o do login e não pode ser alterado por aqui.
           </small>
         </div>
+        <div className="ck-row">
+          <div className="field">
+            <label htmlFor="pf-phone">Telefone</label>
+            <input id="pf-phone" value={phone || '—'} disabled />
+          </div>
+          <div className="field">
+            <label htmlFor="pf-cpf">CPF</label>
+            <input id="pf-cpf" value={cpf || '—'} disabled />
+          </div>
+        </div>
+        <small style={{ display: 'block', marginTop: -4, marginBottom: 4, fontSize: 12, color: 'var(--muted-2)' }}>
+          Telefone e CPF são dados de verificação (KYC) e ficam travados. Para alterar, fale com o suporte.
+        </small>
         <button type="submit" className="btn btn-primary" style={{ marginTop: 6 }}>
           {saved ? <><Icon name="check" />Salvo!</> : 'Salvar alterações'}
         </button>

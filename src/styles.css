@@ -617,6 +617,9 @@ body::before{
 
 .login-panel{display:flex;align-items:center;justify-content:center;padding:40px 24px}
 .login-card{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:28px}
+.login-sent{text-align:center;display:flex;flex-direction:column;align-items:center}
+.login-sent .ck-done-ic{margin-bottom:14px}
+.login-sent .login-btn{margin-top:18px}
 .login-tabs{display:flex;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:4px;margin-bottom:20px}
 .login-tabs button{flex:1;appearance:none;background:none;border:0;color:var(--muted);font-weight:700;font-size:13.5px;padding:9px;border-radius:8px;transition:.15s}
 .login-tabs button.on{background:var(--yellow);color:#000}

@@ -14,7 +14,7 @@ function write(data) { try { localStorage.setItem(keyFor(), JSON.stringify(data)
 function defaults() {
   return {
     products: seedProducts.filter((p) => p.slug),
-    profile: { name: getUser()?.name || '', avatar: '', security: false, domain: '', notifPending: true, notifPaid: true, notifMode: 'auto', notifTextPaid: '', notifTextPending: '', notifColor: '' },
+    profile: { name: getUser()?.name || '', cpf: getUser()?.cpf || '', phone: getUser()?.phone || '', avatar: '', security: false, domain: '', notifPending: true, notifPaid: true, notifMode: 'auto', notifTextPaid: '', notifTextPending: '', notifColor: '' },
     theme: { accent: '#ffd400', mode: 'dark', preset: 'amarelo', bg: '' },
   }
 }
@@ -50,7 +50,7 @@ export async function hydrate() {
       supabase.from('products').select('data').eq('owner', uid()),
     ])
     const store = getStore()
-    if (prof) store.profile = { ...store.profile, name: prof.name || store.profile.name, avatar: prof.avatar || '', security: !!prof.security, domain: prof.domain || '', notifPending: prof.notif_pending !== false, notifPaid: prof.notif_paid !== false, notifMode: prof.notif_mode || 'auto', notifTextPaid: prof.notif_text_paid || '', notifTextPending: prof.notif_text_pending || '', notifColor: prof.notif_color || '' }
+    if (prof) store.profile = { ...store.profile, name: prof.name || store.profile.name, cpf: prof.cpf || getUser()?.cpf || '', phone: prof.phone || getUser()?.phone || '', avatar: prof.avatar || '', security: !!prof.security, domain: prof.domain || '', notifPending: prof.notif_pending !== false, notifPaid: prof.notif_paid !== false, notifMode: prof.notif_mode || 'auto', notifTextPaid: prof.notif_text_paid || '', notifTextPending: prof.notif_text_pending || '', notifColor: prof.notif_color || '' }
     if (Array.isArray(prods) && prods.length) store.products = prods.map((r) => r.data).filter(Boolean)
     write(store)
   } catch { /* mantém o cache local */ }
@@ -72,6 +72,7 @@ async function pushProfile(profile) {
   try {
     await supabase.from('profiles').upsert({
       id: uid(), email: getUser()?.email, name: profile.name, avatar: profile.avatar || '',
+      cpf: profile.cpf || '', phone: profile.phone || '',
       security: !!profile.security, domain: profile.domain || '',
       notif_pending: profile.notifPending !== false, notif_paid: profile.notifPaid !== false,
       notif_mode: profile.notifMode || 'auto', notif_text_paid: profile.notifTextPaid || '',
