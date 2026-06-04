@@ -1127,8 +1127,8 @@ body::before{
 .app-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:39}
 
 @media(max-width:860px){
-  /* zoom volta ao normal no celular (o .82 era pra desktop) */
-  .app{zoom:1;height:100vh}
+  /* zoom menor no celular pra não ficar tudo amontoado (altura compensada) */
+  .app{zoom:.85;height:calc(100vh / .85)}
   .ck-page{zoom:1;height:100vh}
   .login{zoom:1;height:auto;min-height:100vh;overflow:visible}
 

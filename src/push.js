@@ -10,22 +10,29 @@ function urlBase64ToUint8Array(base64String) {
   return arr
 }
 
+// Retorna { ok, reason } para o app conseguir dizer ao usuário o que falhou.
 export async function subscribeToPush(uid) {
-  if (!hasBackend || !uid) return false
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return false
+  if (!hasBackend || !uid) return { ok: false, reason: 'no-backend' }
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return { ok: false, reason: 'unsupported' }
   try {
     const reg = await navigator.serviceWorker.ready
-    const { key } = await fetch('/api/vapid-public').then((r) => r.json())
-    if (!key) return false
+    const { key } = await fetch('/api/vapid-public').then((r) => r.json()).catch(() => ({}))
+    if (!key) return { ok: false, reason: 'no-vapid' }
     const existing = await reg.pushManager.getSubscription()
-    const sub = existing || await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(key),
-    })
+    let sub
+    try {
+      sub = existing || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(key) })
+    } catch (e) {
+      return { ok: false, reason: 'subscribe:' + (e?.name || 'erro') }
+    }
     const json = sub.toJSON()
-    // evita duplicar a mesma inscrição
-    await supabase.from('push_subscriptions').delete().eq('owner', uid).eq('subscription->>endpoint', json.endpoint)
-    await supabase.from('push_subscriptions').insert({ owner: uid, subscription: json })
-    return true
-  } catch { return false }
+    // garante que esta inscrição (endpoint) está salva pro dono, sem duplicar
+    const { data: rows } = await supabase.from('push_subscriptions').select('id,subscription').eq('owner', uid)
+    if ((rows || []).some((r) => r.subscription?.endpoint === json.endpoint)) return { ok: true, reason: 'already' }
+    const { error } = await supabase.from('push_subscriptions').insert({ owner: uid, subscription: json })
+    if (error) return { ok: false, reason: 'db:' + (error.message || error.code || 'erro') }
+    return { ok: true }
+  } catch (e) {
+    return { ok: false, reason: 'erro:' + (e?.name || '?') }
+  }
 }

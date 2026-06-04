@@ -79,11 +79,16 @@ export default function AdminApp() {
     try {
       const p = await Notification.requestPermission()
       setNotifPerm(p)
-      if (p !== 'granted') { flash('Permissão de notificação negada nas configurações.'); return }
+      if (p !== 'granted') { flash('Permissão negada nas Ajustes do iPhone (Notificações).'); return }
       const u = getUser()
-      const ok = u?.id ? await subscribeToPush(u.id) : false
-      flash(ok ? 'Avisos ativados! 🔔' : 'Permissão ok — mas faltam as chaves VAPID no Vercel pra ligar o push.')
-    } catch { flash('Não foi possível ativar os avisos.') }
+      const r = u?.id ? await subscribeToPush(u.id) : { ok: false, reason: 'no-user' }
+      if (r.ok) flash('Avisos ativados! 🔔')
+      else if (r.reason === 'no-vapid') flash('Faltam as chaves VAPID no Vercel.')
+      else if (r.reason === 'unsupported') flash('Abra pelo app instalado na tela inicial (não pelo Safari).')
+      else if (String(r.reason).startsWith('db:')) flash('Erro ao salvar: ' + String(r.reason).slice(3))
+      else if (String(r.reason).startsWith('subscribe:')) flash('iPhone bloqueou a inscrição (' + String(r.reason).slice(10) + '). Abra pelo app instalado.')
+      else flash('Não ativou (' + (r.reason || '?') + ').')
+    } catch (e) { flash('Erro: ' + (e?.message || 'tente de novo')) }
   }
 
   function handleLogout() {
