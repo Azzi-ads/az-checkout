@@ -73,12 +73,16 @@ export default function AdminApp() {
     return () => supabase.removeChannel(ch)
   }, [])
 
+  function flash(msg) { setToast(msg); setTimeout(() => setToast(''), 6000) }
   async function askNotif() {
     try {
       const p = await Notification.requestPermission()
       setNotifPerm(p)
-      if (p === 'granted') { const u = getUser(); if (u?.id) subscribeToPush(u.id) }
-    } catch { /* */ }
+      if (p !== 'granted') { flash('Permissão de notificação negada nas configurações.'); return }
+      const u = getUser()
+      const ok = u?.id ? await subscribeToPush(u.id) : false
+      flash(ok ? 'Avisos ativados! 🔔' : 'Permissão ok — mas faltam as chaves VAPID no Vercel pra ligar o push.')
+    } catch { flash('Não foi possível ativar os avisos.') }
   }
 
   function handleLogout() {
