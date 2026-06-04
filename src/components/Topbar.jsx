@@ -1,9 +1,12 @@
 import { useId, useState } from 'react'
 import Icon from './Icon.jsx'
 
-function NotifBell({ perm, onEnable, prefs, onToggle }) {
+const NOTIF_COLORS = ['', '#22c55e', '#3b82f6', '#a855f7', '#ef4444', '#f97316', '#ec4899']
+
+function NotifBell({ perm, onEnable, onTest, prefs, onToggle, cfg, onCfg }) {
   const [open, setOpen] = useState(false)
   const granted = perm === 'granted'
+  const custom = cfg.notifMode === 'custom'
   return (
     <div className="notif-bell">
       <button type="button" className="bell-btn" aria-label="Notificações" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
@@ -16,12 +19,16 @@ function NotifBell({ perm, onEnable, prefs, onToggle }) {
           <div className="bell-menu" role="dialog" aria-label="Notificações">
             <div className="bell-head"><Icon name="bell" />Notificações</div>
             {granted ? (
-              <div className="bell-status"><Icon name="check" />Ativadas neste aparelho</div>
+              <div className="bell-actions">
+                <div className="bell-status"><Icon name="check" />Ativadas neste aparelho</div>
+                <button type="button" className="btn btn-ghost bell-test" onClick={onTest}>Enviar teste</button>
+              </div>
             ) : (
-              <button type="button" className="btn btn-primary bell-enable" onClick={() => { onEnable(); }}>
+              <button type="button" className="btn btn-primary bell-enable" onClick={onEnable}>
                 <Icon name="bolt" />Ativar notificações
               </button>
             )}
+
             <div className="bell-sep" />
             <button type="button" className="bell-row" onClick={() => onToggle('notifPending')}>
               <span><b>Pix pendente</b><small>Quando um Pix é gerado</small></span>
@@ -31,6 +38,41 @@ function NotifBell({ perm, onEnable, prefs, onToggle }) {
               <span><b>Venda paga</b><small>Quando o pagamento é confirmado</small></span>
               <span className={`bell-sw${prefs.notifPaid !== false ? ' on' : ''}`} role="switch" aria-checked={prefs.notifPaid !== false}><i /></span>
             </button>
+
+            <div className="bell-sep" />
+            <div className="bell-label">Texto do aviso</div>
+            <div className="bell-seg">
+              <button type="button" className={!custom ? 'on' : ''} onClick={() => onCfg({ notifMode: 'auto' })}>Automático (IA)</button>
+              <button type="button" className={custom ? 'on' : ''} onClick={() => onCfg({ notifMode: 'custom' })}>Personalizado</button>
+            </div>
+            {!custom ? (
+              <p className="bell-hint">A IA varia o texto a cada venda — ex.: “Caiu mais uma! 🤑 João pagou R$ 97,00”.</p>
+            ) : (
+              <div className="bell-fields">
+                <label>Venda paga
+                  <input type="text" value={cfg.notifTextPaid} onChange={(e) => onCfg({ notifTextPaid: e.target.value })} placeholder="Caiu mais uma! {cliente} pagou {valor}" />
+                </label>
+                <label>Pix pendente
+                  <input type="text" value={cfg.notifTextPending} onChange={(e) => onCfg({ notifTextPending: e.target.value })} placeholder="Novo Pix de {valor} — {cliente}" />
+                </label>
+                <p className="bell-hint">Use <b>{'{cliente}'}</b>, <b>{'{valor}'}</b> e <b>{'{produto}'}</b> — são trocados automaticamente.</p>
+              </div>
+            )}
+
+            <div className="bell-sep" />
+            <div className="bell-label">Cor do aviso</div>
+            <div className="bell-colors">
+              {NOTIF_COLORS.map((col) => (
+                <button
+                  key={col || 'def'}
+                  type="button"
+                  className={`bell-color${(cfg.notifColor || '') === col ? ' on' : ''}${col ? '' : ' def'}`}
+                  style={col ? { background: col } : undefined}
+                  aria-label={col ? `Cor ${col}` : 'Cor padrão (amarelo)'}
+                  onClick={() => onCfg({ notifColor: col })}
+                />
+              ))}
+            </div>
           </div>
         </>
       )}

@@ -20,12 +20,12 @@ export default async function handler(req, res) {
     // Confirmação rápida do pago (vinda do polling do checkout, que leu o status
     // real no BravoPay) — notifica o vendedor na hora, sem esperar o webhook.
     if (allowed.status === 'pago') {
-      const { data: cur } = await sb.from('sales').select('owner,total,customer,status').eq('id', id).limit(1)
+      const { data: cur } = await sb.from('sales').select('owner,total,customer,items,status').eq('id', id).limit(1)
       const sale = cur?.[0]
       const { error } = await sb.from('sales').update(allowed).eq('id', id)
       if (error) return res.status(500).json({ error: error.message })
       if (sale?.owner && sale.status !== 'pago') {
-        await sendPushToOwner(sb, sale.owner, { title: 'Venda aprovada! 🎉', body: `${sale.customer?.name || 'Cliente'} · ${brl(sale.total)}`, url: '/app' }, 'paid')
+        await sendPushToOwner(sb, sale.owner, 'paid', { name: sale.customer?.name, total: sale.total, product: sale.items?.[0]?.name })
       }
       return res.status(200).json({ ok: true })
     }

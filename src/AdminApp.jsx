@@ -96,6 +96,23 @@ export default function AdminApp() {
   function toggleNotifPref(key) {
     setProfile(saveProfile({ [key]: !(profile[key] !== false) }))
   }
+  function setNotifCfg(patch) {
+    setProfile(saveProfile(patch))
+  }
+  async function testNotif() {
+    try {
+      if (typeof Notification !== 'undefined' && Notification.permission !== 'granted') { await askNotif(); return }
+      const { data } = await supabase.auth.getSession()
+      const token = data?.session?.access_token
+      if (!token) { flash('Faça login novamente para testar.'); return }
+      const r = await fetch('/api/test-push', { method: 'POST', headers: { Authorization: `Bearer ${token}` } })
+      const j = await r.json().catch(() => ({}))
+      if (j.vapid === false) flash('Faltam as chaves VAPID no Vercel (passo do deploy).')
+      else if (!j.subs) flash('Nenhum aparelho ativado aqui — toque em Ativar notificações.')
+      else if (j.sent) flash('Teste enviado! Deve chegar em segundos. 🔔')
+      else flash('Inscrito, mas o envio falhou. Reinstale o app e ative de novo.')
+    } catch { flash('Não consegui enviar o teste.') }
+  }
   function handleThemeChange(next) {
     setTheme(saveTheme(next))
   }
@@ -123,14 +140,22 @@ export default function AdminApp() {
           title={title}
           sub={sub}
           onMenu={() => setMenuOpen(true)}
-          notif={hasBackend ? { perm: notifPerm, onEnable: askNotif, prefs: { notifPending: profile.notifPending !== false, notifPaid: profile.notifPaid !== false }, onToggle: toggleNotifPref } : null}
+          notif={hasBackend ? {
+            perm: notifPerm,
+            onEnable: askNotif,
+            onTest: testNotif,
+            prefs: { notifPending: profile.notifPending !== false, notifPaid: profile.notifPaid !== false },
+            onToggle: toggleNotifPref,
+            cfg: { notifMode: profile.notifMode || 'auto', notifTextPaid: profile.notifTextPaid || '', notifTextPending: profile.notifTextPending || '', notifColor: profile.notifColor || '' },
+            onCfg: setNotifCfg,
+          } : null}
         />
         <section className="page page-enter" id="conteudo" key={page} tabIndex={-1} aria-labelledby="page-title">
           {renderPage()}
         </section>
       </main>
 
-      {toast && <div className="sale-toast"><Icon name="revenue" />{toast}</div>}
+      {toast && <div className="sale-toast" style={profile.notifColor ? { background: profile.notifColor, color: '#fff' } : undefined}><Icon name="revenue" />{toast}</div>}
     </div>
   )
 }

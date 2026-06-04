@@ -79,7 +79,7 @@ export default async function handler(req, res) {
           items: items || [], total: total || (amount_cents / 100), method: 'pix', status: 'aguardando',
         }).select('id').single()
         saleId = sale?.id || null
-        if (owner) await sendPushToOwner(sb, owner, { title: 'Novo Pix gerado ⏳', body: `${customer?.name || 'Cliente'} · ${brl(total || amount_cents / 100)} — aguardando pagamento`, url: '/app' }, 'pending')
+        if (owner) await sendPushToOwner(sb, owner, 'pending', { name: customer?.name, total: total || amount_cents / 100, product: items?.[0]?.name })
       } catch { /* segue sem saleId */ }
     }
 
