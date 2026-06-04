@@ -84,7 +84,8 @@ async function pushProfile(profile) {
 export async function fetchProductBySlug(slug) {
   if (!hasBackend) return null
   try {
-    const { data } = await supabase.from('products').select('data').eq('slug', slug).limit(1)
-    return data?.[0]?.data || null
+    const { data } = await supabase.from('products').select('data,owner').eq('slug', slug).limit(1)
+    const row = data?.[0]
+    return row?.data ? { ...row.data, owner: row.owner } : null
   } catch { return null }
 }

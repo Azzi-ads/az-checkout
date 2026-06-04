@@ -7,6 +7,7 @@ import { getProducts, getProfile, fetchProductBySlug } from '../store.js'
 import { themeVars } from '../theme.js'
 import { ensureCheckout } from '../checkoutConfig.js'
 import { ping, leave, recordEvent } from '../liveTracker.js'
+import { joinCheckoutPresence } from '../livePresence.js'
 import { recordSale, updateSale, addSaleItem } from '../sales.js'
 import { hasBackend } from '../supabase.js'
 
@@ -173,6 +174,7 @@ export function CheckoutView({ product, preview = false }) {
   const recordedRef = useRef(false)
   const outcomeRef = useRef('abandoned')
   const infoRef = useRef({})
+  const presRef = useRef(null)
 
   useEffect(() => {
     if (!cfg.timer || preview) return
@@ -329,6 +331,7 @@ export function CheckoutView({ product, preview = false }) {
     recordedRef.current = true
     recordEvent({ ...infoRef.current, outcome: outcomeRef.current, ts: Date.now() })
     leave(sid)
+    presRef.current?.leave()
   }
 
   // heartbeat enquanto está no checkout (para o Livex ao vivo)
@@ -339,6 +342,21 @@ export function CheckoutView({ product, preview = false }) {
     const iv = setInterval(send, 4000)
     return () => clearInterval(iv)
   }, [sid, preview, status, product.name, total])
+
+  // presença ao vivo cross-device (Supabase Realtime) — entra ao abrir o checkout
+  useEffect(() => {
+    if (preview || !product.owner) return
+    const pres = joinCheckoutPresence(product.owner, () => ({ step: stepRef.current, product: product.name, value: formatBRL(total) }))
+    presRef.current = pres
+    return () => pres.leave()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preview, product.owner])
+
+  // atualiza a etapa (Dados → Pagamento → Aprovado) na presença
+  useEffect(() => {
+    if (preview) return
+    presRef.current?.update({ step: stepRef.current, product: product.name, value: formatBRL(total) })
+  }, [status, total, preview, product.name])
 
   // pagou → registra evento "paid"
   useEffect(() => { if (status === 'paid') endSession() }, [status])

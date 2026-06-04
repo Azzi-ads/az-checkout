@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import KPICard from '../components/KPICard.jsx'
 import DataTable from '../components/DataTable.jsx'
 import Icon from '../components/Icon.jsx'
 import { livexKpis, livexSessions, livexFunnel, formatBRL } from '../data.js'
-import { getLiveSessions } from '../liveTracker.js'
 import { useSales, computeMetrics } from '../metrics.js'
 
 const WINDOWS = [
@@ -18,17 +17,9 @@ function since(ms) {
 }
 
 export default function Livex({ live }) {
-  const [sessions, setSessions] = useState([])
   const [period, setPeriod] = useState('24h')
   const sales = useSales()
-
-  useEffect(() => {
-    const tick = () => setSessions(getLiveSessions())
-    tick()
-    const id = setInterval(tick, 2000)
-    window.addEventListener('storage', tick)
-    return () => { clearInterval(id); window.removeEventListener('storage', tick) }
-  }, [])
+  const sessions = live.sessions || []
 
   const win = WINDOWS.find((w) => w.key === period)
   const m = computeMetrics(sales, win.ms)
@@ -47,7 +38,7 @@ export default function Livex({ live }) {
   })
 
   const rows = sessions.map((s) => ({
-    visitor: `Visitante #${s.id}`,
+    visitor: `Visitante #${String(s.id).slice(-4).toUpperCase()}`,
     product: s.product || '—',
     step: { label: s.step || 'Dados', tone: s.step === 'Pagamento' ? 'pend' : 'pago' },
     time: since(s.since),
