@@ -1013,8 +1013,10 @@ body::before{
 .bell-sw i{position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:var(--muted);transition:transform .15s,background .15s}
 .bell-sw.on{background:var(--yellow);border-color:var(--yellow)}
 .bell-sw.on i{transform:translateX(17px);background:#000}
-.bell-actions{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.bell-test{font-size:12px;padding:7px 12px}
+.bell-actions{display:flex;flex-direction:column;gap:8px}
+.bell-enable,.bell-test{width:100%;justify-content:center}
+.bell-test{font-size:12.5px}
+.bell-status{margin-top:8px}
 .bell-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:2px 0 8px}
 .bell-seg{display:flex;gap:6px;background:var(--surface-3);border:1px solid var(--line);border-radius:10px;padding:3px}
 .bell-seg button{flex:1;font-size:12px;font-weight:700;color:var(--muted);background:none;border:0;padding:7px 6px;border-radius:7px;cursor:pointer}

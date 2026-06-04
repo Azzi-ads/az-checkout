@@ -18,16 +18,13 @@ function NotifBell({ perm, onEnable, onTest, prefs, onToggle, cfg, onCfg }) {
           <div className="bell-overlay" onClick={() => setOpen(false)} />
           <div className="bell-menu" role="dialog" aria-label="Notificações">
             <div className="bell-head"><Icon name="bell" />Notificações</div>
-            {granted ? (
-              <div className="bell-actions">
-                <div className="bell-status"><Icon name="check" />Ativadas neste aparelho</div>
-                <button type="button" className="btn btn-ghost bell-test" onClick={onTest}>Enviar teste</button>
-              </div>
-            ) : (
+            <div className="bell-actions">
               <button type="button" className="btn btn-primary bell-enable" onClick={onEnable}>
-                <Icon name="bolt" />Ativar notificações
+                <Icon name="bolt" />{granted ? 'Reativar avisos' : 'Ativar notificações'}
               </button>
-            )}
+              <button type="button" className="btn btn-ghost bell-test" onClick={onTest}>Enviar teste</button>
+            </div>
+            {granted && <div className="bell-status"><Icon name="check" />Permitido neste aparelho</div>}
 
             <div className="bell-sep" />
             <button type="button" className="bell-row" onClick={() => onToggle('notifPending')}>
