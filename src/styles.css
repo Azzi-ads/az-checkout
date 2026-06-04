@@ -846,6 +846,9 @@ body::before{
 .integ-note{display:flex;gap:10px;align-items:flex-start;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:13px 15px;margin-bottom:16px;font-size:13px;color:var(--muted);font-weight:500;line-height:1.55}
 .integ-note svg{width:18px;height:18px;color:var(--yellow);flex:0 0 18px;margin-top:1px}
 .integ-note code{background:var(--surface-3);padding:1px 6px;border-radius:6px;font-size:12px}
+.dom-steps{margin:4px 0 14px;padding-left:20px;font-size:13.5px;color:var(--muted);line-height:1.7}
+.dom-steps b{color:var(--text)}
+.dom-steps code{background:var(--surface-3);padding:1px 6px;border-radius:6px;font-size:12px}
 .copy-field{display:flex;gap:8px}
 .copy-field input{flex:1;min-width:0;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;color:var(--text);font-family:inherit;font-size:13px;outline:none}
 .copy-field .btn{white-space:nowrap}

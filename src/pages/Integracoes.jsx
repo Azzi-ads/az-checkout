@@ -103,9 +103,24 @@ export default function Integracoes() {
             <button type="button" className="btn btn-primary" onClick={saveDomain}>{savedDom ? 'Salvo!' : 'Salvar'}</button>
           </div>
         </div>
+        {domain.trim() && (
+          <ol className="dom-steps">
+            <li><b>No Vercel:</b> projeto → Settings → Domains → adicione <code>{domain.trim().replace(/^https?:\/\//, '')}</code>.</li>
+            <li><b>No seu DNS:</b> crie um registro <b>CNAME</b>:</li>
+          </ol>
+        )}
+        {domain.trim() && (
+          <div className="ck-row">
+            <CopyField label="Nome (host)" value={domain.trim().replace(/^https?:\/\//, '').split('.')[0]} />
+            <CopyField label="Valor (aponta para)" value="cname.vercel-dns.com" />
+          </div>
+        )}
+        {domain.trim() && (
+          <CopyField label="Seu link de checkout ficará assim" value={`https://${domain.trim().replace(/^https?:\/\//, '')}/checkout/seu-produto`} />
+        )}
         <div className="integ-note">
           <Icon name="lock" />
-          <span>Para ativar: no seu provedor de DNS, crie um <b>CNAME</b> apontando <code>{domain || 'pay.seudominio.com'}</code> para <code>cname.vercel-dns.com</code> e adicione o domínio no painel do Vercel. Depois os links de checkout passam a usar o seu domínio.</span>
+          <span>Sem domínio próprio o link usa o nosso ({origin}/checkout/...). Depois que o domínio propagar (pode levar alguns minutos), os links de checkout passam a usar o seu — 100% white-label.</span>
         </div>
       </div>
     </>
