@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import QRCode from 'qrcode'
 import Icon from '../components/Icon.jsx'
 import { products as seedProducts, checkoutDescriptions, installments, formatBRL } from '../data.js'
 import { getProducts, getProfile, fetchProductBySlug } from '../store.js'
@@ -76,6 +77,19 @@ function Brand({ logo, name }) {
   if (logo) return <img className="ck-logo" src={logo} alt={name || 'Logo'} />
   if (name) return <span className="ck-brandname">{name}</span>
   return <span />
+}
+
+// Mostra a imagem do QR do gateway, ou gera uma a partir do copia-e-cola.
+function QrImage({ code, src }) {
+  const [url, setUrl] = useState(src || '')
+  useEffect(() => {
+    if (src) { setUrl(src); return }
+    if (!code) return
+    let alive = true
+    QRCode.toDataURL(code, { margin: 1, width: 260 }).then((u) => { if (alive) setUrl(u) }).catch(() => {})
+    return () => { alive = false }
+  }, [code, src])
+  return url ? <img className="ck-qr" src={url} alt="QR Code Pix" /> : <FakeQR />
 }
 
 function WaButton({ wa }) {
@@ -396,9 +410,7 @@ export function CheckoutView({ product, preview = false }) {
             <span className="ck-badge"><span className="dot" />Aguardando pagamento</span>
             <h2>Pague com Pix para liberar na hora</h2>
             <p className="ck-muted">Abra o app do seu banco, escaneie o QR Code ou use o Pix copia e cola.</p>
-            {pixData?.qr_code_image
-              ? <img className="ck-qr" src={pixData.qr_code_image} alt="QR Code Pix" />
-              : <FakeQR />}
+            <QrImage code={pixData?.qr_code} src={pixData?.qr_code_image} />
             {pixData?.qr_code && <div className="ck-pixcode">{pixData.qr_code}</div>}
             <button type="button" className={`btn ${copied ? 'btn-ghost' : 'btn-primary'} ck-copy`} onClick={copyPix}>
               <Icon name={copied ? 'check' : 'copy'} />{copied ? 'Código copiado!' : 'Copiar código Pix'}
