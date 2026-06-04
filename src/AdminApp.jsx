@@ -64,9 +64,10 @@ export default function AdminApp() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'sales', filter: `owner=eq.${u.id}` }, (payload) => {
         const s = payload.new
         if (!s) return
+        const prefs = getProfile()
         let txt = ''
-        if (payload.eventType === 'INSERT' && s.status === 'aguardando') txt = `Pix gerado — ${formatBRL(s.total || 0)} (pendente)`
-        else if (s.status === 'pago') txt = `Venda aprovada — ${formatBRL(s.total || 0)} 🎉`
+        if (payload.eventType === 'INSERT' && s.status === 'aguardando') { if (prefs.notifPending === false) return; txt = `Pix gerado — ${formatBRL(s.total || 0)} (pendente)` }
+        else if (s.status === 'pago') { if (prefs.notifPaid === false) return; txt = `Venda aprovada — ${formatBRL(s.total || 0)} 🎉` }
         if (txt) { setToast(txt); setTimeout(() => setToast(''), 6000) }
       })
       .subscribe()
@@ -92,6 +93,9 @@ export default function AdminApp() {
   function handleProfileSave(next) {
     setProfile(saveProfile(next))
   }
+  function toggleNotifPref(key) {
+    setProfile(saveProfile({ [key]: !(profile[key] !== false) }))
+  }
   function handleThemeChange(next) {
     setTheme(saveTheme(next))
   }
@@ -115,17 +119,17 @@ export default function AdminApp() {
       <Sidebar page={page} onSelect={selectPage} liveCount={live.atCheckout} onLogout={handleLogout} profile={profile} open={menuOpen} />
       {menuOpen && <div className="app-overlay" onClick={() => setMenuOpen(false)} />}
       <main className="main" ref={mainRef}>
-        <Topbar title={title} sub={sub} onMenu={() => setMenuOpen(true)} />
+        <Topbar
+          title={title}
+          sub={sub}
+          onMenu={() => setMenuOpen(true)}
+          notif={hasBackend ? { perm: notifPerm, onEnable: askNotif, prefs: { notifPending: profile.notifPending !== false, notifPaid: profile.notifPaid !== false }, onToggle: toggleNotifPref } : null}
+        />
         <section className="page page-enter" id="conteudo" key={page} tabIndex={-1} aria-labelledby="page-title">
           {renderPage()}
         </section>
       </main>
 
-      {hasBackend && notifPerm === 'default' && (
-        <button type="button" className="notif-prompt" onClick={askNotif}>
-          <Icon name="bolt" />Ativar avisos de venda
-        </button>
-      )}
       {toast && <div className="sale-toast"><Icon name="revenue" />{toast}</div>}
     </div>
   )

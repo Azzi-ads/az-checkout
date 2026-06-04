@@ -306,12 +306,17 @@ export function CheckoutView({ product, preview = false }) {
       try {
         const r = await fetch(`/api/status?id=${encodeURIComponent(pixData.id)}`)
         const j = await r.json()
-        if (j.status === 'PAID') { clearInterval(id); goPaid() }
+        if (j.status === 'PAID') {
+          clearInterval(id)
+          // confirma a venda na hora (status real veio do BravoPay) — não espera o webhook
+          if (hasBackend && saleId) apiAtualizarVenda(saleId, { status: 'pago' })
+          goPaid()
+        }
         else if (['EXPIRED', 'FAILED', 'CANCELED'].includes(j.status)) {
           clearInterval(id); setPayError(`Pagamento ${j.status.toLowerCase()}.`); setStatus('form'); setPixData(null)
         }
       } catch { /* tenta de novo no próximo ciclo */ }
-    }, 3000)
+    }, 2000)
     return () => clearInterval(id)
   }, [status, pixData, preview])
 

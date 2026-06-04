@@ -22,13 +22,14 @@ export default async function handler(req, res) {
     if (!srv || !txId || !status) return res.status(200).json({ received: true })
     const sb = createClient(SB_URL, srv)
 
-    await sb.from('sales').update({ status }).eq('tx_id', txId)
-    const { data: rows } = await sb.from('sales').select('owner,total,customer').eq('tx_id', txId).limit(1)
+    // estado anterior (para não notificar 2x — o polling do checkout pode já ter confirmado)
+    const { data: rows } = await sb.from('sales').select('owner,total,customer,status').eq('tx_id', txId).limit(1)
     const sale = rows?.[0]
+    await sb.from('sales').update({ status }).eq('tx_id', txId)
 
-    if (sale?.owner && status === 'pago') {
-      await sendPushToOwner(sb, sale.owner, { title: 'Venda aprovada! 🎉', body: `${sale.customer?.name || 'Cliente'} · ${brl(sale.total)}`, url: '/app' })
-    } else if (sale?.owner && status === 'reembolsado') {
+    if (sale?.owner && status === 'pago' && sale.status !== 'pago') {
+      await sendPushToOwner(sb, sale.owner, { title: 'Venda aprovada! 🎉', body: `${sale.customer?.name || 'Cliente'} · ${brl(sale.total)}`, url: '/app' }, 'paid')
+    } else if (sale?.owner && status === 'reembolsado' && sale.status !== 'reembolsado') {
       await sendPushToOwner(sb, sale.owner, { title: 'Venda reembolsada', body: `${sale.customer?.name || 'Cliente'} · ${brl(sale.total)}`, url: '/app' })
     }
     return res.status(200).json({ received: true })
