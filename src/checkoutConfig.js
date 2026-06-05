@@ -126,7 +126,7 @@ export function ensureCheckout(product) {
   const base = defaultCheckout('padrao')
   const c = product?.checkout
   if (!c) return base
-  return {
+  const merged = {
     ...base,
     ...c,
     fields: { ...base.fields, ...c.fields },
@@ -144,4 +144,10 @@ export function ensureCheckout(product) {
     downsell: { ...base.downsell, ...c.downsell },
     testimonials: c.testimonials || [],
   }
+  // Migra checkouts antigos (preto + amarelo, nunca personalizados) para o padrão branco.
+  const isOldDefault = (c.theme === 'dark' || c.theme === undefined)
+    && (!c.accent || String(c.accent).toLowerCase() === '#ffd400')
+    && !c.bg
+  if (isOldDefault) { merged.theme = 'light'; merged.accent = '#16a34a' }
+  return merged
 }

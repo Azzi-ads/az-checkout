@@ -35,6 +35,7 @@ const STEPS = [
 function CheckoutBuilder({ product, onSave, onBack }) {
   const [draft, setDraft] = useState(() => ({ ...product, checkout: ensureCheckout(product) }))
   const [widget, setWidget] = useState('geral')
+  const [previewMode, setPreviewMode] = useState('desktop')
   const cfg = draft.checkout
   const setCfg = (patch) => setDraft((d) => ({ ...d, checkout: { ...d.checkout, ...patch } }))
   const setField = (k, v) => setCfg({ fields: { ...cfg.fields, [k]: v } })
@@ -328,8 +329,14 @@ function CheckoutBuilder({ product, onSave, onBack }) {
         </div>
 
         <div className="builder-preview">
-          <div className="editor-preview-label"><Icon name="bolt" /> Preview ao vivo</div>
-          <div className="editor-preview"><CheckoutView product={draft} preview /></div>
+          <div className="editor-preview-label">
+            <Icon name="bolt" /> Preview ao vivo
+            <div className="preview-modes">
+              <button type="button" className={previewMode === 'desktop' ? 'on' : ''} onClick={() => setPreviewMode('desktop')}><Icon name="card" />Desktop</button>
+              <button type="button" className={previewMode === 'mobile' ? 'on' : ''} onClick={() => setPreviewMode('mobile')}><Icon name="phone" />Celular</button>
+            </div>
+          </div>
+          <div className={`editor-preview${previewMode === 'mobile' ? ' mob' : ''}`}><CheckoutView product={draft} preview /></div>
         </div>
       </div>
     </div>
