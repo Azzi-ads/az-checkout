@@ -31,7 +31,10 @@ export const METHOD_DEFS = [
 ]
 
 export const CHECKOUT_THEMES = [
-  { key: 'padrao', label: 'Padrão', bg: '', accent: '#ffd400', mode: 'dark' },
+  { key: 'branco', label: 'Branco', bg: '', accent: '#16a34a', mode: 'light' },
+  { key: 'branco-azul', label: 'Branco Azul', bg: '', accent: '#2563eb', mode: 'light' },
+  { key: 'branco-roxo', label: 'Branco Roxo', bg: '', accent: '#7c3aed', mode: 'light' },
+  { key: 'escuro', label: 'Escuro', bg: '', accent: '#ffd400', mode: 'dark' },
   { key: 'aurora', label: 'Aurora', bg: 'radial-gradient(900px 520px at 18% -10%, #5b2a86, transparent 60%), radial-gradient(820px 600px at 120% 15%, #1f6f8b, transparent 55%), #0a0a12', accent: '#22d3ee', mode: 'dark' },
   { key: 'sunset', label: 'Sunset', bg: 'linear-gradient(160deg, #2a1020, #4a1d2e 52%, #160a10)', accent: '#fb923c', mode: 'dark' },
   { key: 'neon', label: 'Neon', bg: 'radial-gradient(720px 520px at 82% -5%, rgba(139,92,246,.55), transparent 60%), radial-gradient(600px 500px at 0% 110%, rgba(34,211,238,.25), transparent 60%), #07070d', accent: '#a78bfa', mode: 'dark' },
@@ -68,8 +71,8 @@ export function defaultCheckout(model = 'padrao') {
     model,
     layout: p.layout,
     steps: 1, // 1 = página única, 2 = dados→pagamento, 3 = dados→endereço→pagamento
-    accent: '#ffd400',
-    theme: 'dark',
+    accent: '#16a34a',
+    theme: 'light',
     bg: '',
     logo: '',
     bannerTop: '',

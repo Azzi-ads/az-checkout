@@ -99,7 +99,7 @@ body::before{
   display:inline-flex;align-items:center;gap:7px;border:0;border-radius:11px;
   font-weight:700;font-size:13.5px;padding:10px 15px;transition:.16s;white-space:nowrap;
 }
-.btn-primary{background:var(--yellow);color:#000;box-shadow:0 6px 18px rgba(255,212,0,.22)}
+.btn-primary{background:var(--yellow);color:var(--on-accent,#000);box-shadow:0 6px 18px rgba(255,212,0,.22)}
 .btn-primary:hover{background:var(--yellow-dim);transform:translateY(-1px)}
 .btn-ghost{background:var(--surface-2);color:var(--text);border:1px solid var(--line)}
 .btn-ghost:hover{background:var(--surface-3)}
@@ -466,6 +466,33 @@ body::before{
   .ck-body{padding:18px 14px 32px}
   .ck-top{padding:12px 14px}
 }
+
+/* ===== Checkout — acabamento profissional (claro por padrão) ===== */
+.ck-page .card,.ck-preview .card{border-radius:16px;padding:22px;box-shadow:0 1px 2px rgba(16,24,40,.04),0 6px 22px rgba(16,24,40,.06)}
+.ck-top{padding:16px 26px;background:var(--surface)}
+.ck-logo{height:38px}
+.ck-brandname{font-family:'Bricolage Grotesque';font-weight:800;font-size:19px;color:var(--text);letter-spacing:-.01em}
+.ck-safe{color:var(--green);background:rgba(22,163,74,.10)}
+.ck-body{max-width:1040px;padding:32px 22px 56px}
+.ck-grid{gap:22px}
+.ck-step-head{margin-bottom:20px}
+.ck-step-head h2{font-size:18px;font-weight:800;letter-spacing:-.015em}
+.ck-num{width:28px;height:28px;flex-basis:28px;border-radius:9px;color:var(--on-accent,#000)}
+.ck-field>label{font-size:13px;font-weight:700;color:var(--text)}
+.ck-input{background:var(--surface);border:1.5px solid var(--line-2);border-radius:11px;padding:0 14px}
+.ck-input:focus-within{border-color:var(--yellow);box-shadow:0 0 0 3px var(--yellow-soft)}
+.ck-input input,.ck-input select{padding:13px 0;font-size:14.5px}
+.ck-method{background:var(--surface);border-radius:13px;padding:14px 8px;font-weight:600}
+.ck-method.on{box-shadow:inset 0 0 0 1px var(--yellow)}
+.ck-bump{border-radius:14px}
+.ck-bump.on .ck-bump-check{color:var(--on-accent,#000)}
+.ck-cta{font-weight:800;font-size:16.5px;padding:17px;border-radius:13px;letter-spacing:.01em;box-shadow:0 10px 24px var(--yellow-soft)}
+.ck-cta:hover:not(:disabled){filter:brightness(1.04)}
+.ck-summary.card{box-shadow:0 1px 2px rgba(16,24,40,.04),0 10px 32px rgba(16,24,40,.09)}
+.ck-prod h3{font-size:15.5px;font-weight:800;letter-spacing:-.01em}
+.ck-total .num{font-size:24px}
+.ck-foot{padding:26px 22px}
+/* legibilidade dos depoimentos/garantia em tema claro herda das vars; nada hardcoded */
 
 /* ===================================================================
    Painel admin — sidebar com grupos, Análises e Custos

@@ -65,6 +65,12 @@ function darken(hex, amt = 14) {
   const d = (v) => Math.max(0, Math.round(v * (1 - amt / 100)))
   return `#${[d(r), d(g), d(b)].map((v) => v.toString(16).padStart(2, '0')).join('')}`
 }
+// preto ou branco — o que tiver melhor contraste sobre a cor de destaque
+function onAccent(hex) {
+  const { r, g, b } = hexToRgb(hex)
+  const L = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return L > 0.6 ? '#000' : '#fff'
+}
 
 // Retorna um objeto de variáveis CSS para aplicar como `style` no .app.
 export function themeVars(theme = DEFAULT_THEME) {
@@ -74,6 +80,7 @@ export function themeVars(theme = DEFAULT_THEME) {
     '--yellow': accent,
     '--yellow-dim': darken(accent, 12),
     '--yellow-soft': `rgba(${r},${g},${b},.12)`,
+    '--on-accent': onAccent(accent),
   }
   if (theme.mode === 'light') Object.assign(vars, LIGHT)
   return vars
