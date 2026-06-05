@@ -608,8 +608,22 @@ export function CheckoutView({ product, preview = false }) {
     </div>
   ) : null
 
+  // bloco de título/subtítulo (com cores personalizadas por bloco)
+  const introNode = (
+    <div className="ck-intro" key="intro">
+      <h2 style={cfg.colors?.title ? { color: cfg.colors.title } : undefined}>{cfg.title}</h2>
+      <p style={cfg.colors?.subtitle ? { color: cfg.colors.subtitle } : undefined}>{cfg.subtitle}</p>
+    </div>
+  )
+  // página única: blocos na ordem definida no builder (Seções)
+  const NODE_MAP = { intro: introNode, dados: dadosSection, endereco: addressOn ? enderecoSection : null, pagamento: pagamentoSection, bump: bumpNode, tests: testsNode }
+  const ALL_BLOCKS = ['intro', 'dados', 'endereco', 'pagamento', 'bump', 'tests']
+  const savedOrder = (cfg.blocks && cfg.blocks.length ? cfg.blocks : ALL_BLOCKS).filter((k) => ALL_BLOCKS.includes(k))
+  const fullOrder = [...savedOrder, ...ALL_BLOCKS.filter((k) => !savedOrder.includes(k))]
+  const singleContent = fullOrder.map((k) => NODE_MAP[k]).filter(Boolean)
+
   let phaseContent
-  if (stepsN === 1) phaseContent = <>{dadosSection}{addressOn && enderecoSection}{pagamentoSection}{bumpNode}{testsNode}</>
+  if (stepsN === 1) phaseContent = <>{singleContent}</>
   else if (phaseKey === 'dados') phaseContent = <>{dadosSection}{stepsN === 2 && cfg.fields.address && enderecoSection}</>
   else if (phaseKey === 'endereco') phaseContent = enderecoSection
   else phaseContent = <>{pagamentoSection}{bumpNode}{testsNode}</>
@@ -623,7 +637,7 @@ export function CheckoutView({ product, preview = false }) {
       <form className={gridClass} onSubmit={pay}>
         <div className="ck-main">
           {cfg.headline?.enabled && cfg.headline.text && <div className="ck-banner">{cfg.headline.text}</div>}
-          <div className="ck-intro"><h2>{cfg.title}</h2><p>{cfg.subtitle}</p></div>
+          {stepsN > 1 && introNode}
 
           {stepsN > 1 && (
             <div className="ck-stepper">

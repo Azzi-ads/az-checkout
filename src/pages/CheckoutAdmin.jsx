@@ -11,6 +11,7 @@ import { getProducts, saveProducts } from '../store.js'
 
 const WIDGETS = [
   { key: 'geral', label: 'Geral', icon: 'config' },
+  { key: 'secoes', label: 'Seções', icon: 'p-grid' },
   { key: 'campos', label: 'Campos', icon: 'lines' },
   { key: 'etapas', label: 'Etapas', icon: 'chart' },
   { key: 'contador', label: 'Contador', icon: 'bolt' },
@@ -49,6 +50,11 @@ function CheckoutBuilder({ product, onSave, onBack }) {
     const t = arr[i]; arr[i] = arr[j]; arr[j] = t; setCfg({ fieldOrder: arr })
   }
   const setLabel = (k, v) => setCfg({ fieldLabels: { ...cfg.fieldLabels, [k]: v } })
+  // seções (ordem + cores)
+  const BLOCK_LABELS = { intro: 'Título + subtítulo', dados: 'Formulário (dados)', endereco: 'Endereço', pagamento: 'Pagamento', bump: 'Order bump', tests: 'Depoimentos' }
+  const blocks = cfg.blocks && cfg.blocks.length ? cfg.blocks : ['intro', 'dados', 'endereco', 'pagamento', 'bump', 'tests']
+  const moveBlock = (i, dir) => { const arr = [...blocks]; const j = i + dir; if (j < 0 || j >= arr.length) return; const t = arr[i]; arr[i] = arr[j]; arr[j] = t; setCfg({ blocks: arr }) }
+  const setColor = (k, v) => setCfg({ colors: { ...cfg.colors, [k]: v } })
   // frete (múltiplo)
   const shipOpts = cfg.shipping?.options || []
   const setShipOpts = (opts) => setCfg({ shipping: { ...cfg.shipping, options: opts } })
@@ -81,6 +87,33 @@ function CheckoutBuilder({ product, onSave, onBack }) {
         )}
         <div className="wgroup">Avançado</div>
         <Toggle title="Valor livre" desc="Cliente escolhe quanto pagar." on={cfg.valorLivre} onChange={(v) => setCfg({ valorLivre: v })} />
+      </>
+    )
+    if (widget === 'secoes') return (
+      <>
+        <p className="profile-hint" style={{ marginBottom: 12 }}>Reordene (↑/↓) os blocos da página. A ordem vale no layout de <b>1 etapa</b>.</p>
+        {blocks.map((key, i) => (
+          <div className="fld-row" key={key}>
+            <div className="fld-move">
+              <button type="button" disabled={i === 0} onClick={() => moveBlock(i, -1)} aria-label="Subir">↑</button>
+              <button type="button" disabled={i === blocks.length - 1} onClick={() => moveBlock(i, 1)} aria-label="Descer">↓</button>
+            </div>
+            <span style={{ flex: 1, fontWeight: 600, fontSize: 13.5 }}>{BLOCK_LABELS[key] || key}</span>
+          </div>
+        ))}
+        <div className="wgroup">Cores dos textos</div>
+        <div className="field"><label>Cor do título</label>
+          <div className="ck-color-row">
+            <input type="color" value={cfg.colors?.title || '#15151b'} onChange={(e) => setColor('title', e.target.value)} />
+            {cfg.colors?.title && <button type="button" className="btn btn-ghost" onClick={() => setColor('title', '')}>Padrão</button>}
+          </div>
+        </div>
+        <div className="field"><label>Cor do subtítulo</label>
+          <div className="ck-color-row">
+            <input type="color" value={cfg.colors?.subtitle || '#5b5b66'} onChange={(e) => setColor('subtitle', e.target.value)} />
+            {cfg.colors?.subtitle && <button type="button" className="btn btn-ghost" onClick={() => setColor('subtitle', '')}>Padrão</button>}
+          </div>
+        </div>
       </>
     )
     if (widget === 'campos') return (
