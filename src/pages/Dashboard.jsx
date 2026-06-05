@@ -55,7 +55,15 @@ function RevenueChart() {
   )
 }
 
-export default function Dashboard({ profile }) {
+const QUICK = [
+  { id: 'produtos', icon: 'plus', title: 'Criar produto', sub: 'Adicione algo pra vender', c: 'g' },
+  { id: 'vendas', icon: 'vendas', title: 'Vendas', sub: 'Acompanhe seus pedidos', c: 'b' },
+  { id: 'cobrancas', icon: 'revenue', title: 'Cobranças', sub: 'Taxa e recebimentos', c: 'p' },
+  { id: 'checkout', icon: 'card', title: 'Checkout', sub: 'Personalize sua página', c: 'o' },
+  { id: 'integracoes', icon: 'store', title: 'Integrações', sub: 'Conecte seu gateway', c: 'c' },
+]
+
+export default function Dashboard({ profile, onNav }) {
   const name = profile?.name || getUser()?.name
   const sales = useSales()
   const hoje = computeMetrics(sales, DAY)
@@ -93,6 +101,17 @@ export default function Dashboard({ profile }) {
       <div className="greeting">
         <h2>{greeting()}, {firstName(name)} 👋</h2>
         <p>Sua operação começa aqui. Crie um produto e compartilhe o checkout para ver os números aparecerem.</p>
+      </div>
+
+      <div className="quick-label">Acesso rápido</div>
+      <div className="quick">
+        {QUICK.map((q) => (
+          <button type="button" key={q.id} className={`quick-card q-${q.c}`} onClick={() => onNav?.(q.id)}>
+            <span className="quick-ic"><Icon name={q.icon} /></span>
+            <b>{q.title}</b>
+            <span className="quick-sub">{q.sub}</span>
+          </button>
+        ))}
       </div>
 
       <div className="card journey-card">

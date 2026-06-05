@@ -124,7 +124,7 @@ export default function AdminApp() {
   }
 
   function renderPage() {
-    if (page === 'dashboard') return <Dashboard profile={profile} />
+    if (page === 'dashboard') return <Dashboard profile={profile} onNav={selectPage} />
     if (page === 'livex') return <Livex live={live} />
     if (page === 'produtos') return <Produtos />
     if (page === 'perfil') return <Perfil profile={profile} onSave={handleProfileSave} />
