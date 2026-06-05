@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useState } from 'react'
 import Icon from './Icon.jsx'
 
 const NOTIF_COLORS = ['', '#22c55e', '#3b82f6', '#a855f7', '#ef4444', '#f97316', '#ec4899']
@@ -98,24 +98,15 @@ function MetaBar() {
 }
 
 export default function Topbar({ title, sub, onMenu, notif }) {
-  const searchId = useId()
   return (
     <header className="topbar">
       <button type="button" className="menu-btn" onClick={onMenu} aria-label="Abrir menu"><Icon name="lines" /></button>
-      <div>
+      <div className="topbar-title">
         <h1 id="page-title">{title}</h1>
         <div className="sub">{sub}</div>
       </div>
       <MetaBar />
-      <div className="search">
-        <Icon name="search" />
-        <label htmlFor={searchId} className="sr-only">Buscar</label>
-        <input id={searchId} type="search" placeholder="Buscar..." />
-      </div>
       {notif && <NotifBell {...notif} />}
-      <button type="button" className="btn btn-primary">
-        <Icon name="plus" />Novo
-      </button>
     </header>
   )
 }
