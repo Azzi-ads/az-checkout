@@ -1234,3 +1234,27 @@ body::before{
   .kpis,.metrics{grid-template-columns:1fr 1fr}
   .login-hero{display:none}
 }
+
+/* ===================================================================
+   Identidade AZ v2 — acabamento do painel (escuro + amarelo)
+   =================================================================== */
+.topbar{padding:16px 28px}
+.topbar h1{font-weight:800;letter-spacing:-.015em}
+.search:focus-within{box-shadow:0 0 0 3px var(--yellow-soft)}
+
+/* sidebar */
+.brand-logo{width:150px}
+.nav-item{border-radius:10px}
+.nav-item.active{background:linear-gradient(90deg,var(--yellow-soft),transparent 85%)}
+.side-foot .user{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:9px 10px}
+.store-switch{border:1px solid var(--line)}
+
+/* tabelas mais limpas */
+.tbl th{padding:0 16px 12px}
+.tbl td{padding:15px 16px}
+.tbl tbody tr{transition:background .12s}
+.card-head h3{letter-spacing:-.01em;font-weight:800}
+
+/* títulos de cartão e números */
+.kpi .val{letter-spacing:-.02em}
+.pill{font-weight:700}
