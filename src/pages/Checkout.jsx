@@ -10,6 +10,7 @@ import { ping, leave, recordEvent } from '../liveTracker.js'
 import { joinCheckoutPresence } from '../livePresence.js'
 import useIntentScore from '../intent/useIntentScore.js'
 import IntentActions from '../intent/IntentActions.jsx'
+import { getFingerprint } from '../fraud/fingerprint.js'
 import { recordSale, updateSale, addSaleItem } from '../sales.js'
 import { hasBackend } from '../supabase.js'
 
@@ -200,6 +201,8 @@ export function CheckoutView({ product, preview = false }) {
   const [saleId, setSaleId] = useState(null)
   const [proofSent, setProofSent] = useState(false)
   const proofRef = useRef(null)
+  const interactRef = useRef(0) // 1ª interação (p/ medir tempo de preenchimento)
+  const fpData = useMemo(() => getFingerprint(), [])
   const [sid] = useState(() => Math.random().toString(36).slice(2, 8))
   const stepRef = useRef('Dados')
   stepRef.current = status === 'pix' ? 'Pagamento' : status === 'paid' ? 'Aprovado' : 'Dados'
@@ -250,7 +253,16 @@ export function CheckoutView({ product, preview = false }) {
   const dadosOk = nameOk && emailOk && cpfOk && valorOk && (stepsN === 2 && cfg.fields.address ? addrOk : true)
   const phaseValid = phaseKey === 'dados' ? dadosOk : phaseKey === 'endereco' ? addrOk : true
 
-  const set = (k) => (e) => setData((s) => ({ ...s, [k]: e.target.value }))
+  const set = (k) => (e) => { if (!interactRef.current) interactRef.current = Date.now(); setData((s) => ({ ...s, [k]: e.target.value })) }
+  async function runFraudCheck() {
+    if (preview || !hasBackend) return { action: 'allow' }
+    try {
+      const c = buildCustomer()
+      const fillTimeMs = interactRef.current ? Date.now() - interactRef.current : null
+      const r = await fetch('/api/fraud-check', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: sid, slug: product.slug, name: c.name, email: c.email, cpf: c.cpf, fingerprint: fpData.fingerprint, device: fpData.device, fillTimeMs }) })
+      return await r.json()
+    } catch { return { action: 'allow' } }
+  }
   const setA = (k) => (e) => setAddr((s) => ({ ...s, [k]: e.target.value }))
 
   async function pay(e) {
@@ -262,6 +274,13 @@ export function CheckoutView({ product, preview = false }) {
     // Preview do editor: não chama o gateway de verdade (usa mock visual).
     if (preview) {
       setStatus(goPix ? 'pix' : 'paid')
+      return
+    }
+
+    // AZ Security — antifraude antes de gerar a cobrança
+    const fraud = await runFraudCheck()
+    if (fraud?.action === 'block') {
+      setPayError(fraud.message || 'Estamos enfrentando uma instabilidade temporária. Tente novamente mais tarde.')
       return
     }
 
