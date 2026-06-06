@@ -170,7 +170,8 @@ function Frame({ children, preview, styleVars, showTimer, mmss, logo, brandName,
 }
 
 export function CheckoutView({ product, preview = false }) {
-  const cfg = ensureCheckout(product)
+  const [ab, setAb] = useState(null) // variante de Teste A/B aplicada
+  const cfg = useMemo(() => { const base = ensureCheckout(product); return ab?.config ? { ...base, ...ab.config } : base }, [product, ab])
   const styleVars = themeVars({ accent: cfg.accent, mode: cfg.theme })
   const isRapido = cfg.model === 'rapido'
   const secure = (() => { try { return !!getProfile().security } catch { return false } })()
@@ -397,8 +398,22 @@ export function CheckoutView({ product, preview = false }) {
     presRef.current?.update({ step: stepRef.current, product: product.name, value: formatBRL(total) })
   }, [status, total, preview, product.name])
 
-  // pagou → registra evento "paid" + conversão de intenção
-  useEffect(() => { if (status === 'paid') { endSession(); intent.markConverted(total) } }, [status])
+  // pagou → registra evento "paid" + conversão de intenção + conversão do A/B
+  useEffect(() => {
+    if (status !== 'paid') return
+    endSession(); intent.markConverted(total)
+    if (ab && !preview) {
+      fetch('/api/exp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'convert', sessionId: sid, revenue: total, bump: !!(bump && cfg.bump.enabled) }) }).catch(() => {})
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status])
+
+  // Teste A/B: pega a variante e aplica a config
+  useEffect(() => {
+    if (preview) return
+    fetch('/api/exp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'assign', slug: product.slug, sessionId: sid }) })
+      .then((r) => r.json()).then((j) => { if (j?.variantId) setAb({ experimentId: j.experimentId, variantId: j.variantId, config: j.config || {} }) }).catch(() => {})
+  }, [preview, product.slug, sid])
 
   // saiu (fechou aba / navegou) → registra evento (abandono, se não pagou)
   useEffect(() => {
