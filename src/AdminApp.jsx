@@ -69,8 +69,8 @@ export default function AdminApp() {
         if (!s) return
         const prefs = getProfile()
         let txt = ''
-        if (payload.eventType === 'INSERT' && s.status === 'aguardando') { if (prefs.notifPending === false) return; txt = `Pix gerado — ${formatBRL(s.total || 0)} (pendente)` }
-        else if (s.status === 'pago') { if (prefs.notifPaid === false) return; txt = `Venda aprovada — ${formatBRL(s.total || 0)} 🎉` }
+        if (payload.eventType === 'INSERT' && s.status === 'aguardando') { if (prefs.notifPending === false) return; txt = `Venda Pendente — ${formatBRL(s.total || 0)}` }
+        else if (s.status === 'pago') { if (prefs.notifPaid === false) return; txt = `Venda Aprovada — ${formatBRL(s.total || 0)}` }
         if (txt) { setToast(txt); setTimeout(() => setToast(''), 6000) }
       })
       .subscribe()
@@ -154,7 +154,7 @@ export default function AdminApp() {
             perm: notifPerm,
             onEnable: askNotif,
             onTest: testNotif,
-            prefs: { notifPending: profile.notifPending !== false, notifPaid: profile.notifPaid !== false },
+            prefs: { notifPending: profile.notifPending !== false, notifPaid: profile.notifPaid !== false, notifSummary: profile.notifSummary !== false },
             onToggle: toggleNotifPref,
             cfg: { notifMode: profile.notifMode || 'auto', notifTextPaid: profile.notifTextPaid || '', notifTextPending: profile.notifTextPending || '', notifColor: profile.notifColor || '' },
             onCfg: setNotifCfg,

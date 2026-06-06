@@ -35,15 +35,19 @@ function NotifBell({ perm, onEnable, onTest, prefs, onToggle, cfg, onCfg }) {
               <span><b>Venda paga</b><small>Quando o pagamento é confirmado</small></span>
               <span className={`bell-sw${prefs.notifPaid !== false ? ' on' : ''}`} role="switch" aria-checked={prefs.notifPaid !== false}><i /></span>
             </button>
+            <button type="button" className="bell-row" onClick={() => onToggle('notifSummary')}>
+              <span><b>Resumo de faturamento</b><small>Às 9h, 12h, 16h e 20h</small></span>
+              <span className={`bell-sw${prefs.notifSummary !== false ? ' on' : ''}`} role="switch" aria-checked={prefs.notifSummary !== false}><i /></span>
+            </button>
 
             <div className="bell-sep" />
             <div className="bell-label">Texto do aviso</div>
             <div className="bell-seg">
-              <button type="button" className={!custom ? 'on' : ''} onClick={() => onCfg({ notifMode: 'auto' })}>Automático (IA)</button>
+              <button type="button" className={!custom ? 'on' : ''} onClick={() => onCfg({ notifMode: 'auto' })}>Padrão</button>
               <button type="button" className={custom ? 'on' : ''} onClick={() => onCfg({ notifMode: 'custom' })}>Personalizado</button>
             </div>
             {!custom ? (
-              <p className="bell-hint">A IA varia o texto a cada venda — ex.: “Caiu mais uma! 🤑 João pagou R$ 97,00”.</p>
+              <p className="bell-hint">Padrão: “Venda Pendente” / “Venda Aprovada” + valor.</p>
             ) : (
               <div className="bell-fields">
                 <label>Venda paga
