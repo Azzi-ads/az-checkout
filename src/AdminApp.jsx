@@ -7,6 +7,7 @@ import Analises from './pages/Analises.jsx'
 import Custos from './pages/Custos.jsx'
 import Livex from './pages/Livex.jsx'
 import Produtos from './pages/Produtos.jsx'
+import IA from './pages/IA.jsx'
 import CheckoutAdmin from './pages/CheckoutAdmin.jsx'
 import Integracoes from './pages/Integracoes.jsx'
 import Vendas from './pages/Vendas.jsx'
@@ -27,6 +28,7 @@ import { supabase, hasBackend } from './supabase.js'
 import { subscribeToPush } from './push.js'
 
 const SIMPLE_PAGES = {
+  ia: IA,
   analises: Analises,
   custos: Custos,
   checkout: CheckoutAdmin,

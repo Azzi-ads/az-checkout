@@ -15,6 +15,7 @@ export const navAccount = [
 
 export const pageTitles = {
   dashboard: ['Dashboard', 'Visão geral da sua operação'],
+  ia: ['AZ IA', 'Crie funis e analise sua operação com inteligência artificial'],
   analises: ['Análises', 'Métricas e jornada do checkout'],
   custos: ['Custos', 'Lucro real da sua operação'],
   livex: ['Livex', 'Pessoas ao vivo no checkout'],

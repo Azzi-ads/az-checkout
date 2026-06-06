@@ -14,6 +14,7 @@ const SECTIONS = [
     label: 'Principal',
     items: [
       { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+      { id: 'ia', label: 'AZ IA', icon: 'spark' },
       {
         id: 'analises', label: 'Análises', icon: 'chart',
         children: [

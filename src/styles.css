@@ -1292,3 +1292,30 @@ body::before{
 .insight-warning{border-left-color:var(--red)} .insight-warning .insight-ic{background:rgba(255,93,93,.12);color:var(--red)}
 .insight-success{border-left-color:var(--green)} .insight-success .insight-ic{background:rgba(61,220,145,.12);color:var(--green)}
 .insight-info{border-left-color:var(--yellow)} .insight-info .insight-ic{background:var(--yellow-soft);color:var(--yellow)}
+
+/* AZ IA */
+.ia-tabs{display:inline-flex;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:4px;margin-bottom:16px}
+.ia-tabs button{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--muted);background:none;border:0;padding:8px 14px;border-radius:8px;cursor:pointer}
+.ia-tabs button svg{width:15px;height:15px}
+.ia-tabs button.on{background:var(--yellow);color:var(--on-accent,#000)}
+.ia-card{max-width:760px}
+.ia-hero{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.ia-hero>svg{width:30px;height:30px;color:var(--yellow);flex:0 0 30px}
+.ia-hero b{display:block;font-size:16px;font-weight:800}
+.ia-hero span{font-size:12.5px;color:var(--muted)}
+.ia-input{width:100%;background:var(--surface-2);border:1.5px solid var(--line);border-radius:12px;color:var(--text);font-family:inherit;font-size:14px;padding:14px;line-height:1.5;resize:vertical;outline:none;margin-bottom:12px}
+.ia-input:focus{border-color:var(--yellow);box-shadow:0 0 0 3px var(--yellow-soft)}
+.ia-err{color:var(--red);font-size:13px;font-weight:600;margin-top:10px}
+.ia-result{margin-top:18px;border-top:1px solid var(--line);padding-top:16px;display:flex;flex-direction:column;gap:11px}
+.ia-msg{font-size:13.5px;color:var(--text);font-weight:600}
+.ia-prod{display:flex;gap:12px;align-items:flex-start;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:13px 15px}
+.ia-prod-color{width:14px;height:14px;flex:0 0 14px;border-radius:5px;margin-top:3px}
+.ia-prod-body{display:flex;flex-direction:column;gap:3px}
+.ia-prod-body b{font-size:14px;font-weight:800}
+.ia-prod-body b s{color:var(--muted-2);font-weight:600;font-size:12px}
+.ia-prod-body span{font-size:12px;color:var(--muted);font-weight:500}
+.ia-ok{display:flex;align-items:center;gap:8px;color:var(--green);font-weight:700;font-size:13.5px}
+.ia-ok svg{width:16px;height:16px}
+.ia-summary{margin-top:16px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:16px}
+.ia-summary p{font-size:13.5px;color:var(--text);line-height:1.6;margin:0 0 6px}
+.ia-summary p:empty{display:none}
