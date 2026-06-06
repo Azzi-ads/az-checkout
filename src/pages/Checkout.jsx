@@ -207,7 +207,11 @@ export function CheckoutView({ product, preview = false }) {
   const infoRef = useRef({})
   const presRef = useRef(null)
   // Intent Score Engine — experiência dinâmica por intenção de compra
-  const intent = useIntentScore({ preview, enabled: cfg.intent?.enabled !== false, discountPct: cfg.intent?.discountPct ?? 10 })
+  const intent = useIntentScore({
+    preview, enabled: cfg.intent?.enabled !== false, discountPct: cfg.intent?.discountPct ?? 10,
+    sessionId: sid, slug: product.slug, owner: product.owner, utm: getTracking().utm,
+    deviceType: typeof navigator !== 'undefined' && /Mobi|Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+  })
 
   useEffect(() => {
     if (!cfg.timer || preview) return
@@ -393,8 +397,8 @@ export function CheckoutView({ product, preview = false }) {
     presRef.current?.update({ step: stepRef.current, product: product.name, value: formatBRL(total) })
   }, [status, total, preview, product.name])
 
-  // pagou → registra evento "paid"
-  useEffect(() => { if (status === 'paid') endSession() }, [status])
+  // pagou → registra evento "paid" + conversão de intenção
+  useEffect(() => { if (status === 'paid') { endSession(); intent.markConverted(total) } }, [status])
 
   // saiu (fechou aba / navegou) → registra evento (abandono, se não pagou)
   useEffect(() => {

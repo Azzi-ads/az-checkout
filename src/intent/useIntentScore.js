@@ -5,28 +5,50 @@ import { RuleBasedProvider, clamp, tierOf } from './intentScore.js'
 const throttle = (fn, ms) => { let t = 0; return (...a) => { const n = Date.now(); if (n - t >= ms) { t = n; fn(...a) } } }
 
 // Captura comportamento do visitante e calcula a intenção (0-100) em tempo real.
-export default function useIntentScore({ preview, enabled = true, discountPct = 10, provider } = {}) {
+export default function useIntentScore(opts = {}) {
+  const { preview, enabled = true, discountPct = 10, provider, sessionId, slug, owner, utm, deviceType } = opts
   const [score, setScore] = useState(0)
   const [tier, setTier] = useState('abandono')
   const [exitArmed, setExitArmed] = useState(false)
   const [discountActive, setDiscountActive] = useState(false)
-  const ref = useRef({ score: 0, tier: 'abandono', fired: new Set(), prov: provider || new RuleBasedProvider() })
+  const ref = useRef({ score: 0, tier: 'abandono', fired: new Set(), events: [], scrollDepth: 0, start: Date.now(), converted: false, convValue: 0, lastSent: 0, prov: provider || new RuleBasedProvider() })
+
+  const snapshot = () => {
+    const st = ref.current
+    return {
+      sessionId, checkoutSlug: slug, owner, score: st.score, tier: st.tier,
+      events: st.events.slice(-100), timeOnPage: Math.round((Date.now() - st.start) / 1000),
+      scrollDepth: Math.round(st.scrollDepth), converted: st.converted, conversionValue: st.convValue,
+      utm, deviceType,
+    }
+  }
+  const persist = (beacon) => {
+    if (preview || !sessionId) return
+    try {
+      const body = JSON.stringify(snapshot())
+      if (beacon && navigator.sendBeacon) navigator.sendBeacon('/api/intent', new Blob([body], { type: 'application/json' }))
+      else fetch('/api/intent', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true }).catch(() => {})
+    } catch { /* ignore */ }
+  }
 
   useEffect(() => {
     if (preview || !enabled || typeof window === 'undefined') return
     const st = ref.current
 
+    const maybePersist = () => { const n = Date.now(); if (n - st.lastSent > 4000) { st.lastSent = n; persist(false) } }
     const apply = (ev) => {
       const repeatable = ev === 'tab_change' || ev === 'minimize'
       if (!repeatable && st.fired.has(ev)) return
       if (!repeatable) st.fired.add(ev)
       const d = st.prov.delta(ev)
       if (!d) return
+      st.events.push({ event: ev, t: Date.now() })
       st.score = clamp(st.score + d)
       setScore(st.score)
       bus.emit('intent:score-updated', { score: st.score, event: ev })
       const t = tierOf(st.score)
-      if (t !== st.tier) { st.tier = t; setTier(t); bus.emit('intent:tier-changed', { tier: t, score: st.score }) }
+      if (t !== st.tier) { st.tier = t; setTier(t); bus.emit('intent:tier-changed', { tier: t, score: st.score }); persist(false); st.lastSent = Date.now() }
+      else maybePersist()
     }
 
     apply('page_open')
@@ -38,13 +60,14 @@ export default function useIntentScore({ preview, enabled = true, discountPct = 
     const onScroll = throttle(() => {
       const h = document.documentElement.scrollHeight - window.innerHeight
       const d = h > 0 ? (window.scrollY / h) * 100 : 100
+      if (d > st.scrollDepth) st.scrollDepth = d
       if (d >= 25) apply('scroll25'); if (d >= 50) apply('scroll50'); if (d >= 75) apply('scroll75')
       arm()
     }, 400)
     const onAct = throttle(arm, 1500)
-    const onVis = () => { if (document.hidden) apply('tab_change') }
+    const onVis = () => { if (document.hidden) { apply('tab_change'); persist(false) } }
     const onLeave = (e) => { if (e.clientY <= 0) { setExitArmed(true); bus.emit('intent:exit-triggered', {}) } }
-    const onBefore = () => apply('try_close')
+    const onBefore = () => { apply('try_close'); persist(true) }
     const onPop = () => apply('back')
     const onFocusIn = (e) => { if (e.target.closest?.('.ck-input')) apply('field_focus') }
     const onInput = (e) => { const id = e.target.id; if (id === 'ck-name') apply('fill_name'); else if (id === 'ck-email') apply('fill_email'); else if (id === 'ck-phone') apply('fill_phone') }
@@ -77,6 +100,7 @@ export default function useIntentScore({ preview, enabled = true, discountPct = 
     }, 900)
 
     return () => {
+      persist(true)
       stay.forEach(clearTimeout); inact.forEach(clearTimeout); clearTimeout(tIo); io?.disconnect()
       window.removeEventListener('scroll', onScroll); window.removeEventListener('mousemove', onAct); window.removeEventListener('keydown', onAct)
       document.removeEventListener('visibilitychange', onVis); document.removeEventListener('mouseout', onLeave)
@@ -88,5 +112,6 @@ export default function useIntentScore({ preview, enabled = true, discountPct = 
   }, [preview, enabled])
 
   const acceptDiscount = () => { setDiscountActive(true); bus.emit('intent:discount-triggered', { accepted: true }) }
-  return { score, tier, exitArmed, discountActive, discountPct, acceptDiscount, setExitArmed }
+  const markConverted = (value) => { ref.current.converted = true; ref.current.convValue = Number(value) || 0; bus.emit('intent:purchase-completed', { value }); persist(false) }
+  return { score, tier, exitArmed, discountActive, discountPct, acceptDiscount, setExitArmed, markConverted }
 }
