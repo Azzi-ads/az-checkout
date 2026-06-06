@@ -100,54 +100,42 @@ export default function Dashboard({ profile, onNav }) {
   }, [])
 
   return (
-    <>
+    <div className="dash">
       <div className="greeting">
         <h2>{greeting()}, {firstName(name)} 👋</h2>
         <p>Sua operação começa aqui. Crie um produto e compartilhe o checkout para ver os números aparecerem.</p>
       </div>
 
-      <div className="quick-label">Acesso rápido</div>
-      <div className="quick">
-        {QUICK.map((q) => (
-          <button type="button" key={q.id} className={`quick-card q-${q.c}`} onClick={() => onNav?.(q.id)}>
-            <span className="quick-ic"><Icon name={q.icon} /></span>
-            <b>{q.title}</b>
-            <span className="quick-sub">{q.sub}</span>
-          </button>
-        ))}
-      </div>
-
-      <div className="card journey-card">
-        <div className="card-head">
-          <h3>Jornada de premiação</h3>
-          <span className="pill">R$ {Math.round(rewardJourney.current / 1000)}k / {Math.round(rewardJourney.goal / 1000)}k</span>
+      <section className="dash-sec">
+        <div className="dash-label">Acesso rápido</div>
+        <div className="quick">
+          {QUICK.map((q) => (
+            <button type="button" key={q.id} className={`quick-card q-${q.c}`} onClick={() => onNav?.(q.id)}>
+              <span className="quick-ic"><Icon name={q.icon} /></span>
+              <b>{q.title}</b>
+              <span className="quick-sub">{q.sub}</span>
+            </button>
+          ))}
         </div>
-        <div className="journey-track">
-          <div className="journey-fill" style={{ width: `${Math.min(100, (rewardJourney.current / rewardJourney.goal) * 100)}%` }} />
-          {rewardJourney.milestones.map((m) => {
-            const unlocked = rewardJourney.current >= m.value
-            return (
-              <div className="journey-node" key={m.value} style={{ left: `${(m.value / rewardJourney.goal) * 100}%` }}>
-                <span className={`journey-dot${unlocked ? ' on' : ''}`}><Icon name="bolt" /></span>
-                <b>{m.label}</b>
-                <span>{m.prize}</span>
-              </div>
-            )
-          })}
+      </section>
+
+      <section className="dash-sec">
+        <div className="dash-label">Resumo de hoje</div>
+        <div className="grid kpis">
+          {kpis.map((k) => (
+            <KPICard key={k.label} {...k} />
+          ))}
         </div>
-      </div>
+      </section>
 
-      <div className="grid kpis">
-        {kpis.map((k) => (
-          <KPICard key={k.label} {...k} />
-        ))}
-      </div>
-
-      <div className="grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginTop: 16 }}>
-        <KPICard icon="chart" label={`Projeção do mês ${trendArrow}`} value={formatBRL(fc.projMonth)} />
-        <KPICard icon="revenue" label="LTV médio (por cliente)" value={formatBRL(fc.ltv)} />
-        <KPICard icon="bag" label="Produto em alta (7d)" value={fc.topProduct || '—'} />
-      </div>
+      <section className="dash-sec">
+        <div className="dash-label">Projeção & desempenho</div>
+        <div className="grid dash-3">
+          <KPICard icon="chart" label={`Projeção do mês ${trendArrow}`} value={formatBRL(fc.projMonth)} />
+          <KPICard icon="revenue" label="LTV médio (por cliente)" value={formatBRL(fc.ltv)} />
+          <KPICard icon="bag" label="Produto em alta (7d)" value={fc.topProduct || '—'} />
+        </div>
+      </section>
 
       <div className="grid row2">
         <div className="card">
@@ -178,7 +166,7 @@ export default function Dashboard({ profile, onNav }) {
         </div>
       </div>
 
-      <div className="card" style={{ marginTop: 16 }}>
+      <div className="card">
         <div className="card-head"><h3>Vendas pendentes</h3><span className="pill">{pendentes.length}</span></div>
         {pendentes.length === 0 ? (
           <div className="empty"><Icon name="bag" /><p>Nenhuma venda pendente</p><span>Pix gerados que ainda não foram pagos aparecem aqui.</span></div>
@@ -196,6 +184,26 @@ export default function Dashboard({ profile, onNav }) {
             ))}
           </div>
         )}
+      </div>
+
+      <div className="card journey-card">
+        <div className="card-head">
+          <h3>Jornada de premiação</h3>
+          <span className="pill">R$ {Math.round(rewardJourney.current / 1000)}k / {Math.round(rewardJourney.goal / 1000)}k</span>
+        </div>
+        <div className="journey-track">
+          <div className="journey-fill" style={{ width: `${Math.min(100, (rewardJourney.current / rewardJourney.goal) * 100)}%` }} />
+          {rewardJourney.milestones.map((m) => {
+            const unlocked = rewardJourney.current >= m.value
+            return (
+              <div className="journey-node" key={m.value} style={{ left: `${(m.value / rewardJourney.goal) * 100}%` }}>
+                <span className={`journey-dot${unlocked ? ' on' : ''}`}><Icon name="bolt" /></span>
+                <b>{m.label}</b>
+                <span>{m.prize}</span>
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       <div className="grid row2">
@@ -248,6 +256,6 @@ export default function Dashboard({ profile, onNav }) {
           )}
         </div>
       </div>
-    </>
+    </div>
   )
 }
