@@ -11,6 +11,8 @@ import { joinCheckoutPresence } from '../livePresence.js'
 import useIntentScore from '../intent/useIntentScore.js'
 import IntentActions from '../intent/IntentActions.jsx'
 import { getFingerprint } from '../fraud/fingerprint.js'
+import { initTracking, trackEvent } from '../tracking/tracking.js'
+import { captureUtms, getUtms } from '../tracking/utm.js'
 import { recordSale, updateSale, addSaleItem } from '../sales.js'
 import { hasBackend } from '../supabase.js'
 
@@ -253,7 +255,7 @@ export function CheckoutView({ product, preview = false }) {
   const dadosOk = nameOk && emailOk && cpfOk && valorOk && (stepsN === 2 && cfg.fields.address ? addrOk : true)
   const phaseValid = phaseKey === 'dados' ? dadosOk : phaseKey === 'endereco' ? addrOk : true
 
-  const set = (k) => (e) => { if (!interactRef.current) interactRef.current = Date.now(); setData((s) => ({ ...s, [k]: e.target.value })) }
+  const set = (k) => (e) => { if (!interactRef.current) { interactRef.current = Date.now(); if (!preview) trackEvent('initiated', { product: product.name }) } setData((s) => ({ ...s, [k]: e.target.value })) }
   async function runFraudCheck() {
     if (preview || !hasBackend) return { action: 'allow' }
     try {
@@ -421,8 +423,12 @@ export function CheckoutView({ product, preview = false }) {
   useEffect(() => {
     if (status !== 'paid') return
     endSession(); intent.markConverted(total)
-    if (ab && !preview) {
-      fetch('/api/exp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'convert', sessionId: sid, revenue: total, bump: !!(bump && cfg.bump.enabled) }) }).catch(() => {})
+    if (!preview) {
+      const txId = pixData?.id || saleId || sid
+      trackEvent('purchase', { value: total, product: product.name, transactionId: txId })
+      const ua = typeof navigator !== 'undefined' ? navigator.userAgent : ''
+      fetch('/api/utmify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slug: product.slug, transactionId: txId, sessionId: sid, value: total, product: product.name, method, customer: buildCustomer(), utms: getUtms(), userAgent: ua }) }).catch(() => {})
+      if (ab) fetch('/api/exp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'convert', sessionId: sid, revenue: total, bump: !!(bump && cfg.bump.enabled) }) }).catch(() => {})
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status])
@@ -433,6 +439,14 @@ export function CheckoutView({ product, preview = false }) {
     fetch('/api/exp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'assign', slug: product.slug, sessionId: sid }) })
       .then((r) => r.json()).then((j) => { if (j?.variantId) setAb({ experimentId: j.experimentId, variantId: j.variantId, config: j.config || {} }) }).catch(() => {})
   }, [preview, product.slug, sid])
+
+  // Tracking: captura UTMs, injeta pixels do dono e dispara PageView
+  useEffect(() => {
+    if (preview) return
+    captureUtms()
+    fetch(`/api/track-config?slug=${encodeURIComponent(product.slug)}`).then((r) => r.json())
+      .then((c) => { initTracking(c || {}); trackEvent('page_view', { product: product.name }) }).catch(() => {})
+  }, [preview, product.slug, product.name])
 
   // saiu (fechou aba / navegou) → registra evento (abandono, se não pagou)
   useEffect(() => {
@@ -612,7 +626,7 @@ export function CheckoutView({ product, preview = false }) {
       <header className="ck-step-head"><span className="ck-num">{stepsN === 1 ? (addressOn ? 3 : 2) : ph + 1}</span><h2>Pagamento</h2></header>
       <div className="ck-methods" role="tablist" aria-label="Forma de pagamento">
         {methods.map((m) => (
-          <button type="button" key={m.key} role="tab" aria-selected={method === m.key} className={`ck-method${method === m.key ? ' on' : ''}`} onClick={() => setMethod(m.key)}>
+          <button type="button" key={m.key} role="tab" aria-selected={method === m.key} className={`ck-method${method === m.key ? ' on' : ''}`} onClick={() => { setMethod(m.key); if (!preview) trackEvent('payment_method_selected', { product: product.name }) }}>
             <Icon name={m.icon} /><b>{m.label}</b><span>{m.note}</span>
           </button>
         ))}
