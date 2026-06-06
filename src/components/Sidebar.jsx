@@ -19,6 +19,7 @@ const SECTIONS = [
         id: 'analises', label: 'Análises', icon: 'chart',
         children: [
           { id: 'analises', label: 'Visão geral', icon: 'pulse' },
+          { id: 'intencao', label: 'Intenção', icon: 'spark' },
           { id: 'custos', label: 'Custos', icon: 'revenue' },
         ],
       },

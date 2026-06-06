@@ -4,6 +4,7 @@ import Sidebar from './components/Sidebar.jsx'
 import Topbar from './components/Topbar.jsx'
 import Dashboard from './pages/Dashboard.jsx'
 import Analises from './pages/Analises.jsx'
+import Intencao from './pages/Intencao.jsx'
 import Custos from './pages/Custos.jsx'
 import Livex from './pages/Livex.jsx'
 import Produtos from './pages/Produtos.jsx'
@@ -30,6 +31,7 @@ import { subscribeToPush } from './push.js'
 const SIMPLE_PAGES = {
   ia: IA,
   analises: Analises,
+  intencao: Intencao,
   custos: Custos,
   checkout: CheckoutAdmin,
   integracoes: Integracoes,
