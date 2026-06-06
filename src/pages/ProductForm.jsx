@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import Icon from '../components/Icon.jsx'
 import { formatBRL } from '../data.js'
 import { defaultCheckout } from '../checkoutConfig.js'
+import { isOwner } from '../auth.js'
+import { supabase } from '../supabase.js'
 
 const CATEGORIES = [
   { icon: 'p-video', label: 'Curso / vídeo' },
@@ -44,7 +46,9 @@ export default function ProductForm({ product, onSave, onClose }) {
   async function buscarProdutos() {
     setLoadingList(true); setListError('')
     try {
-      const r = await fetch('/api/produtos-bravo')
+      const { data: sess } = await supabase.auth.getSession()
+      const token = sess?.session?.access_token || ''
+      const r = await fetch('/api/produtos-bravo', { headers: { Authorization: `Bearer ${token}` } })
       const j = await r.json()
       if (!r.ok) throw new Error(j.error || 'Erro ao buscar produtos.')
       setBravoList(j.products || [])
@@ -105,14 +109,14 @@ export default function ProductForm({ product, onSave, onClose }) {
 
         {/* vínculo com o gateway */}
         <div className="field">
-          <label>Produto no BravoPay <button type="button" className="link-btn" onClick={buscarProdutos} disabled={loadingList}>{loadingList ? 'buscando…' : 'buscar'}</button></label>
+          <label>ID do produto no gateway {isOwner() && <button type="button" className="link-btn" onClick={buscarProdutos} disabled={loadingList}>{loadingList ? 'buscando…' : 'buscar'}</button>}</label>
           {bravoList ? (
             <select value={draft.bravoProductId || ''} onChange={(e) => escolher(e.target.value)}>
               <option value="">Selecione…</option>
               {bravoList.map((p) => <option key={bvId(p)} value={bvId(p)}>{bvName(p)}{bvCents(p) != null ? ` — ${formatBRL(bvCents(p) / 100)}` : ''}</option>)}
             </select>
           ) : (
-            <input value={draft.bravoProductId || ''} onChange={(e) => set({ bravoProductId: e.target.value })} placeholder="Clique em “buscar” ou cole o ID do BravoPay" />
+            <input value={draft.bravoProductId || ''} onChange={(e) => set({ bravoProductId: e.target.value })} placeholder={isOwner() ? 'Clique em “buscar” ou cole o ID' : 'Cole o ID do produto no seu gateway'} />
           )}
           {listError && <small style={{ color: 'var(--red)', display: 'block', marginTop: 6 }}>{listError}</small>}
         </div>

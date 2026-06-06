@@ -211,6 +211,9 @@ export default function Dashboard({ profile, onNav }) {
         </div>
         <div className="card">
           <div className="card-head"><h3>Mural de novidades</h3></div>
+          {news.length === 0 ? (
+            <div className="empty"><Icon name="megaphone" /><p>Nenhuma novidade ainda</p><span>Os avisos da plataforma aparecem aqui.</span></div>
+          ) : (
           <div className="news">
             {news.map((n) => (
               <div className={`news-it${n.desc ? ' news-feat' : ''}`} key={n.title}>
@@ -233,6 +236,7 @@ export default function Dashboard({ profile, onNav }) {
               </div>
             ))}
           </div>
+          )}
         </div>
       </div>
     </>

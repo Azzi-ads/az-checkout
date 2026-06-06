@@ -1,7 +1,6 @@
 // Dados por usuário (produtos, perfil, tema).
 // Leitura síncrona via localStorage (cache); quando há backend, sincroniza com
 // o Supabase (produtos e perfil) — hidrata no login e faz push ao salvar.
-import { products as seedProducts } from './data.js'
 import { getUser } from './auth.js'
 import { supabase, hasBackend } from './supabase.js'
 
@@ -13,7 +12,7 @@ function write(data) { try { localStorage.setItem(keyFor(), JSON.stringify(data)
 
 function defaults() {
   return {
-    products: seedProducts.filter((p) => p.slug),
+    products: [],
     profile: { name: getUser()?.name || '', cpf: getUser()?.cpf || '', phone: getUser()?.phone || '', avatar: '', security: false, domain: '', plan: 'start', card: null, notifPending: true, notifPaid: true, notifMode: 'auto', notifTextPaid: '', notifTextPending: '', notifColor: '' },
     theme: { accent: '#ffd400', mode: 'dark', preset: 'amarelo', bg: '' },
   }

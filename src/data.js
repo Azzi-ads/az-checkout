@@ -253,12 +253,8 @@ export const costsBase = {
 export const costsDefaults = { ads: 0, gateway: 0, outros: 0 }
 
 // ===== Início: Mural de novidades + Alcance geográfico =====
-export const newsWall = [
-  { tag: 'Novidade', title: 'Popup de prova social', desc: 'Exiba quem acabou de comprar direto no checkout, configurável no personalizador.', time: 'há 2h' },
-  { title: 'Painel de Custos renovado', time: 'há 2h' },
-  { title: 'Automação AZ 2.0 disponível', time: 'há 1d' },
-  { title: 'Relatório de jornada do checkout', time: 'há 3d' },
-]
+// Mural vazio por padrão — só mostra anúncios reais (tabela announcements).
+export const newsWall = []
 
 // Conta nova: ainda sem visitantes.
 export const geoReach = []

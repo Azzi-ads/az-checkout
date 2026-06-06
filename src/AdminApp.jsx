@@ -20,7 +20,7 @@ import Admin from './pages/Admin.jsx'
 import useLiveCount from './useLiveCount.js'
 import Icon from './components/Icon.jsx'
 import { pageTitles, formatBRL } from './data.js'
-import { logout, getUser } from './auth.js'
+import { logout, getUser, isOwner } from './auth.js'
 import { getProfile, saveProfile, getTheme, saveTheme } from './store.js'
 import { themeVars } from './theme.js'
 import { supabase, hasBackend } from './supabase.js'
@@ -131,6 +131,7 @@ export default function AdminApp() {
     if (page === 'aparencia') return <Aparencia theme={theme} onChange={handleThemeChange} />
     if (page === 'security') return <AZSecurity profile={profile} onSave={handleProfileSave} />
     if (page === 'cobrancas') return <Cobrancas profile={profile} onGoPlanos={() => selectPage('planos')} />
+    if (page === 'admin' && !isOwner()) return <Dashboard profile={profile} onNav={selectPage} />
     const Page = SIMPLE_PAGES[page]
     return <Page />
   }
