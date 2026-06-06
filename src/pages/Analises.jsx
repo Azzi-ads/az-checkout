@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import PeriodTabs from '../components/PeriodTabs.jsx'
+import Icon from '../components/Icon.jsx'
 import { abandonedSeries, checkoutJourney, operationHealth, formatBRL } from '../data.js'
 import { useSales, computeMetrics, DAY } from '../metrics.js'
+import { generateAlerts } from '../alerts.js'
+import { getProducts } from '../store.js'
 
 const WIN = { hoje: DAY, ontem: DAY, '7d': 7 * DAY, mes: 30 * DAY, ano: 365 * DAY }
 
@@ -41,6 +44,7 @@ function AbandonedChart() {
 export default function Analises() {
   const [period, setPeriod] = useState('hoje')
   const sales = useSales()
+  const alerts = useMemo(() => generateAlerts(sales, getProducts()), [sales])
   const m = computeMetrics(sales, WIN[period] || DAY)
   const kpis = [
     { key: 'vendas', label: 'Vendas Geradas', value: formatBRL(m.receita), sub: `${m.pagos} pedidos`, highlight: true },
@@ -54,6 +58,26 @@ export default function Analises() {
     <>
       <div className="page-head">
         <PeriodTabs value={period} onChange={setPeriod} />
+      </div>
+
+      <div className="card insights" style={{ marginBottom: 16 }}>
+        <div className="card-head"><h3>Insights</h3><span className="pill">{alerts.length}</span></div>
+        {alerts.length === 0 ? (
+          <div className="empty"><Icon name="check" /><p>Tudo certo!</p><span>Sua operação está saudável — sem alertas no momento.</span></div>
+        ) : (
+          <div className="insight-list">
+            {alerts.map((a, i) => (
+              <div className={`insight insight-${a.type}`} key={i}>
+                <div className="insight-ic"><Icon name={a.type === 'success' ? 'check' : a.type === 'info' ? 'bolt' : 'shield'} /></div>
+                <div className="insight-body">
+                  <b>{a.title}</b>
+                  <p>{a.desc}</p>
+                  {a.action && <span className="insight-act"><Icon name="bolt" />{a.action}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid metrics">

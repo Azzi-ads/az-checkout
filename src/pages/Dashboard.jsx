@@ -1,8 +1,9 @@
 import KPICard from '../components/KPICard.jsx'
 import Icon from '../components/Icon.jsx'
-import { revenueChart, geoReach, newsWall, rewardJourney, formatBRL } from '../data.js'
+import { geoReach, newsWall, rewardJourney, formatBRL } from '../data.js'
 import { getUser } from '../auth.js'
 import { useSales, computeMetrics, DAY } from '../metrics.js'
+import { forecast, buildChartPaths } from '../forecast.js'
 import { supabase, hasBackend } from '../supabase.js'
 import { useEffect, useState } from 'react'
 
@@ -28,29 +29,28 @@ function firstName(name = '') {
   return name.trim().split(/\s+/)[0] || 'por aqui'
 }
 
-function RevenueChart() {
-  const { area, line, dot, labels } = revenueChart
+function RevenueChart({ paths }) {
   return (
     <>
-      <svg className="chart" viewBox="0 0 640 220" preserveAspectRatio="none" role="img" aria-label="Faturamento dos últimos 7 dias, tendência de alta">
+      <svg className="chart" viewBox="0 0 640 220" preserveAspectRatio="none" role="img" aria-label="Faturamento dos últimos 30 dias e projeção">
         <defs>
           <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="rgba(255,212,0,.34)" />
             <stop offset="100%" stopColor="rgba(255,212,0,0)" />
           </linearGradient>
         </defs>
-        <line className="gl" x1="0" y1="40" x2="640" y2="40" />
-        <line className="gl" x1="0" y1="95" x2="640" y2="95" />
-        <line className="gl" x1="0" y1="150" x2="640" y2="150" />
-        <path className="area" d={area} />
-        <path className="line" d={line} />
-        <circle className="dot" cx={dot.cx} cy={dot.cy} r="5" />
+        <line className="gl" x1="0" y1="55" x2="640" y2="55" />
+        <line className="gl" x1="0" y1="110" x2="640" y2="110" />
+        <line className="gl" x1="0" y1="165" x2="640" y2="165" />
+        {paths.area && <path className="area" d={paths.area} />}
+        {paths.line && <path className="line" d={paths.line} />}
+        {paths.projLine && <path d={paths.projLine} fill="none" stroke="var(--yellow)" strokeWidth="2" strokeDasharray="5 5" opacity="0.6" />}
+        {paths.dot && <circle className="dot" cx={paths.dot.cx} cy={paths.dot.cy} r="5" />}
       </svg>
-      <svg viewBox="0 0 640 20" style={{ width: '100%', height: 20 }} aria-hidden="true">
-        {labels.map((l) => (
-          <text className="xlab" key={l.t} x={l.x} y="14">{l.t}</text>
-        ))}
-      </svg>
+      <div className="chart-legend">
+        <span><i style={{ background: 'var(--yellow)' }} />Últimos 30 dias</span>
+        <span><i style={{ background: 'var(--yellow)', opacity: 0.5 }} />Projeção</span>
+      </div>
     </>
   )
 }
@@ -82,6 +82,9 @@ export default function Dashboard({ profile, onNav }) {
     .filter((s) => s.status === 'aguardando')
     .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
     .slice(0, 6)
+  const fc = forecast(sales)
+  const chartPaths = buildChartPaths(fc.daily, fc.projected)
+  const trendArrow = fc.trend === 'up' ? '↑' : fc.trend === 'down' ? '↓' : '→'
 
   const [news, setNews] = useState(newsWall)
   useEffect(() => {
@@ -140,13 +143,19 @@ export default function Dashboard({ profile, onNav }) {
         ))}
       </div>
 
+      <div className="grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)', marginTop: 16 }}>
+        <KPICard icon="chart" label={`Projeção do mês ${trendArrow}`} value={formatBRL(fc.projMonth)} />
+        <KPICard icon="revenue" label="LTV médio (por cliente)" value={formatBRL(fc.ltv)} />
+        <KPICard icon="bag" label="Produto em alta (7d)" value={fc.topProduct || '—'} />
+      </div>
+
       <div className="grid row2">
         <div className="card">
           <div className="card-head">
-            <h3>Faturamento — 7 dias</h3>
-            <span className="pill">{revenueChart.total}</span>
+            <h3>Faturamento — 30 dias</h3>
+            <span className="pill">{formatBRL(fc.daily.reduce((a, b) => a + b, 0))} no período</span>
           </div>
-          <RevenueChart />
+          <RevenueChart paths={chartPaths} />
         </div>
         <div className="card">
           <div className="card-head"><h3>Vendas recentes</h3></div>
