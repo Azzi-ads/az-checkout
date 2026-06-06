@@ -455,6 +455,32 @@ body::before{
 .ck-deliver-h svg{width:16px;height:16px;color:var(--accent,var(--yellow))}
 .ck-deliver p{font-size:13.5px;line-height:1.55;color:var(--text);white-space:pre-wrap;word-break:break-word;margin:0}
 
+/* Intent Score Engine — ações dinâmicas no checkout */
+.ck-discount{color:var(--green);font-weight:700}
+.intent-overlay{position:fixed;top:0;left:0;width:calc(100vw / .78);height:calc(100vh / .78);background:rgba(0,0,0,.55);display:grid;place-items:center;padding:24px;z-index:80;animation:fade .2s ease}
+.intent-modal{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:26px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.45)}
+.intent-badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--on-accent,#000);background:var(--yellow);padding:4px 11px;border-radius:99px;margin-bottom:12px}
+.intent-modal h3{font-size:20px;font-weight:800}
+.intent-modal p{font-size:14px;color:var(--muted);margin:8px 0 16px;line-height:1.5}
+.intent-modal .btn-primary{width:100%;justify-content:center}
+.intent-link{display:block;margin:10px auto 0;background:none;border:0;color:var(--muted-2);font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:underline}
+.intent-banner{position:fixed;top:0;left:0;width:calc(100vw / .78);display:flex;align-items:center;gap:10px;justify-content:center;background:var(--yellow-soft);border-bottom:1px solid var(--line);padding:10px 16px;z-index:70;font-size:13px;font-weight:700;color:var(--text);animation:fade .2s ease}
+.intent-banner>svg{width:16px;height:16px;color:var(--yellow)}
+.intent-banner .btn-primary{padding:6px 12px;font-size:12.5px}
+.intent-x{background:none;border:0;color:var(--muted-2);cursor:pointer;display:grid;place-items:center}
+.intent-x svg{width:15px;height:15px}
+.intent-support{position:fixed;right:18px;bottom:18px;width:280px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 16px 44px rgba(0,0,0,.4);z-index:70;animation:fade .2s ease}
+.intent-support .intent-x{position:absolute;top:10px;right:10px}
+.intent-support-h{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px}
+.intent-support-h svg{width:16px;height:16px;color:var(--yellow)}
+.intent-support p{font-size:12.5px;color:var(--muted);margin:6px 0 12px;line-height:1.45}
+.intent-support .btn-primary{width:100%;justify-content:center}
+@media(max-width:860px){
+  .intent-overlay{width:100vw;height:100vh}
+  .intent-banner{width:100vw}
+  .intent-support{left:14px;right:14px;width:auto}
+}
+
 @media(max-width:860px){
   .ck-grid{grid-template-columns:1fr}
   .ck-summary{position:static;order:2}

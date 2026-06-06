@@ -8,6 +8,8 @@ import { themeVars } from '../theme.js'
 import { ensureCheckout } from '../checkoutConfig.js'
 import { ping, leave, recordEvent } from '../liveTracker.js'
 import { joinCheckoutPresence } from '../livePresence.js'
+import useIntentScore from '../intent/useIntentScore.js'
+import IntentActions from '../intent/IntentActions.jsx'
 import { recordSale, updateSale, addSaleItem } from '../sales.js'
 import { hasBackend } from '../supabase.js'
 
@@ -204,6 +206,8 @@ export function CheckoutView({ product, preview = false }) {
   const outcomeRef = useRef('abandoned')
   const infoRef = useRef({})
   const presRef = useRef(null)
+  // Intent Score Engine — experiência dinâmica por intenção de compra
+  const intent = useIntentScore({ preview, enabled: cfg.intent?.enabled !== false, discountPct: cfg.intent?.discountPct ?? 10 })
 
   useEffect(() => {
     if (!cfg.timer || preview) return
@@ -221,7 +225,9 @@ export function CheckoutView({ product, preview = false }) {
   const shipOpts = cfg.shipping?.options || []
   const shipSel = cfg.shipping?.enabled ? (shipOpts[ship] || shipOpts[0]) : null
   const shipPrice = shipSel?.price || 0
-  const total = baseAmount + (bump && cfg.bump.enabled ? cfg.bump.amount : 0) + shipPrice
+  const rawTotal = baseAmount + (bump && cfg.bump.enabled ? cfg.bump.amount : 0) + shipPrice
+  const intentDiscount = intent.discountActive ? Math.round(rawTotal * (intent.discountPct / 100) * 100) / 100 : 0
+  const total = Math.max(0, rawTotal - intentDiscount)
   const parcelas = useMemo(() => installments(total), [total])
 
   const emailOk = /\S+@\S+\.\S+/.test(data.email)
@@ -445,6 +451,7 @@ export function CheckoutView({ product, preview = false }) {
             ))}
           </div>
         )}
+        {intentDiscount > 0 && <div className="ck-line ck-discount"><span>Desconto ({intent.discountPct}%)</span><span className="num">− {formatBRL(intentDiscount)}</span></div>}
         <div className="ck-line ck-total"><span>Total</span><span className="num">{formatBRL(total)}</span></div>
       </div>
       <ul className="ck-trust">
@@ -670,6 +677,7 @@ export function CheckoutView({ product, preview = false }) {
         {Resumo}
       </form>
       {cfg.bannerBottom && <img className="ck-bannerimg" src={cfg.bannerBottom} alt="" />}
+      {!preview && <IntentActions intent={intent} whatsapp={cfg.whatsapp} />}
     </Frame>
   )
 }
