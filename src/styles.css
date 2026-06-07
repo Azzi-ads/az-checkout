@@ -506,7 +506,11 @@ body::before{
 /* Dropshipping: coluna única focada, urgência forte, CTA grande */
 .ck-skin-drop .ck-body{max-width:600px}
 .ck-skin-drop .ck-grid{grid-template-columns:1fr}
-.ck-skin-drop .ck-summary{position:static;order:2}
+/* produto + resumo NO TOPO (padrão de checkout de mercado) */
+.ck-skin-drop .ck-summary{position:static;order:-1}
+.ck-skin-drop .ck-prod-thumb{width:84px;height:84px;flex:0 0 84px;border-radius:12px}
+.ck-skin-drop .ck-prod h3{font-size:16px;font-weight:800}
+.ck-skin-drop .ck-total .num{font-size:26px}
 .ck-skin-drop .ck-timer{background:var(--yellow);color:var(--on-accent,#fff);font-weight:800;font-size:14px;padding:12px 16px;border-bottom:0;animation:pulse 1.9s infinite}
 .ck-skin-drop .ck-timer svg{color:var(--on-accent,#fff)}
 .ck-skin-drop .ck-banner{background:linear-gradient(90deg,var(--yellow),var(--yellow-dim));color:var(--on-accent,#fff);font-weight:800;text-align:center;border-radius:12px;padding:12px 14px;border:0;box-shadow:0 8px 22px var(--yellow-soft)}
@@ -515,7 +519,6 @@ body::before{
 .ck-skin-drop .card{border-radius:16px}
 .ck-skin-drop .ck-cta{font-size:18px;font-weight:900;padding:18px;border-radius:14px;box-shadow:0 12px 30px var(--yellow-soft)}
 .ck-skin-drop .ck-cta:hover:not(:disabled){transform:translateY(-2px)}
-.ck-skin-drop .ck-prod-thumb{width:64px;height:64px;flex:0 0 64px}
 
 /* bandeiras de pagamento (rodapé) */
 .ck-brands{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;width:100%;margin-bottom:6px}
