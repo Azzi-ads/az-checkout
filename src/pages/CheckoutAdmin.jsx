@@ -39,7 +39,18 @@ function CheckoutBuilder({ product, onSave, onBack }) {
   const [previewMode, setPreviewMode] = useState('desktop')
   const cfg = draft.checkout
   const setCfg = (patch) => setDraft((d) => ({ ...d, checkout: { ...d.checkout, ...patch } }))
-  const applyTemplate = (t) => setDraft((d) => ({ ...d, checkout: { ...applyModel(d.checkout, t.model), layout: t.layout, steps: t.steps, theme: t.theme, accent: t.accent, bg: '', template: t.key } }))
+  const applyTemplate = (t) => setDraft((d) => {
+    const b = applyModel(d.checkout, t.model)
+    const ex = t.extra || {}
+    return { ...d, checkout: {
+      ...b, layout: t.layout, steps: t.steps, theme: t.theme, accent: t.accent, skin: t.skin, bg: '', template: t.key,
+      fields: { ...b.fields, ...(ex.fields || {}) },
+      quantity: { ...b.quantity, ...(ex.quantity || {}) },
+      shipping: { ...b.shipping, ...(ex.shipping || {}) },
+      headline: { ...b.headline, ...(ex.headline || {}) },
+      ...(ex.timer !== undefined ? { timer: ex.timer } : {}),
+    } }
+  })
   const setField = (k, v) => setCfg({ fields: { ...cfg.fields, [k]: v } })
   const setMethod = (k, v) => setCfg({ methods: { ...cfg.methods, [k]: v } })
   const setBump = (patch) => setCfg({ bump: { ...cfg.bump, ...patch } })
@@ -327,13 +338,7 @@ function CheckoutBuilder({ product, onSave, onBack }) {
       <div className="builder-top">
         <button type="button" className="ck-back" onClick={onBack} aria-label="Voltar"><Icon name="arrowLeft" /></button>
         <h2>Checkout Builder</h2>
-        <div className="builder-model">
-          <span>Modelo</span>
-          <select value={cfg.model} onChange={(e) => setDraft((d) => ({ ...d, checkout: applyModel(d.checkout, e.target.value) }))}>
-            {CHECKOUT_MODELS.map((m) => <option key={m.key} value={m.key}>{m.label}</option>)}
-          </select>
-        </div>
-        <button type="button" className="btn btn-primary" onClick={() => onSave(draft)}><Icon name="check" />Salvar alterações</button>
+        <button type="button" className="btn btn-primary" style={{ marginLeft: 'auto' }} onClick={() => onSave(draft)}><Icon name="check" />Salvar alterações</button>
       </div>
 
       <div className="builder-grid">

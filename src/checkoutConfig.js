@@ -19,14 +19,32 @@ export const CHECKOUT_MODELS = [
   { key: 'valor-livre', label: 'Valor Livre', desc: 'Cliente escolhe quanto pagar.', icon: 'lines' },
 ]
 
-// Modelos prontos (bases) — aplicam layout + etapas + tema de uma vez. Marca AZ.
+// Modelos prontos por NICHO — cada um muda o layout (estrutura), o "skin" (visual)
+// e os widgets, gerando checkouts genuinamente diferentes (não só texto). Marca AZ.
 export const CHECKOUT_TEMPLATES = [
-  { key: 'branco', name: 'Em Branco', desc: 'Comece do zero e personalize', model: 'padrao', layout: 'classico', steps: 1, theme: 'light', accent: '#16a34a' },
-  { key: 'express', name: 'AZ Express', desc: 'Só Pix, poucos campos — alta conversão', model: 'pix-na-hora', layout: 'centralizado', steps: 1, theme: 'light', accent: '#16a34a' },
-  { key: 'loja', name: 'AZ Loja', desc: 'Produto físico com endereço (3 etapas)', model: 'drop', layout: 'classico', steps: 3, theme: 'light', accent: '#2563eb' },
-  { key: 'duas-colunas', name: 'AZ Duas Colunas', desc: 'Formulário + resumo lado a lado', model: 'padrao', layout: 'classico', steps: 1, theme: 'light', accent: '#7c3aed' },
-  { key: 'vision', name: 'AZ Vision', desc: 'Premium com depoimentos e prova social', model: 'vision', layout: 'classico', steps: 1, theme: 'light', accent: '#16a34a' },
-  { key: 'escuro', name: 'AZ Escuro', desc: 'Tema escuro com destaque amarelo', model: 'padrao', layout: 'classico', steps: 1, theme: 'dark', accent: '#ffd400' },
+  {
+    key: 'info', name: 'Infoproduto', desc: 'Curso / e-book — prova social + garantia',
+    skin: 'info', model: 'vision', layout: 'classico', steps: 1, theme: 'light', accent: '#16a34a',
+    extra: { fields: { phone: true, cpf: true, address: false }, timer: true },
+  },
+  {
+    key: 'ecom', name: 'E-commerce', desc: 'Loja — produto, quantidade e entrega',
+    skin: 'ecom', model: 'drop', layout: 'classico', steps: 1, theme: 'light', accent: '#2563eb',
+    extra: { fields: { phone: true, cpf: true, address: true }, quantity: { enabled: true, max: 10 }, shipping: { enabled: true, options: [{ label: 'Padrão', price: 0 }] }, timer: false },
+  },
+  {
+    key: 'drop', name: 'Dropshipping', desc: 'Oferta agressiva — timer, frete e escassez',
+    skin: 'drop', model: 'drop', layout: 'centralizado', steps: 1, theme: 'light', accent: '#e11d48',
+    extra: { fields: { phone: true, cpf: false, address: true }, timer: true, headline: { enabled: true, text: '🔥 Frete grátis hoje — estoque limitado!' }, shipping: { enabled: true, options: [{ label: 'Frete grátis', price: 0 }] } },
+  },
+  {
+    key: 'branco', name: 'Em Branco', desc: 'Comece do zero e personalize',
+    skin: 'info', model: 'padrao', layout: 'classico', steps: 1, theme: 'light', accent: '#16a34a', extra: {},
+  },
+  {
+    key: 'escuro', name: 'AZ Escuro', desc: 'Tema escuro premium (amarelo)',
+    skin: 'info', model: 'padrao', layout: 'classico', steps: 1, theme: 'dark', accent: '#ffd400', extra: {},
+  },
 ]
 
 export const FIELD_DEFS = [
@@ -83,6 +101,7 @@ export function defaultCheckout(model = 'padrao') {
     steps: 1, // 1 = página única, 2 = dados→pagamento, 3 = dados→endereço→pagamento
     accent: '#16a34a',
     theme: 'light',
+    skin: 'info', // estilo/nicho: info | ecom | drop
     bg: '',
     logo: '',
     bannerTop: '',
@@ -144,6 +163,7 @@ export function ensureCheckout(product) {
     fieldLabels: { ...base.fieldLabels, ...c.fieldLabels },
     blocks: c.blocks && c.blocks.length ? c.blocks : base.blocks,
     colors: { ...base.colors, ...c.colors },
+    skin: c.skin || base.skin,
     methods: { ...base.methods, ...c.methods },
     bump: { ...base.bump, ...c.bump },
     quantity: { ...base.quantity, ...c.quantity },
