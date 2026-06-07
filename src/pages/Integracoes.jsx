@@ -33,17 +33,10 @@ export default function Integracoes() {
   const [test, setTest] = useState({ state: 'idle', msg: '' })
   const [domain, setDomain] = useState(() => getProfile().domain || '')
   const [savedDom, setSavedDom] = useState(false)
-  const [trk, setTrk] = useState(() => getProfile().tracking || {})
-  const [savedTrk, setSavedTrk] = useState(false)
 
   function saveDomain() {
     saveProfile({ domain: domain.trim() })
     setSavedDom(true); setTimeout(() => setSavedDom(false), 2000)
-  }
-  const setTrkField = (k, v) => setTrk((t) => ({ ...t, [k]: v }))
-  function saveTracking() {
-    saveProfile({ tracking: trk })
-    setSavedTrk(true); setTimeout(() => setSavedTrk(false), 2000)
   }
 
   async function testar() {
@@ -96,24 +89,6 @@ export default function Integracoes() {
           <span>A <b>chave secreta</b> fica guardada com segurança no servidor (variável de ambiente <code>BRAVOPAY_API_KEY</code> no Vercel) — nunca no navegador. Cada produto se liga a um produto do BravoPay em <b>Produtos → Editar</b>.</span>
         </div>
         <CopyField label="URL do webhook (cadastre no painel do BravoPay)" value={`${origin}/api/webhook`} />
-      </div>
-
-      <div className="card" style={{ marginTop: 16 }}>
-        <div className="card-head"><h3>Pixels & rastreamento</h3><span className="pill">tráfego pago</span></div>
-        <p className="area-intro" style={{ marginBottom: 14 }}>Cole os IDs e salve — os eventos (PageView, InitiateCheckout, Purchase) são disparados automaticamente no checkout.</p>
-        <div className="ck-row">
-          <div className="field"><label>Meta Pixel (ID)</label><input value={trk.metaPixel || ''} onChange={(e) => setTrkField('metaPixel', e.target.value)} placeholder="000000000000000" /></div>
-          <div className="field"><label>TikTok Pixel (ID)</label><input value={trk.tiktokPixel || ''} onChange={(e) => setTrkField('tiktokPixel', e.target.value)} placeholder="XXXXXXXXXXXX" /></div>
-        </div>
-        <div className="ck-row">
-          <div className="field"><label>Kwai Pixel (ID)</label><input value={trk.kwaiPixel || ''} onChange={(e) => setTrkField('kwaiPixel', e.target.value)} placeholder="XXXXXXXX" /></div>
-          <div className="field"><label>Utmify (Token API)</label><input value={trk.utmifyToken || ''} onChange={(e) => setTrkField('utmifyToken', e.target.value)} placeholder="token da sua conta Utmify" /></div>
-        </div>
-        <div className="ck-row">
-          <div className="field"><label>Google Ads — Conversion ID</label><input value={trk.googleAdsId || ''} onChange={(e) => setTrkField('googleAdsId', e.target.value)} placeholder="AW-000000000" /></div>
-          <div className="field"><label>Google Ads — Conversion Label</label><input value={trk.googleAdsLabel || ''} onChange={(e) => setTrkField('googleAdsLabel', e.target.value)} placeholder="AbC-D_efG" /></div>
-        </div>
-        <button type="button" className="btn btn-primary" onClick={saveTracking}>{savedTrk ? <><Icon name="check" />Salvo!</> : 'Salvar pixels'}</button>
       </div>
 
       <div className="card" style={{ marginTop: 16 }}>

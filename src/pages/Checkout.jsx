@@ -8,11 +8,6 @@ import { themeVars } from '../theme.js'
 import { ensureCheckout } from '../checkoutConfig.js'
 import { ping, leave, recordEvent } from '../liveTracker.js'
 import { joinCheckoutPresence } from '../livePresence.js'
-import useIntentScore from '../intent/useIntentScore.js'
-import IntentActions from '../intent/IntentActions.jsx'
-import { getFingerprint } from '../fraud/fingerprint.js'
-import { initTracking, trackEvent } from '../tracking/tracking.js'
-import { captureUtms, getUtms } from '../tracking/utm.js'
 import { recordSale, updateSale, addSaleItem } from '../sales.js'
 import { hasBackend } from '../supabase.js'
 
@@ -173,8 +168,7 @@ function Frame({ children, preview, styleVars, showTimer, mmss, logo, brandName,
 }
 
 export function CheckoutView({ product, preview = false }) {
-  const [ab, setAb] = useState(null) // variante de Teste A/B aplicada
-  const cfg = useMemo(() => { const base = ensureCheckout(product); return ab?.config ? { ...base, ...ab.config } : base }, [product, ab])
+  const cfg = ensureCheckout(product)
   const styleVars = themeVars({ accent: cfg.accent, mode: cfg.theme })
   const isRapido = cfg.model === 'rapido'
   const secure = (() => { try { return !!getProfile().security } catch { return false } })()
@@ -203,8 +197,6 @@ export function CheckoutView({ product, preview = false }) {
   const [saleId, setSaleId] = useState(null)
   const [proofSent, setProofSent] = useState(false)
   const proofRef = useRef(null)
-  const interactRef = useRef(0) // 1ª interação (p/ medir tempo de preenchimento)
-  const fpData = useMemo(() => getFingerprint(), [])
   const [sid] = useState(() => Math.random().toString(36).slice(2, 8))
   const stepRef = useRef('Dados')
   stepRef.current = status === 'pix' ? 'Pagamento' : status === 'paid' ? 'Aprovado' : 'Dados'
@@ -212,12 +204,6 @@ export function CheckoutView({ product, preview = false }) {
   const outcomeRef = useRef('abandoned')
   const infoRef = useRef({})
   const presRef = useRef(null)
-  // Intent Score Engine — experiência dinâmica por intenção de compra
-  const intent = useIntentScore({
-    preview, enabled: cfg.intent?.enabled !== false, discountPct: cfg.intent?.discountPct ?? 10,
-    sessionId: sid, slug: product.slug, owner: product.owner, utm: getTracking().utm,
-    deviceType: typeof navigator !== 'undefined' && /Mobi|Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
-  })
 
   useEffect(() => {
     if (!cfg.timer || preview) return
@@ -235,9 +221,7 @@ export function CheckoutView({ product, preview = false }) {
   const shipOpts = cfg.shipping?.options || []
   const shipSel = cfg.shipping?.enabled ? (shipOpts[ship] || shipOpts[0]) : null
   const shipPrice = shipSel?.price || 0
-  const rawTotal = baseAmount + (bump && cfg.bump.enabled ? cfg.bump.amount : 0) + shipPrice
-  const intentDiscount = intent.discountActive ? Math.round(rawTotal * (intent.discountPct / 100) * 100) / 100 : 0
-  const total = Math.max(0, rawTotal - intentDiscount)
+  const total = baseAmount + (bump && cfg.bump.enabled ? cfg.bump.amount : 0) + shipPrice
   const parcelas = useMemo(() => installments(total), [total])
 
   const emailOk = /\S+@\S+\.\S+/.test(data.email)
@@ -255,16 +239,7 @@ export function CheckoutView({ product, preview = false }) {
   const dadosOk = nameOk && emailOk && cpfOk && valorOk && (stepsN === 2 && cfg.fields.address ? addrOk : true)
   const phaseValid = phaseKey === 'dados' ? dadosOk : phaseKey === 'endereco' ? addrOk : true
 
-  const set = (k) => (e) => { if (!interactRef.current) { interactRef.current = Date.now(); if (!preview) trackEvent('initiated', { product: product.name }) } setData((s) => ({ ...s, [k]: e.target.value })) }
-  async function runFraudCheck() {
-    if (preview || !hasBackend) return { action: 'allow' }
-    try {
-      const c = buildCustomer()
-      const fillTimeMs = interactRef.current ? Date.now() - interactRef.current : null
-      const r = await fetch('/api/fraud-check', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sessionId: sid, slug: product.slug, name: c.name, email: c.email, cpf: c.cpf, fingerprint: fpData.fingerprint, device: fpData.device, fillTimeMs }) })
-      return await r.json()
-    } catch { return { action: 'allow' } }
-  }
+  const set = (k) => (e) => setData((s) => ({ ...s, [k]: e.target.value }))
   const setA = (k) => (e) => setAddr((s) => ({ ...s, [k]: e.target.value }))
 
   async function pay(e) {
@@ -276,13 +251,6 @@ export function CheckoutView({ product, preview = false }) {
     // Preview do editor: não chama o gateway de verdade (usa mock visual).
     if (preview) {
       setStatus(goPix ? 'pix' : 'paid')
-      return
-    }
-
-    // AZ Security — antifraude antes de gerar a cobrança
-    const fraud = await runFraudCheck()
-    if (fraud?.action === 'block') {
-      setPayError(fraud.message || 'Estamos enfrentando uma instabilidade temporária. Tente novamente mais tarde.')
       return
     }
 
@@ -419,34 +387,8 @@ export function CheckoutView({ product, preview = false }) {
     presRef.current?.update({ step: stepRef.current, product: product.name, value: formatBRL(total) })
   }, [status, total, preview, product.name])
 
-  // pagou → registra evento "paid" + conversão de intenção + conversão do A/B
-  useEffect(() => {
-    if (status !== 'paid') return
-    endSession(); intent.markConverted(total)
-    if (!preview) {
-      const txId = pixData?.id || saleId || sid
-      trackEvent('purchase', { value: total, product: product.name, transactionId: txId })
-      const ua = typeof navigator !== 'undefined' ? navigator.userAgent : ''
-      fetch('/api/utmify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slug: product.slug, transactionId: txId, sessionId: sid, value: total, product: product.name, method, customer: buildCustomer(), utms: getUtms(), userAgent: ua }) }).catch(() => {})
-      if (ab) fetch('/api/exp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'convert', sessionId: sid, revenue: total, bump: !!(bump && cfg.bump.enabled) }) }).catch(() => {})
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status])
-
-  // Teste A/B: pega a variante e aplica a config
-  useEffect(() => {
-    if (preview) return
-    fetch('/api/exp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'assign', slug: product.slug, sessionId: sid }) })
-      .then((r) => r.json()).then((j) => { if (j?.variantId) setAb({ experimentId: j.experimentId, variantId: j.variantId, config: j.config || {} }) }).catch(() => {})
-  }, [preview, product.slug, sid])
-
-  // Tracking: captura UTMs, injeta pixels do dono e dispara PageView
-  useEffect(() => {
-    if (preview) return
-    captureUtms()
-    fetch(`/api/track-config?slug=${encodeURIComponent(product.slug)}`).then((r) => r.json())
-      .then((c) => { initTracking(c || {}); trackEvent('page_view', { product: product.name }) }).catch(() => {})
-  }, [preview, product.slug, product.name])
+  // pagou → registra evento "paid"
+  useEffect(() => { if (status === 'paid') endSession() }, [status])
 
   // saiu (fechou aba / navegou) → registra evento (abandono, se não pagou)
   useEffect(() => {
@@ -503,7 +445,6 @@ export function CheckoutView({ product, preview = false }) {
             ))}
           </div>
         )}
-        {intentDiscount > 0 && <div className="ck-line ck-discount"><span>Desconto ({intent.discountPct}%)</span><span className="num">− {formatBRL(intentDiscount)}</span></div>}
         <div className="ck-line ck-total"><span>Total</span><span className="num">{formatBRL(total)}</span></div>
       </div>
       <ul className="ck-trust">
@@ -626,7 +567,7 @@ export function CheckoutView({ product, preview = false }) {
       <header className="ck-step-head"><span className="ck-num">{stepsN === 1 ? (addressOn ? 3 : 2) : ph + 1}</span><h2>Pagamento</h2></header>
       <div className="ck-methods" role="tablist" aria-label="Forma de pagamento">
         {methods.map((m) => (
-          <button type="button" key={m.key} role="tab" aria-selected={method === m.key} className={`ck-method${method === m.key ? ' on' : ''}`} onClick={() => { setMethod(m.key); if (!preview) trackEvent('payment_method_selected', { product: product.name }) }}>
+          <button type="button" key={m.key} role="tab" aria-selected={method === m.key} className={`ck-method${method === m.key ? ' on' : ''}`} onClick={() => setMethod(m.key)}>
             <Icon name={m.icon} /><b>{m.label}</b><span>{m.note}</span>
           </button>
         ))}
@@ -729,7 +670,6 @@ export function CheckoutView({ product, preview = false }) {
         {Resumo}
       </form>
       {cfg.bannerBottom && <img className="ck-bannerimg" src={cfg.bannerBottom} alt="" />}
-      {!preview && <IntentActions intent={intent} whatsapp={cfg.whatsapp} />}
     </Frame>
   )
 }

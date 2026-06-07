@@ -2,7 +2,6 @@ import { useRef, useState } from 'react'
 import Icon from '../components/Icon.jsx'
 import Toggle from '../components/Toggle.jsx'
 import { CheckoutView } from './Checkout.jsx'
-import ABTest from './ABTest.jsx'
 import { ACCENTS, MODES } from '../theme.js'
 import {
   CHECKOUT_MODELS, CHECKOUT_THEMES, CHECKOUT_LAYOUTS, METHOD_DEFS,
@@ -25,7 +24,6 @@ const WIDGETS = [
   { key: 'frete', label: 'Frete', icon: 'produtos' },
   { key: 'upsell', label: 'Upsell', icon: 'revenue' },
   { key: 'cores', label: 'Cores', icon: 'palette' },
-  { key: 'abtest', label: 'Teste A/B', icon: 'chart' },
 ]
 const FIELD_NAMES = { name: 'Nome', email: 'E-mail', phone: 'Celular / WhatsApp', cpf: 'CPF' }
 const STEPS = [
@@ -66,7 +64,6 @@ function CheckoutBuilder({ product, onSave, onBack }) {
   const setT = (list) => setCfg({ testimonials: list })
 
   function Controls() {
-    if (widget === 'abtest') return product.slug ? <ABTest product={draft} /> : <p className="profile-hint">Salve o produto antes de criar um teste A/B.</p>
     if (widget === 'geral') return (
       <>
         <div className="field"><label>Layout</label>

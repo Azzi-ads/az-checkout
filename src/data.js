@@ -18,7 +18,6 @@ export const pageTitles = {
   ia: ['AZ IA', 'Crie funis e analise sua operação com inteligência artificial'],
   analises: ['Análises', 'Métricas e jornada do checkout'],
   custos: ['Custos', 'Lucro real da sua operação'],
-  intencao: ['Intenção', 'Score de intenção de compra dos visitantes'],
   livex: ['Livex', 'Pessoas ao vivo no checkout'],
   produtos: ['Produtos', 'Gerencie seu catálogo'],
   vendas: ['Vendas', 'Histórico de pedidos'],
