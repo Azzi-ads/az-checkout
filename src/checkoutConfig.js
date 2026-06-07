@@ -19,6 +19,16 @@ export const CHECKOUT_MODELS = [
   { key: 'valor-livre', label: 'Valor Livre', desc: 'Cliente escolhe quanto pagar.', icon: 'lines' },
 ]
 
+// Modelos prontos (bases) — aplicam layout + etapas + tema de uma vez. Marca AZ.
+export const CHECKOUT_TEMPLATES = [
+  { key: 'branco', name: 'Em Branco', desc: 'Comece do zero e personalize', model: 'padrao', layout: 'classico', steps: 1, theme: 'light', accent: '#16a34a' },
+  { key: 'express', name: 'AZ Express', desc: 'Só Pix, poucos campos — alta conversão', model: 'pix-na-hora', layout: 'centralizado', steps: 1, theme: 'light', accent: '#16a34a' },
+  { key: 'loja', name: 'AZ Loja', desc: 'Produto físico com endereço (3 etapas)', model: 'drop', layout: 'classico', steps: 3, theme: 'light', accent: '#2563eb' },
+  { key: 'duas-colunas', name: 'AZ Duas Colunas', desc: 'Formulário + resumo lado a lado', model: 'padrao', layout: 'classico', steps: 1, theme: 'light', accent: '#7c3aed' },
+  { key: 'vision', name: 'AZ Vision', desc: 'Premium com depoimentos e prova social', model: 'vision', layout: 'classico', steps: 1, theme: 'light', accent: '#16a34a' },
+  { key: 'escuro', name: 'AZ Escuro', desc: 'Tema escuro com destaque amarelo', model: 'padrao', layout: 'classico', steps: 1, theme: 'dark', accent: '#ffd400' },
+]
+
 export const FIELD_DEFS = [
   { key: 'phone', label: 'Celular / WhatsApp' },
   { key: 'cpf', label: 'CPF' },

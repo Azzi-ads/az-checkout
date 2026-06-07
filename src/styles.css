@@ -841,6 +841,24 @@ body::before{
 .editor-preview{border:1px solid var(--line-2);border-radius:16px;overflow:hidden;max-height:calc(100vh - 170px);overflow-y:auto;transition:max-width .2s ease}
 .editor-preview.mob{max-width:400px;margin:0 auto;border-radius:26px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
 
+/* galeria de modelos do checkout */
+.tpl-gallery{display:flex;flex-direction:column;gap:10px}
+.tpl-card{display:flex;align-items:center;gap:12px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px;transition:border-color .15s}
+.tpl-card.on{border-color:var(--yellow)}
+.tpl-thumb{position:relative;width:80px;height:56px;flex:0 0 80px;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:#fff;display:flex;gap:4px;padding:14px 6px 6px}
+.tpl-thumb.dark{background:#0e0e12;border-color:#222}
+.tpl-bar{position:absolute;top:0;left:0;right:0;height:9px;background:var(--ta,#16a34a)}
+.tpl-col{border-radius:3px;background:rgba(0,0,0,.09)}
+.tpl-thumb.dark .tpl-col{background:rgba(255,255,255,.14)}
+.tpl-form{flex:1.7}
+.tpl-sum{flex:1}
+.tpl-thumb.lay-centralizado{justify-content:center}
+.tpl-thumb.lay-centralizado .tpl-form{flex:0 0 60%}
+.tpl-body{flex:1;min-width:0}
+.tpl-body b{display:block;font-size:14px;font-weight:800}
+.tpl-body span{font-size:12px;color:var(--muted)}
+.tpl-use{flex:0 0 auto}
+
 /* modelos de checkout */
 .model-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 .model-card{

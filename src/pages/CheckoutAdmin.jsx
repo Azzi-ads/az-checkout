@@ -4,12 +4,13 @@ import Toggle from '../components/Toggle.jsx'
 import { CheckoutView } from './Checkout.jsx'
 import { ACCENTS, MODES } from '../theme.js'
 import {
-  CHECKOUT_MODELS, CHECKOUT_THEMES, CHECKOUT_LAYOUTS, METHOD_DEFS,
+  CHECKOUT_MODELS, CHECKOUT_THEMES, CHECKOUT_LAYOUTS, CHECKOUT_TEMPLATES, METHOD_DEFS,
   applyModel, ensureCheckout,
 } from '../checkoutConfig.js'
 import { getProducts, saveProducts } from '../store.js'
 
 const WIDGETS = [
+  { key: 'modelos', label: 'Modelos', icon: 'p-grid' },
   { key: 'geral', label: 'Geral', icon: 'config' },
   { key: 'secoes', label: 'Seções', icon: 'p-grid' },
   { key: 'campos', label: 'Campos', icon: 'lines' },
@@ -34,10 +35,11 @@ const STEPS = [
 
 function CheckoutBuilder({ product, onSave, onBack }) {
   const [draft, setDraft] = useState(() => ({ ...product, checkout: ensureCheckout(product) }))
-  const [widget, setWidget] = useState('geral')
+  const [widget, setWidget] = useState('modelos')
   const [previewMode, setPreviewMode] = useState('desktop')
   const cfg = draft.checkout
   const setCfg = (patch) => setDraft((d) => ({ ...d, checkout: { ...d.checkout, ...patch } }))
+  const applyTemplate = (t) => setDraft((d) => ({ ...d, checkout: { ...applyModel(d.checkout, t.model), layout: t.layout, steps: t.steps, theme: t.theme, accent: t.accent, bg: '', template: t.key } }))
   const setField = (k, v) => setCfg({ fields: { ...cfg.fields, [k]: v } })
   const setMethod = (k, v) => setCfg({ methods: { ...cfg.methods, [k]: v } })
   const setBump = (patch) => setCfg({ bump: { ...cfg.bump, ...patch } })
@@ -64,6 +66,27 @@ function CheckoutBuilder({ product, onSave, onBack }) {
   const setT = (list) => setCfg({ testimonials: list })
 
   function Controls() {
+    if (widget === 'modelos') return (
+      <>
+        <p className="profile-hint" style={{ marginBottom: 12 }}>Escolha uma base pronta. Você ajusta tudo depois nos outros painéis.</p>
+        <div className="tpl-gallery">
+          {CHECKOUT_TEMPLATES.map((t) => {
+            const on = (cfg.template || '') === t.key
+            return (
+              <div className={`tpl-card${on ? ' on' : ''}`} key={t.key}>
+                <span className={`tpl-thumb ${t.theme} lay-${t.layout}`} style={{ '--ta': t.accent }}>
+                  <i className="tpl-bar" />
+                  <i className="tpl-col tpl-form" />
+                  {t.layout === 'classico' && <i className="tpl-col tpl-sum" />}
+                </span>
+                <div className="tpl-body"><b>{t.name}</b><span>{t.desc}</span></div>
+                <button type="button" className={`btn ${on ? 'btn-ghost' : 'btn-primary'} tpl-use`} onClick={() => applyTemplate(t)}>{on ? 'Em uso' : 'Usar'}</button>
+              </div>
+            )
+          })}
+        </div>
+      </>
+    )
     if (widget === 'geral') return (
       <>
         <div className="field"><label>Layout</label>
