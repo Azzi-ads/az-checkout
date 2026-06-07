@@ -109,7 +109,7 @@ export default function ProductForm({ product, onSave, onClose }) {
 
         {/* vínculo com o gateway */}
         <div className="field">
-          <label>ID do produto no gateway {isOwner() && <button type="button" className="link-btn" onClick={buscarProdutos} disabled={loadingList}>{loadingList ? 'buscando…' : 'buscar'}</button>}</label>
+          <label>ID do produto no gateway <button type="button" className="link-btn" onClick={buscarProdutos} disabled={loadingList}>{loadingList ? 'buscando…' : 'buscar'}</button></label>
           {bravoList ? (
             <select value={draft.bravoProductId || ''} onChange={(e) => escolher(e.target.value)}>
               <option value="">Selecione…</option>

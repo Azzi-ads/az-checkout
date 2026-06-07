@@ -13,7 +13,7 @@ function write(data) { try { localStorage.setItem(keyFor(), JSON.stringify(data)
 function defaults() {
   return {
     products: [],
-    profile: { name: getUser()?.name || '', cpf: getUser()?.cpf || '', phone: getUser()?.phone || '', avatar: '', security: false, domain: '', plan: 'start', card: null, notifPending: true, notifPaid: true, notifSummary: true, notifMode: 'auto', notifTextPaid: '', notifTextPending: '', notifColor: '' },
+    profile: { name: getUser()?.name || '', cpf: getUser()?.cpf || '', phone: getUser()?.phone || '', avatar: '', security: false, domain: '', plan: 'start', card: null, notifPending: true, notifPaid: true, notifSummary: true, notifMode: 'auto', notifTextPaid: '', notifTextPending: '', notifColor: '', gatewayConnected: false },
     theme: { accent: '#ffd400', mode: 'dark', preset: 'amarelo', bg: '' },
   }
 }
@@ -49,7 +49,7 @@ export async function hydrate() {
       supabase.from('products').select('data').eq('owner', uid()),
     ])
     const store = getStore()
-    if (prof) store.profile = { ...store.profile, name: prof.name || store.profile.name, cpf: prof.cpf || getUser()?.cpf || '', phone: prof.phone || getUser()?.phone || '', avatar: prof.avatar || '', security: !!prof.security, domain: prof.domain || '', plan: prof.plan || 'start', notifPending: prof.notif_pending !== false, notifPaid: prof.notif_paid !== false, notifSummary: prof.notif_summary !== false, notifMode: prof.notif_mode || 'auto', notifTextPaid: prof.notif_text_paid || '', notifTextPending: prof.notif_text_pending || '', notifColor: prof.notif_color || '' }
+    if (prof) store.profile = { ...store.profile, name: prof.name || store.profile.name, cpf: prof.cpf || getUser()?.cpf || '', phone: prof.phone || getUser()?.phone || '', avatar: prof.avatar || '', security: !!prof.security, domain: prof.domain || '', plan: prof.plan || 'start', notifPending: prof.notif_pending !== false, notifPaid: prof.notif_paid !== false, notifSummary: prof.notif_summary !== false, notifMode: prof.notif_mode || 'auto', notifTextPaid: prof.notif_text_paid || '', notifTextPending: prof.notif_text_pending || '', notifColor: prof.notif_color || '', gatewayConnected: !!prof.gateway_connected }
     // cartão de cobrança da taxa (só dados não-sensíveis: bandeira + final)
     try {
       const { data: bill } = await supabase.from('billing').select('brand,last4,status').eq('owner', uid()).maybeSingle()

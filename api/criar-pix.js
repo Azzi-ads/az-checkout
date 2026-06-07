@@ -2,6 +2,7 @@
 // e registra a venda no banco com o tx_id (para o webhook confirmar depois).
 import { createClient } from '@supabase/supabase-js'
 import { sendPushToOwner, brl } from '../lib/push.js'
+import { keyByOwner } from '../lib/gateway.js'
 
 const BASE = 'https://bravopay.solutions/api/v1'
 const SB_URL = 'https://wgzihgfavsboezhrgqck.supabase.co'
@@ -36,13 +37,19 @@ function shape(obj, depth = 0) {
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Método não permitido' })
-  const key = process.env.BRAVOPAY_API_KEY
-  if (!key) return res.status(500).json({ error: 'BRAVOPAY_API_KEY não configurada.' })
 
   try {
     const { product_id, amount_cents, customer, utm, fbclid, ttclid, gclid, slug, items, total } = req.body || {}
     if (!product_id) return res.status(400).json({ error: 'Produto sem ID do BravoPay. Configure em Produtos → Editar.' })
     if (!amount_cents || amount_cents < 1) return res.status(400).json({ error: 'Valor inválido.' })
+
+    // chave do PRÓPRIO vendedor (multi-tenant); cai pra plataforma só como fallback
+    const srv = process.env.SUPABASE_SERVICE_ROLE
+    const sb = srv ? createClient(SB_URL, srv) : null
+    let owner = null
+    if (sb && slug) { const { data: prod } = await sb.from('products').select('owner').eq('slug', slug).limit(1); owner = prod?.[0]?.owner || null }
+    const key = (sb && owner ? await keyByOwner(sb, owner) : null) || process.env.BRAVOPAY_API_KEY
+    if (!key) return res.status(400).json({ error: 'Gateway não conectado. Conecte o BravoPay em Integrações.' })
 
     const r = await fetch(`${BASE}/transactions`, {
       method: 'POST',
@@ -68,12 +75,8 @@ export default async function handler(req, res) {
 
     // registra a venda (aguardando) ligada ao tx_id
     let saleId = null
-    const srv = process.env.SUPABASE_SERVICE_ROLE
-    if (srv && slug) {
+    if (sb && slug) {
       try {
-        const sb = createClient(SB_URL, srv)
-        const { data: prod } = await sb.from('products').select('owner').eq('slug', slug).limit(1)
-        const owner = prod?.[0]?.owner || null
         const { data: sale } = await sb.from('sales').insert({
           owner, tx_id: txId, product_slug: slug, customer: customer || {},
           items: items || [], total: total || (amount_cents / 100), method: 'pix', status: 'aguardando',

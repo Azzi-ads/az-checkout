@@ -1,13 +1,19 @@
 // Função serverless (Vercel) — consulta o status de uma transação no BravoPay.
-// Usada pelo polling do checkout (a cada 3s).
+// Usada pelo polling do checkout. Usa a chave do PRÓPRIO vendedor (multi-tenant).
+import { createClient } from '@supabase/supabase-js'
+import { keyByTx } from '../lib/gateway.js'
+
 const BASE = 'https://bravopay.solutions/api/v1'
+const SB_URL = 'https://wgzihgfavsboezhrgqck.supabase.co'
 
 export default async function handler(req, res) {
-  const key = process.env.BRAVOPAY_API_KEY
-  if (!key) return res.status(500).json({ error: 'BRAVOPAY_API_KEY não configurada no servidor.' })
-
   const id = req.query.id
   if (!id) return res.status(400).json({ error: 'id da transação é obrigatório.' })
+
+  const srv = process.env.SUPABASE_SERVICE_ROLE
+  const sb = srv ? createClient(SB_URL, srv) : null
+  const key = (sb ? await keyByTx(sb, id) : null) || process.env.BRAVOPAY_API_KEY
+  if (!key) return res.status(500).json({ error: 'Gateway não conectado.' })
 
   try {
     const r = await fetch(`${BASE}/transactions/${encodeURIComponent(id)}`, {
