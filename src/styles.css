@@ -500,7 +500,7 @@ body::before{
 .ck-skin-ecom .ck-step-head h2{font-size:16px}
 .ck-skin-ecom .ck-prod-thumb{width:64px;height:64px;flex:0 0 64px}
 .ck-skin-ecom .ck-summary.card{border:1.5px solid var(--line-2);box-shadow:0 1px 2px rgba(16,24,40,.05),0 10px 28px rgba(16,24,40,.1)}
-.ck-skin-ecom .ck-cta{border-radius:10px}
+.ck-skin-ecom .ck-cta{border-radius:99px;font-weight:800;font-size:16px;padding:16px}
 .ck-skin-ecom .ck-prod h3{font-size:15px;font-weight:700}
 
 /* Dropshipping: coluna única focada, urgência forte, CTA grande */
@@ -528,6 +528,25 @@ body::before{
 /* selo de oferta (% off) no produto do resumo */
 .ck-prod-thumb{position:relative}
 .ck-off{position:absolute;top:-7px;left:-7px;background:var(--red);color:#fff;font-size:10.5px;font-weight:800;padding:2px 6px;border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+
+/* resumo do pedido — padrão e-commerce */
+.ck-sum-head{margin-bottom:8px}
+.ck-sum-head h3{font-size:16px;font-weight:800}
+.ck-safe-line{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--green);margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.ck-safe-line svg{width:15px;height:15px}
+.ck-prod-info{min-width:0}
+.ck-prod-badges{display:flex;flex-wrap:wrap;gap:6px;margin:5px 0}
+.ck-bdg-flash{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:800;color:#fff;background:var(--red);padding:2px 7px;border-radius:6px}
+.ck-bdg-flash svg{width:11px;height:11px}
+.ck-bdg-return{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:#a16207;background:#fef3c7;padding:2px 7px;border-radius:6px}
+.ck-bdg-return svg{width:11px;height:11px}
+.ck-neg{color:var(--red)}
+.ck-total-row{display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.ck-total-row span{font-size:14px;font-weight:700}
+.ck-total-row b{font-family:'Bricolage Grotesque';font-size:24px;color:var(--yellow)}
+.ck-sum-foot{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.ck-sum-foot span{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--muted-2)}
+.ck-sum-foot svg{width:13px;height:13px;color:var(--green)}
 
 /* ===================================================================
    Painel admin — sidebar com grupos, Análises e Custos

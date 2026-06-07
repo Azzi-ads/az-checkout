@@ -29,7 +29,7 @@ export const CHECKOUT_TEMPLATES = [
   },
   {
     key: 'ecom', name: 'E-commerce', desc: 'Loja — produto, quantidade e entrega',
-    skin: 'ecom', model: 'drop', layout: 'classico', steps: 1, theme: 'light', accent: '#2563eb',
+    skin: 'ecom', model: 'drop', layout: 'classico', steps: 1, theme: 'light', accent: '#e11d48',
     extra: { fields: { phone: true, cpf: true, address: true }, quantity: { enabled: true, max: 10 }, shipping: { enabled: true, options: [{ label: 'Padrão', price: 0 }] }, timer: false },
   },
   {

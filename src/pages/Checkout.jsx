@@ -415,15 +415,30 @@ export function CheckoutView({ product, preview = false }) {
     { icon: 'bolt', title: 'Acesso imediato', desc: 'Liberação automática após o pagamento.' },
   ]
 
+  const origUnit = product.oldAmount && product.oldAmount > product.amount ? product.oldAmount : product.amount
+  const origBase = origUnit * qtyVal
+  const descProd = Math.max(0, origBase - baseAmount)
+  const itemCount = qtyVal + (bump && cfg.bump.enabled ? 1 : 0)
   const Resumo = (
     <aside className="ck-summary card">
+      <div className="ck-sum-head"><h3>Resumo do pedido</h3></div>
+      <div className="ck-safe-line"><Icon name="shield" />Finalização da compra 100% segura</div>
+
       <div className="ck-prod">
         <div className="ck-prod-thumb">
           {product.image ? <img src={product.image} alt="" /> : <Icon name={product.icon} strokeWidth={1.6} />}
           {product.oldAmount > product.amount && <span className="ck-off">-{Math.round((1 - product.amount / product.oldAmount) * 100)}%</span>}
         </div>
-        <div><h3>{product.name}</h3><p>{description}</p></div>
+        <div className="ck-prod-info">
+          <h3>{product.name}</h3>
+          <div className="ck-prod-badges">
+            {cfg.timer && <span className="ck-bdg-flash"><Icon name="bolt" />Oferta Relâmpago {mmss}</span>}
+            <span className="ck-bdg-return"><Icon name="check" />Devolução gratuita</span>
+          </div>
+          <p>{description}</p>
+        </div>
       </div>
+
       {cfg.quantity?.enabled && !cfg.valorLivre && (
         <div className="ck-qty">
           <span>Quantidade</span>
@@ -434,34 +449,44 @@ export function CheckoutView({ product, preview = false }) {
           </div>
         </div>
       )}
-      <div className="ck-lines">
-        {cfg.valorLivre ? (
-          <div className="ck-field" style={{ marginBottom: 2 }}>
-            <label htmlFor="ck-valor">Quanto deseja pagar?</label>
-            <div className="ck-input"><span style={{ color: 'var(--muted-2)', fontWeight: 700 }}>R$</span>
-              <input id="ck-valor" type="number" min="0" step="0.01" value={freeAmount} onChange={(e) => setFreeAmount(e.target.value)} placeholder="0,00" /></div>
-          </div>
-        ) : (
-          <div className="ck-line"><span>{product.name}{qtyVal > 1 ? ` × ${qtyVal}` : ''}</span><span className="num">{product.oldAmount && qtyVal === 1 && <s>{formatBRL(product.oldAmount)}</s>} {formatBRL(baseAmount)}</span></div>
-        )}
-        {bump && cfg.bump.enabled && <div className="ck-line"><span>+ {cfg.bump.title}</span><span className="num">{formatBRL(cfg.bump.amount)}</span></div>}
-        {cfg.shipping?.enabled && shipOpts.length > 0 && (
-          <div className="ck-ship">
-            <span className="ck-ship-title">Escolha o frete</span>
-            {shipOpts.map((o, i) => (
-              <label key={i} className={`ck-ship-opt${ship === i ? ' on' : ''}`}>
-                <input type="radio" name="ckship" checked={ship === i} onChange={() => setShip(i)} />
-                <span>{o.label || `Opção ${i + 1}`}</span>
-                <b className="num">{o.price ? formatBRL(o.price) : 'Grátis'}</b>
-              </label>
-            ))}
-          </div>
-        )}
-        <div className="ck-line ck-total"><span>Total</span><span className="num">{formatBRL(total)}</span></div>
+
+      {cfg.valorLivre ? (
+        <div className="ck-field" style={{ margin: '14px 0 2px' }}>
+          <label htmlFor="ck-valor">Quanto deseja pagar?</label>
+          <div className="ck-input"><span style={{ color: 'var(--muted-2)', fontWeight: 700 }}>R$</span>
+            <input id="ck-valor" type="number" min="0" step="0.01" value={freeAmount} onChange={(e) => setFreeAmount(e.target.value)} placeholder="0,00" /></div>
+        </div>
+      ) : (
+        <div className="ck-lines">
+          <div className="ck-line"><span>Subtotal do produto</span><span className="num">{formatBRL(origBase)}</span></div>
+          {descProd > 0 && <div className="ck-line"><span>Desconto no produto</span><span className="num ck-neg">- {formatBRL(descProd)}</span></div>}
+          {bump && cfg.bump.enabled && <div className="ck-line"><span>+ {cfg.bump.title}</span><span className="num">{formatBRL(cfg.bump.amount)}</span></div>}
+          {cfg.shipping?.enabled && shipOpts.length > 0 ? (
+            <div className="ck-ship">
+              {shipOpts.map((o, i) => (
+                <label key={i} className={`ck-ship-opt${ship === i ? ' on' : ''}`}>
+                  <input type="radio" name="ckship" checked={ship === i} onChange={() => setShip(i)} />
+                  <span>{o.label || `Frete ${i + 1}`}</span>
+                  <b className="num">{o.price ? formatBRL(o.price) : 'Grátis'}</b>
+                </label>
+              ))}
+            </div>
+          ) : (
+            <div className="ck-line"><span>Frete</span><span className="num">{shipPrice ? formatBRL(shipPrice) : 'Grátis'}</span></div>
+          )}
+        </div>
+      )}
+
+      <div className="ck-total-row">
+        <span>Total {itemCount > 0 ? `(${itemCount} ${itemCount > 1 ? 'itens' : 'item'})` : ''}</span>
+        <b className="num">{formatBRL(total)}</b>
       </div>
-      <ul className="ck-trust">
-        {trust.map((t) => (<li key={t.title}><Icon name={t.icon} /><div><b>{t.title}</b><span>{t.desc}</span></div></li>))}
-      </ul>
+
+      <div className="ck-sum-foot">
+        <span><Icon name="lock" />Pagamentos seguros</span>
+        <span><Icon name="shield" />Privacidade protegida</span>
+        <span><Icon name="check" />Entrega garantida</span>
+      </div>
     </aside>
   )
 
