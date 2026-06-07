@@ -517,6 +517,15 @@ body::before{
 .ck-skin-drop .ck-cta:hover:not(:disabled){transform:translateY(-2px)}
 .ck-skin-drop .ck-prod-thumb{width:64px;height:64px;flex:0 0 64px}
 
+/* bandeiras de pagamento (rodapé) */
+.ck-brands{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;width:100%;margin-bottom:6px}
+.ck-brand{font-size:10.5px;font-weight:800;letter-spacing:.02em;color:#fff;padding:4px 9px;border-radius:6px;background:#3a3a45}
+.ck-brand.b-pix{background:#0fae9b}.ck-brand.b-visa{background:#1a1f71}.ck-brand.b-master{background:#cf3a2b}
+.ck-brand.b-elo{background:#111}.ck-brand.b-amex{background:#1174c4}.ck-brand.b-boleto{background:#555}
+/* selo de oferta (% off) no produto do resumo */
+.ck-prod-thumb{position:relative}
+.ck-off{position:absolute;top:-7px;left:-7px;background:var(--red);color:#fff;font-size:10.5px;font-weight:800;padding:2px 6px;border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+
 /* ===================================================================
    Painel admin — sidebar com grupos, Análises e Custos
    =================================================================== */

@@ -122,6 +122,15 @@ function QrImage({ code, src }) {
   return url ? <img className="ck-qr" src={url} alt="QR Code Pix" /> : <FakeQR />
 }
 
+const PAY_BRANDS = ['Pix', 'Visa', 'Master', 'Elo', 'Amex', 'Boleto']
+function PayBrands() {
+  return (
+    <div className="ck-brands" aria-label="Formas de pagamento aceitas">
+      {PAY_BRANDS.map((b) => <span className={`ck-brand b-${b.toLowerCase()}`} key={b}>{b}</span>)}
+    </div>
+  )
+}
+
 function WaButton({ wa }) {
   if (!wa?.enabled || !wa.number) return null
   return (
@@ -160,6 +169,7 @@ function Frame({ children, preview, styleVars, showTimer, mmss, logo, brandName,
       </header>
       <main className="ck-body">{children}</main>
       <footer className="ck-foot">
+        <PayBrands />
         {secure && <span className="ck-secured"><Icon name="shield" />Protegido por AZ Security</span>}
         <span>Pagamento processado com segurança</span>
       </footer>
@@ -410,6 +420,7 @@ export function CheckoutView({ product, preview = false }) {
       <div className="ck-prod">
         <div className="ck-prod-thumb">
           {product.image ? <img src={product.image} alt="" /> : <Icon name={product.icon} strokeWidth={1.6} />}
+          {product.oldAmount > product.amount && <span className="ck-off">-{Math.round((1 - product.amount / product.oldAmount) * 100)}%</span>}
         </div>
         <div><h3>{product.name}</h3><p>{description}</p></div>
       </div>
