@@ -15,7 +15,12 @@ export default async function handler(req, res) {
     })
     const data = await r.json().catch(() => ({}))
     if (!r.ok) return res.status(r.status).json({ error: 'Erro ao consultar transação.', detail: data })
-    return res.status(200).json({ status: data.status, id: data.id })
+    // normaliza o status do gateway (pode vir em formatos diferentes)
+    const raw = String(data.status || data.transaction?.status || '').toLowerCase()
+    const PAID = ['paid', 'approved', 'completed', 'confirmed', 'success', 'succeeded', 'pago', 'aprovado']
+    const FAIL = ['expired', 'failed', 'canceled', 'cancelled', 'refused', 'declined', 'chargeback', 'refunded', 'expirado', 'cancelado', 'recusado']
+    const status = PAID.includes(raw) ? 'PAID' : FAIL.includes(raw) ? 'FAILED' : 'PENDING'
+    return res.status(200).json({ status, raw: data.status, id: data.id })
   } catch (e) {
     return res.status(500).json({ error: 'Falha na consulta ao gateway.' })
   }
