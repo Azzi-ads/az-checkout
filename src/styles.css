@@ -556,6 +556,13 @@ body::before{
 .brand-logo.pingu-word{font-size:28px}
 .login-logo.pingu-word{font-size:42px}
 
+/* destaques com o gradiente PinguFy (roxo + ciano) */
+.meta-fill,.journey-fill,.sec-ind-fill,.prev-fill{background:var(--pingu-grad)}
+.nav-item.active::before{background:var(--pingu-grad)}
+.quick-ic{background:linear-gradient(135deg,rgba(168,85,247,.16),rgba(34,211,238,.16))}
+.quick-card:hover .quick-ic{background:var(--pingu-grad);color:#fff}
+.kpi .ic{background:linear-gradient(135deg,rgba(168,85,247,.16),rgba(34,211,238,.14))}
+
 /* ===================================================================
    Painel admin — sidebar com grupos, Análises e Custos
    =================================================================== */

@@ -27,7 +27,7 @@ export const MODES = [
   { key: 'light', label: 'Claro' },
 ]
 
-export const DEFAULT_THEME = { accent: '#a855f7', mode: 'dark', preset: 'pingufy', bg: '' }
+export const DEFAULT_THEME = { accent: '#a855f7', mode: 'light', preset: 'pingufy', bg: '' }
 
 // Temas prontos do SITE (painel): fundo + cor + modo.
 export const SITE_THEMES = [

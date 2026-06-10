@@ -14,14 +14,26 @@ function defaults() {
   return {
     products: [],
     profile: { name: getUser()?.name || '', cpf: getUser()?.cpf || '', phone: getUser()?.phone || '', avatar: '', security: false, domain: '', plan: 'start', card: null, notifPending: true, notifPaid: true, notifSummary: true, notifMode: 'auto', notifTextPaid: '', notifTextPending: '', notifColor: '', gatewayConnected: false },
-    theme: { accent: '#a855f7', mode: 'dark', preset: 'amarelo', bg: '' },
+    theme: { accent: '#a855f7', mode: 'light', preset: 'pingufy', bg: '' },
   }
+}
+
+// Migra tema antigo (amarelo/escuro padrão) para o claro PinguFy.
+function migrateTheme(t) {
+  const PINGU = { accent: '#a855f7', mode: 'light', preset: 'pingufy', bg: '' }
+  if (!t) return PINGU
+  const ac = String(t.accent || '').toLowerCase()
+  if (t.preset === 'amarelo' || ac === '#ffd400' || (t.mode === 'dark' && !t.bg && (ac === '#a855f7' || ac === '#ffd400'))) return PINGU
+  return t
 }
 
 export function getStore() {
   const saved = read()
   if (!saved) { const d = defaults(); write(d); return d }
-  return { ...defaults(), ...saved }
+  const merged = { ...defaults(), ...saved }
+  const mig = migrateTheme(merged.theme)
+  if (mig !== merged.theme) { merged.theme = mig; write(merged) }
+  return merged
 }
 
 export function getProducts() { return getStore().products }
