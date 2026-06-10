@@ -93,7 +93,7 @@ export default function Login() {
   return (
     <div className="login">
       <section className="login-hero">
-        <BrandLogo className="login-logo" />
+        <BrandLogo className="login-logo" mode="dark" />
         <h1>A plataforma de checkout<br /> que <b>vende mais</b>.</h1>
         <p>Crie checkouts de alta conversão para seus infoprodutos — com Pix na hora, cartão em 12x e tudo personalizável.</p>
         <ul className="login-feats">

@@ -44,7 +44,7 @@ body::before{
     radial-gradient(700px 700px at -10% 110%, rgba(168,85,247,.04), transparent 60%);
 }
 
-.app{display:flex;height:100vh;position:relative;z-index:1;background:var(--bg)}
+.app{display:flex;height:100vh;position:relative;z-index:1;background:var(--bg);color:var(--text)}
 
 /* ===== Sidebar ===== */
 .sidebar{
@@ -288,7 +288,7 @@ body::before{
 /* ===================================================================
    Checkout do cliente (rota /checkout) — tema preto + amarelo
    =================================================================== */
-.ck-page{height:100vh;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column}
+.ck-page{height:100vh;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;color:var(--text)}
 
 .ck-timer{
   display:flex;align-items:center;justify-content:center;gap:8px;

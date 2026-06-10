@@ -27,7 +27,7 @@ export default function App() {
   if (!ready) {
     return (
       <div className="boot">
-        <BrandLogo />
+        <BrandLogo mode="dark" />
         <span className="boot-spin" aria-hidden="true" />
       </div>
     )
