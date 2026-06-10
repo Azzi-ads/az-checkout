@@ -14,7 +14,7 @@ function defaults() {
   return {
     products: [],
     profile: { name: getUser()?.name || '', cpf: getUser()?.cpf || '', phone: getUser()?.phone || '', avatar: '', security: false, domain: '', plan: 'start', card: null, notifPending: true, notifPaid: true, notifSummary: true, notifMode: 'auto', notifTextPaid: '', notifTextPending: '', notifColor: '', gatewayConnected: false },
-    theme: { accent: '#ffd400', mode: 'dark', preset: 'amarelo', bg: '' },
+    theme: { accent: '#a855f7', mode: 'dark', preset: 'amarelo', bg: '' },
   }
 }
 

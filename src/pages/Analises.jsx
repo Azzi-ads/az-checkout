@@ -22,8 +22,8 @@ function AbandonedChart() {
       <svg className="chart" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" role="img" aria-label="Carrinhos abandonados versus finalizados nos últimos 7 dias">
         <defs>
           <linearGradient id="ab" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(255,212,0,.28)" />
-            <stop offset="100%" stopColor="rgba(255,212,0,0)" />
+            <stop offset="0%" stopColor="rgba(168,85,247,.28)" />
+            <stop offset="100%" stopColor="rgba(168,85,247,0)" />
           </linearGradient>
         </defs>
         {[0.25, 0.5, 0.75].map((g) => (

@@ -160,8 +160,8 @@ export const storeFields = [
 export const currencyOptions = ['Real (BRL) — R$', 'Dólar (USD) — $']
 
 export const appearanceFields = [
-  { label: 'Cor principal', value: '#0a0a0b — Preto' },
-  { label: 'Cor de destaque', value: '#ffd400 — Amarelo' },
+  { label: 'Cor principal', value: '#0a0a0e — Preto' },
+  { label: 'Cor de destaque', value: '#a855f7 — Roxo PinguFy' },
 ]
 
 export const gatewayToggles = [

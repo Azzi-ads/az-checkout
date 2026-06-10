@@ -19,7 +19,7 @@ export const ACCENTS = [
 
 // padrões de fundo (raio / cifrão) como SVG inline
 const pat = (svg) => `url("data:image/svg+xml,${encodeURIComponent(svg)}")`
-const BOLT = pat("<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><path d='M44 8 26 44h14l-4 28 22-40H44l4-24z' fill='rgba(255,212,0,0.06)'/></svg>")
+const BOLT = pat("<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><path d='M44 8 26 44h14l-4 28 22-40H44l4-24z' fill='rgba(168,85,247,0.07)'/></svg>")
 const DOLLAR = pat("<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'><text x='40' y='54' font-size='40' text-anchor='middle' fill='rgba(61,220,145,0.07)' font-family='Arial'>$</text></svg>")
 
 export const MODES = [
@@ -32,13 +32,13 @@ export const DEFAULT_THEME = { accent: '#a855f7', mode: 'dark', preset: 'pingufy
 // Temas prontos do SITE (painel): fundo + cor + modo.
 export const SITE_THEMES = [
   { key: 'pingufy', label: 'PinguFy', bg: '', accent: '#a855f7', mode: 'dark' },
-  { key: 'grafite', label: 'Grafite', bg: 'linear-gradient(160deg,#101116,#0a0a0d)', accent: '#ffd400', mode: 'dark' },
+  { key: 'grafite', label: 'Grafite', bg: 'linear-gradient(160deg,#101116,#0a0a0d)', accent: '#a855f7', mode: 'dark' },
   { key: 'aurora', label: 'Aurora', bg: 'radial-gradient(1000px 600px at 15% -10%, rgba(91,42,134,.5), transparent 60%), radial-gradient(900px 600px at 120% 10%, rgba(31,111,139,.4), transparent 55%), #0a0a12', accent: '#22d3ee', mode: 'dark' },
   { key: 'neon', label: 'Neon', bg: 'radial-gradient(820px 600px at 85% -5%, rgba(139,92,246,.4), transparent 60%), #07070d', accent: '#a78bfa', mode: 'dark' },
   { key: 'oceano', label: 'Oceano', bg: 'linear-gradient(160deg,#08233a,#06121d)', accent: '#3b82f6', mode: 'dark' },
   { key: 'floresta', label: 'Floresta', bg: 'linear-gradient(160deg,#07251c,#05130e)', accent: '#3ddc91', mode: 'dark' },
   { key: 'rose', label: 'Rosé', bg: 'linear-gradient(160deg,#2a0f1c,#150810)', accent: '#f472b6', mode: 'dark' },
-  { key: 'raio', label: 'Raio ⚡', bg: `${BOLT}, #060608`, accent: '#ffd400', mode: 'dark' },
+  { key: 'raio', label: 'Raio ⚡', bg: `${BOLT}, #060608`, accent: '#a855f7', mode: 'dark' },
   { key: 'cifrao', label: 'Cifrão $', bg: `${DOLLAR}, #05080a`, accent: '#3ddc91', mode: 'dark' },
   { key: 'clean', label: 'Clean', bg: 'linear-gradient(160deg,#f6f7fa,#eceef3)', accent: '#7c3aed', mode: 'light' },
 ]
@@ -74,7 +74,7 @@ function onAccent(hex) {
 
 // Retorna um objeto de variáveis CSS para aplicar como `style` no .app.
 export function themeVars(theme = DEFAULT_THEME) {
-  const accent = theme.accent || '#ffd400'
+  const accent = theme.accent || '#a855f7'
   const { r, g, b } = hexToRgb(accent)
   const vars = {
     '--yellow': accent,

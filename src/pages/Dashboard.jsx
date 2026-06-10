@@ -35,8 +35,8 @@ function RevenueChart({ paths }) {
       <svg className="chart" viewBox="0 0 640 220" preserveAspectRatio="none" role="img" aria-label="Faturamento dos últimos 30 dias e projeção">
         <defs>
           <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(255,212,0,.34)" />
-            <stop offset="100%" stopColor="rgba(255,212,0,0)" />
+            <stop offset="0%" stopColor="rgba(168,85,247,.34)" />
+            <stop offset="100%" stopColor="rgba(168,85,247,0)" />
           </linearGradient>
         </defs>
         <line className="gl" x1="0" y1="55" x2="640" y2="55" />
