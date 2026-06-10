@@ -563,6 +563,11 @@ body::before{
 .quick-card:hover .quick-ic{background:var(--pingu-grad);color:#fff}
 .kpi .ic{background:linear-gradient(135deg,rgba(168,85,247,.16),rgba(34,211,238,.14))}
 
+/* garante texto legivel em qualquer tema (titulos/marcas sem cor propria) */
+.app h1,.app h2,.app h3,.app h4{color:var(--text)}
+.app .store-meta b,.app .user .meta b,.app .greeting h2,.app .topbar h1{color:var(--text)}
+.app .kpi .val,.app .num{color:var(--text)}
+
 /* ===================================================================
    Painel admin — sidebar com grupos, Análises e Custos
    =================================================================== */
