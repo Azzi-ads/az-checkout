@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Obrigado pela sua compra — TikTok Shop</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --tt-red:#FE2C55;
+    --tt-cyan:#25F4EE;
+    --tt-black:#161823;
+    --tt-gray:#86878B;
+    --tt-line:#EFEFEF;
+    --tt-bg:#F8F8F8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:var(--tt-bg);
+    color:var(--tt-black);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* ── Top bar ── */
+  .topbar{
+    background:#000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    padding:13px 16px;
+    position:sticky;top:0;z-index:10;
+  }
+  .topbar .logo{
+    display:flex;align-items:center;gap:6px;
+    font-weight:800;font-size:17px;color:#fff;letter-spacing:-.5px;
+  }
+  .topbar .note{
+    width:22px;height:22px;display:inline-block;position:relative;
+  }
+  /* TikTok glyph */
+  .tt-note{position:relative;width:20px;height:22px;display:inline-block;}
+  .tt-note svg{display:block;}
+
+  /* ── Card ── */
+  .wrap{flex:1;display:flex;flex-direction:column;align-items:center;padding:24px 18px 40px;}
+  .card{
+    background:#fff;
+    width:100%;max-width:440px;
+    border-radius:20px;
+    box-shadow:0 6px 24px rgba(22,24,35,.08);
+    overflow:hidden;
+  }
+  .card-top{
+    background:linear-gradient(135deg,#161823 0%,#2a2d3a 100%);
+    padding:40px 24px 56px;
+    text-align:center;
+    position:relative;
+  }
+  .card-top::after{
+    content:"";position:absolute;left:0;right:0;bottom:-1px;height:40px;
+    background:#fff;border-radius:40px 40px 0 0;
+  }
+
+  /* Animated check */
+  .check{
+    width:88px;height:88px;border-radius:50%;
+    margin:0 auto 18px;
+    display:flex;align-items:center;justify-content:center;
+    background:#fff;
+    position:relative;
+    box-shadow:0 0 0 0 rgba(37,244,238,.5);
+    animation:pop .5s cubic-bezier(.2,.8,.3,1.4) both, pulse 2s ease-out .6s infinite;
+  }
+  .check::before{
+    content:"";position:absolute;inset:-6px;border-radius:50%;
+    background:linear-gradient(135deg,var(--tt-cyan),var(--tt-red));
+    z-index:-1;
+  }
+  .check svg{width:46px;height:46px;}
+  .check svg path{
+    stroke-dasharray:48;stroke-dashoffset:48;
+    animation:draw .5s ease .35s forwards;
+  }
+  @keyframes pop{0%{transform:scale(0)}100%{transform:scale(1)}}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(37,244,238,.45)}
+    70%{box-shadow:0 0 0 16px rgba(37,244,238,0)}
+    100%{box-shadow:0 0 0 0 rgba(37,244,238,0)}
+  }
+
+  .card-top h1{color:#fff;font-size:23px;font-weight:800;letter-spacing:-.5px;}
+  .card-top p{color:rgba(255,255,255,.7);font-size:14px;margin-top:6px;}
+
+  .card-body{padding:8px 24px 24px;position:relative;}
+
+  .badge{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(254,44,85,.1);color:var(--tt-red);
+    font-size:12px;font-weight:700;
+    padding:6px 12px;border-radius:999px;
+    margin:0 auto 18px;
+  }
+  .badge-row{display:flex;justify-content:center;}
+
+  /* Order summary */
+  .order{
+    border:1px solid var(--tt-line);border-radius:14px;
+    padding:16px;margin-bottom:18px;
+  }
+  .order-row{
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:14px;padding:7px 0;
+  }
+  .order-row .k{color:var(--tt-gray);}
+  .order-row .v{font-weight:600;}
+  .order-row.total{
+    border-top:1px dashed var(--tt-line);margin-top:6px;padding-top:13px;
+  }
+  .order-row.total .v{color:var(--tt-red);font-size:18px;font-weight:800;}
+
+  /* Steps */
+  .steps{margin-bottom:22px;}
+  .steps h3{font-size:13px;color:var(--tt-gray);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;}
+  .step{display:flex;gap:12px;align-items:flex-start;padding-bottom:16px;position:relative;}
+  .step:not(:last-child)::before{
+    content:"";position:absolute;left:13px;top:28px;bottom:0;width:2px;background:var(--tt-line);
+  }
+  .step .dot{
+    width:28px;height:28px;border-radius:50%;flex:0 0 28px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:700;color:#fff;z-index:1;
+  }
+  .step.done .dot{background:linear-gradient(135deg,var(--tt-cyan),#0fd1c4);}
+  .step.active .dot{background:var(--tt-red);}
+  .step.next .dot{background:#fff;border:2px solid var(--tt-line);color:var(--tt-gray);}
+  .step .txt b{display:block;font-size:14px;font-weight:600;}
+  .step .txt span{font-size:12px;color:var(--tt-gray);}
+
+  /* CTA */
+  .cta{
+    display:block;width:100%;text-align:center;
+    background:var(--tt-red);color:#fff;
+    font-size:16px;font-weight:700;
+    padding:15px;border-radius:12px;border:none;cursor:pointer;
+    text-decoration:none;
+    transition:transform .1s ease,filter .2s ease;
+  }
+  .cta:active{transform:scale(.98);filter:brightness(.95);}
+  .cta-ghost{
+    display:block;width:100%;text-align:center;
+    background:transparent;color:var(--tt-black);
+    font-size:14px;font-weight:600;
+    padding:13px;margin-top:10px;border-radius:12px;
+    border:1px solid var(--tt-line);text-decoration:none;
+  }
+
+  .secure{
+    display:flex;align-items:center;justify-content:center;gap:6px;
+    margin-top:18px;color:var(--tt-gray);font-size:12px;
+  }
+  .foot{
+    text-align:center;color:var(--tt-gray);font-size:11px;
+    padding:18px;line-height:1.6;
+  }
+  .foot b{color:var(--tt-black);}
+
+  /* confetti */
+  .confetti{position:fixed;top:-10px;width:8px;height:14px;opacity:.9;z-index:5;animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:0;}}
+
+  /* toast de acompanhamento */
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(24px);
+    background:var(--tt-black);color:#fff;
+    font-size:13px;font-weight:600;line-height:1.4;
+    padding:13px 18px;border-radius:12px;
+    box-shadow:0 8px 30px rgba(22,24,35,.28);
+    display:flex;align-items:center;gap:9px;
+    max-width:340px;width:calc(100% - 36px);
+    opacity:0;pointer-events:none;z-index:50;
+    transition:opacity .25s ease,transform .25s ease;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast .dotgrad{
+    flex:0 0 9px;width:9px;height:9px;border-radius:50%;
+    background:linear-gradient(135deg,var(--tt-cyan),var(--tt-red));
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <span class="tt-note">
+      <svg width="20" height="22" viewBox="0 0 20 22" fill="none">
+        <path d="M14.5 0c.3 2.3 1.6 3.9 3.9 4.1v2.8c-1.3.1-2.5-.3-3.9-1.1v5.7c0 5.7-6.2 7.5-8.7 3.4-1.6-2.7-.6-7.4 4.7-7.6v3c-.4.06-.8.17-1.2.31-1.2.42-1.6 1.18-1.5 2.1.2 1.76 3.4 2.28 3.1-1.16V0h3.6z" fill="#fff"/>
+        <path d="M14.5 0c.3 2.3 1.6 3.9 3.9 4.1" stroke="#25F4EE" stroke-width="0"/>
+      </svg>
+    </span>
+    <span class="logo">TikTok <span style="color:var(--tt-red)">Shop</span></span>
+  </div>
+
+  <div class="wrap">
+    <div class="card">
+      <div class="card-top">
+        <div class="check">
+          <svg viewBox="0 0 52 52" fill="none">
+            <path d="M14 27l8 8 16-18" stroke="url(#g)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs><linearGradient id="g" x1="14" y1="27" x2="38" y2="27" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#25F4EE"/><stop offset="1" stop-color="#FE2C55"/>
+            </linearGradient></defs>
+          </svg>
+        </div>
+        <h1>Pedido confirmado!</h1>
+        <p>Obrigado pela sua compra 💖</p>
+      </div>
+
+      <div class="card-body">
+        <div class="badge-row">
+          <span class="badge">● Pagamento aprovado</span>
+        </div>
+
+        <div class="order">
+          <div class="order-row"><span class="k">Número do pedido</span><span class="v" id="orderId">#TT-000000</span></div>
+          <div class="order-row"><span class="k">Forma de pagamento</span><span class="v">Pix</span></div>
+          <div class="order-row"><span class="k">Entrega estimada</span><span class="v" id="ship">—</span></div>
+        </div>
+
+        <div class="steps">
+          <h3>Status do pedido</h3>
+          <div class="step done"><div class="dot">✓</div><div class="txt"><b>Pagamento confirmado</b><span>Recebemos seu pagamento com sucesso</span></div></div>
+          <div class="step active"><div class="dot">2</div><div class="txt"><b>Em separação</b><span>Seu produto está sendo preparado</span></div></div>
+          <div class="step next"><div class="dot">3</div><div class="txt"><b>A caminho</b><span>Você receberá o código de rastreio por e-mail em até 72 horas</span></div></div>
+          <div class="step next"><div class="dot">4</div><div class="txt"><b>Entregue</b><span>No conforto da sua casa</span></div></div>
+        </div>
+
+        <a class="cta" href="#" id="trackBtn">Acompanhar meu pedido</a>
+        <a class="cta-ghost" href="#" onclick="window.history.length>1?history.back():null;return false;">Continuar comprando</a>
+
+        <div class="secure">
+          🔒 Compra 100% segura e protegida
+        </div>
+      </div>
+    </div>
+
+    <div class="foot">
+      Um e-mail de confirmação será enviado para você em até 24 horas.<br>
+      Dúvidas? Fale com o vendedor pelo <b>TikTok Shop</b>.
+    </div>
+  </div>
+
+  <div class="toast" id="toast">
+    <span class="dotgrad"></span>
+    <span>O acompanhamento do pedido será liberado em breve. Fique de olho no seu e-mail! 📦</span>
+  </div>
+
+<script>
+  // Número de pedido pseudo-aleatório (estável por sessão)
+  (function(){
+    var n = Math.floor(100000 + Math.random()*900000);
+    document.getElementById('orderId').textContent = '#TT-' + n;
+
+    // Entrega estimada (+8 a +14 dias)
+    var meses=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+    var d1=new Date(); d1.setDate(d1.getDate()+8);
+    var d2=new Date(); d2.setDate(d2.getDate()+14);
+    document.getElementById('ship').textContent =
+      d1.getDate()+' '+meses[d1.getMonth()]+' – '+d2.getDate()+' '+meses[d2.getMonth()];
+  })();
+
+  // Botão "Acompanhar meu pedido": avisa que será liberado em breve
+  (function(){
+    var btn = document.getElementById('trackBtn');
+    var toast = document.getElementById('toast');
+    var hideTimer;
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      toast.classList.add('show');
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(function(){ toast.classList.remove('show'); }, 3800);
+    });
+  })();
+
+  // Confete TikTok ao carregar
+  (function(){
+    var cores=['#FE2C55','#25F4EE','#ffffff','#FFC107'];
+    for(var i=0;i<26;i++){
+      var c=document.createElement('div');
+      c.className='confetti';
+      c.style.left=Math.random()*100+'vw';
+      c.style.background=cores[i%cores.length];
+      c.style.animationDuration=(2+Math.random()*2)+'s';
+      c.style.animationDelay=(Math.random()*.6)+'s';
+      c.style.borderRadius=Math.random()>.5?'50%':'2px';
+      document.body.appendChild(c);
+      (function(el){setTimeout(function(){el.remove();},4500);})(c);
+    }
+  })();
+</script>
+</body>
+</html>

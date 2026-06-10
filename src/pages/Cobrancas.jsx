@@ -52,7 +52,7 @@ export default function Cobrancas({ profile, onGoPlanos }) {
           <div className="card-head"><h3>Seu plano</h3><span className="pill">{ratePct(plan)} por venda</span></div>
           <div className="bill-plan">
             <div className="bill-plan-name"><Icon name="planos" />{owner ? 'Plano Elite (dono — isento)' : planName(plan)}</div>
-            <p className="ck-muted">{owner ? 'Como dono da plataforma, você não paga taxa.' : `A cada venda paga, ${ratePct(plan)} é a taxa da AZ, cobrada no seu cartão nos horários definidos.`}</p>
+            <p className="ck-muted">{owner ? 'Como dono da plataforma, você não paga taxa.' : `A cada venda paga, ${ratePct(plan)} é a taxa da PinguFy, cobrada no seu cartão nos horários definidos.`}</p>
             {!owner && <button type="button" className="btn btn-ghost" onClick={onGoPlanos}><Icon name="planos" />Mudar de plano</button>}
           </div>
         </div>
@@ -62,7 +62,7 @@ export default function Cobrancas({ profile, onGoPlanos }) {
           {card ? (
             <div className="bill-card">
               <div className="bill-card-face"><Icon name="card" /><b>{(card.brand || 'Cartão').toUpperCase()} •••• {card.last4}</b></div>
-              <p className="ck-muted">É deste cartão que a taxa da AZ é descontada automaticamente.</p>
+              <p className="ck-muted">É deste cartão que a taxa da PinguFy é descontada automaticamente.</p>
               <button type="button" className="btn btn-ghost" onClick={cadastrarCartao}><Icon name="refresh" />Trocar cartão</button>
             </div>
           ) : (

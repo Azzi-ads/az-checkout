@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import Icon from './Icon.jsx'
+import BrandLogo from './BrandLogo.jsx'
 import { getUser, isOwner, planLabel } from '../auth.js'
 
 function initialsOf(name = '') {
   const parts = name.trim().split(/\s+/).filter(Boolean)
-  if (!parts.length) return 'AZ'
+  if (!parts.length) return 'PF'
   return (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase()
 }
 
@@ -14,7 +15,7 @@ const SECTIONS = [
     label: 'Principal',
     items: [
       { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-      { id: 'ia', label: 'AZ IA', icon: 'spark' },
+      { id: 'ia', label: 'PinguFy IA', icon: 'spark' },
       {
         id: 'analises', label: 'Análises', icon: 'chart',
         children: [
@@ -35,7 +36,7 @@ const SECTIONS = [
     items: [
       { id: 'perfil', label: 'Perfil', icon: 'user' },
       { id: 'aparencia', label: 'Aparência', icon: 'palette' },
-      { id: 'security', label: 'AZ Security', icon: 'shield' },
+      { id: 'security', label: 'PinguFy Security', icon: 'shield' },
       { id: 'cobrancas', label: 'Cobranças', icon: 'revenue' },
       { id: 'planos', label: 'Planos', icon: 'planos' },
     ],
@@ -97,7 +98,7 @@ export default function Sidebar({ page, onSelect, liveCount, onLogout, profile, 
   return (
     <aside className={`sidebar${open ? ' open' : ''}`}>
       <div className="brand">
-        <img className="brand-logo" src="/logo-wide.png" alt="AZ Checkout" width="430" height="96" />
+        <BrandLogo className="brand-logo" />
       </div>
 
       <button type="button" className="store-switch" aria-label="Trocar de loja" onClick={() => onSelect('perfil')}>

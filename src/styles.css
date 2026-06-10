@@ -10,9 +10,11 @@
   --text:#ffffff;
   --muted:#a6a6ae;
   --muted-2:#6b6b74;
-  --yellow:#ffd400;
-  --yellow-dim:#e6bf00;
-  --yellow-soft:rgba(255,212,0,.12);
+  --yellow:#a855f7;
+  --yellow-dim:#9333ea;
+  --yellow-soft:rgba(168,85,247,.14);
+  --on-accent:#fff;
+  --pingu-grad:linear-gradient(90deg,#2dd4bf,#a855f7 55%,#22d3ee);
   --green:#3ddc91;
   --red:#ff5d5d;
   --radius:16px;
@@ -547,6 +549,12 @@ body::before{
 .ck-sum-foot{display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
 .ck-sum-foot span{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--muted-2)}
 .ck-sum-foot svg{width:13px;height:13px;color:var(--green)}
+
+/* marca PinguFy — wordmark em gradiente (quando não há logo PNG) */
+.pingu-word{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.03em;line-height:1;display:inline-block;background:var(--pingu-grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.pingu-word{font-size:34px}
+.brand-logo.pingu-word{font-size:28px}
+.login-logo.pingu-word{font-size:42px}
 
 /* ===================================================================
    Painel admin — sidebar com grupos, Análises e Custos

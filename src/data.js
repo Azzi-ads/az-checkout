@@ -15,7 +15,7 @@ export const navAccount = [
 
 export const pageTitles = {
   dashboard: ['Dashboard', 'Visão geral da sua operação'],
-  ia: ['AZ IA', 'Crie funis e analise sua operação com inteligência artificial'],
+  ia: ['PinguFy IA', 'Crie funis e analise sua operação com inteligência artificial'],
   analises: ['Análises', 'Métricas e jornada do checkout'],
   custos: ['Custos', 'Lucro real da sua operação'],
   livex: ['Livex', 'Pessoas ao vivo no checkout'],
@@ -28,7 +28,7 @@ export const pageTitles = {
   aparencia: ['Aparência', 'Personalize as cores e o tema do painel'],
   integracoes: ['Integrações', 'Conecte seu gateway de pagamento'],
   checkout: ['Checkout', 'Personalize o checkout dos seus produtos'],
-  security: ['AZ Security', 'Proteção do checkout e dos dados'],
+  security: ['PinguFy Security', 'Proteção do checkout e dos dados'],
   admin: ['Admin', 'Painel do dono — contas e faturamento'],
 }
 
@@ -153,7 +153,7 @@ export const orderFilters = [
 ]
 
 export const storeFields = [
-  { label: 'Nome da loja', value: 'AZ Checkout' },
+  { label: 'Nome da loja', value: 'PinguFy' },
   { label: 'E-mail de suporte', value: 'suporte@azcheckout.com' },
 ]
 
@@ -181,10 +181,10 @@ export const notificationToggles = [
 export const plans = [
   {
     variant: 'normal', tagtop: 'Entrada essencial', name: 'Plano Start',
-    desc: 'Base essencial para iniciar a operação com a AZ Checkout sem mensalidade fixa.',
+    desc: 'Base essencial para iniciar a operação com a PinguFy sem mensalidade fixa.',
     price: 'Gratuito',
     fee: { rate: '2.5%', note: 'Sem mensalidade fixa.' },
-    benefits: ['Checkout AZ pronto para uso', 'Personalização completa dos temas', 'Integrações com gateways externos', 'Suporte via chat'],
+    benefits: ['Checkout PinguFy pronto para uso', 'Personalização completa dos temas', 'Integrações com gateways externos', 'Suporte via chat'],
     cta: { label: 'Começar grátis', variant: 'ghost' },
   },
   {

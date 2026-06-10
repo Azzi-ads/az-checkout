@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Navigate, Link } from 'react-router-dom'
 import Icon from '../components/Icon.jsx'
+import BrandLogo from '../components/BrandLogo.jsx'
 import { isAuthed, login, signUp, getUser } from '../auth.js'
 import { hydrate, getProfile, saveProfile } from '../store.js'
 
@@ -92,7 +93,7 @@ export default function Login() {
   return (
     <div className="login">
       <section className="login-hero">
-        <img className="login-logo" src="/logo-wide.png" alt="AZ Checkout" width="430" height="96" />
+        <BrandLogo className="login-logo" />
         <h1>A plataforma de checkout<br /> que <b>vende mais</b>.</h1>
         <p>Crie checkouts de alta conversão para seus infoprodutos — com Pix na hora, cartão em 12x e tudo personalizável.</p>
         <ul className="login-feats">

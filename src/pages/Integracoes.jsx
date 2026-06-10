@@ -80,7 +80,7 @@ export default function Integracoes() {
 
   return (
     <>
-      <p className="area-intro">Conecte seu gateway de pagamento. O AZ é o checkout; quem processa o dinheiro é o gateway que você conectar aqui.</p>
+      <p className="area-intro">Conecte seu gateway de pagamento. A PinguFy é o checkout; quem processa o dinheiro é o gateway que você conectar aqui.</p>
 
       <div className="grid integ-grid">
         {GATEWAYS.map((g) => (

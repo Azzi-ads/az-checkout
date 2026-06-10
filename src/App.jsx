@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import AdminApp from './AdminApp.jsx'
 import Checkout from './pages/Checkout.jsx'
 import Login from './pages/Login.jsx'
+import BrandLogo from './components/BrandLogo.jsx'
 import { initAuth, isAuthed } from './auth.js'
 import { hydrate } from './store.js'
 
@@ -26,7 +27,7 @@ export default function App() {
   if (!ready) {
     return (
       <div className="boot">
-        <img src="/logo-wide.png" alt="AZ Checkout" width="430" height="96" />
+        <BrandLogo />
         <span className="boot-spin" aria-hidden="true" />
       </div>
     )

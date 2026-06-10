@@ -4,7 +4,7 @@ import { getUser } from '../auth.js'
 
 function initialsOf(name = '') {
   const p = name.trim().split(/\s+/).filter(Boolean)
-  return p.length ? (p[0][0] + (p[1]?.[0] || '')).toUpperCase() : 'AZ'
+  return p.length ? (p[0][0] + (p[1]?.[0] || '')).toUpperCase() : 'PF'
 }
 
 export default function Perfil({ profile, onSave }) {

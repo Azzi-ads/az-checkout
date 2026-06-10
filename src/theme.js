@@ -27,11 +27,11 @@ export const MODES = [
   { key: 'light', label: 'Claro' },
 ]
 
-export const DEFAULT_THEME = { accent: '#ffd400', mode: 'dark', preset: 'amarelo', bg: '' }
+export const DEFAULT_THEME = { accent: '#a855f7', mode: 'dark', preset: 'pingufy', bg: '' }
 
 // Temas prontos do SITE (painel): fundo + cor + modo.
 export const SITE_THEMES = [
-  { key: 'amarelo', label: 'Padrão', bg: '', accent: '#ffd400', mode: 'dark' },
+  { key: 'pingufy', label: 'PinguFy', bg: '', accent: '#a855f7', mode: 'dark' },
   { key: 'grafite', label: 'Grafite', bg: 'linear-gradient(160deg,#101116,#0a0a0d)', accent: '#ffd400', mode: 'dark' },
   { key: 'aurora', label: 'Aurora', bg: 'radial-gradient(1000px 600px at 15% -10%, rgba(91,42,134,.5), transparent 60%), radial-gradient(900px 600px at 120% 10%, rgba(31,111,139,.4), transparent 55%), #0a0a12', accent: '#22d3ee', mode: 'dark' },
   { key: 'neon', label: 'Neon', bg: 'radial-gradient(820px 600px at 85% -5%, rgba(139,92,246,.4), transparent 60%), #07070d', accent: '#a78bfa', mode: 'dark' },

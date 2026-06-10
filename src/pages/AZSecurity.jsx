@@ -62,7 +62,7 @@ export default function AZSecurity({ profile, onSave }) {
       </div>
 
       <p className="area-intro" style={{ marginTop: 16 }}>
-        Quando ativa, a AZ Security mascara dados sensíveis enviados a integrações externas e adiciona uma camada extra de proteção ao checkout — sem afetar sua operação interna. O selo “Protegido por AZ Security” passa a aparecer no checkout.
+        Quando ativa, a PinguFy Security mascara dados sensíveis enviados a integrações externas e adiciona uma camada extra de proteção ao checkout — sem afetar sua operação interna. O selo “Protegido por PinguFy Security” passa a aparecer no checkout.
       </p>
     </>
   )

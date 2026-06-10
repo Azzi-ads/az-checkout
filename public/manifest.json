@@ -1,6 +1,6 @@
 {
-  "name": "AZ Checkout",
-  "short_name": "AZ Checkout",
+  "name": "PinguFy",
+  "short_name": "PinguFy",
   "description": "Plataforma de checkout — gerencie produtos, vendas e clientes.",
   "start_url": "/app",
   "scope": "/",

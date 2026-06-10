@@ -170,7 +170,7 @@ function Frame({ children, preview, styleVars, showTimer, mmss, logo, brandName,
       <main className="ck-body">{children}</main>
       <footer className="ck-foot">
         <PayBrands />
-        {secure && <span className="ck-secured"><Icon name="shield" />Protegido por AZ Security</span>}
+        {secure && <span className="ck-secured"><Icon name="shield" />Protegido por PinguFy Security</span>}
         <span>Pagamento processado com segurança</span>
       </footer>
       <WaButton wa={wa} />
