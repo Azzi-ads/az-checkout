@@ -3,6 +3,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { sendPushToOwner, brl } from '../lib/push.js'
 import { keyByOwner } from '../lib/gateway.js'
+import { processWithFallback, NoGatewayAvailableError } from '../lib/gatewayRouter.js'
 
 const BASE = 'https://bravopay.solutions/api/v1'
 const SB_URL = 'https://wgzihgfavsboezhrgqck.supabase.co'
@@ -51,15 +52,45 @@ export default async function handler(req, res) {
     const key = (sb && owner ? await keyByOwner(sb, owner) : null) || process.env.BRAVOPAY_API_KEY
     if (!key) return res.status(400).json({ error: 'Gateway não conectado. Conecte o BravoPay em Integrações.' })
 
-    const r = await fetch(`${BASE}/transactions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
-      body: JSON.stringify({ product_id, amount_cents, method: 'pix', customer, utm, fbclid, ttclid, gclid }),
-    })
-    const data = await r.json().catch(() => ({}))
-    if (!r.ok) {
-      const raw = data && Object.keys(data).length ? JSON.stringify(data) : `HTTP ${r.status}`
-      return res.status(r.status).json({ error: `BravoPay (${r.status}): ${raw}`, status: r.status })
+    // Processador de UM gateway. Hoje só sabemos falar com o BravoPay;
+    // outros gateways da fila de saúde são pulados (fallback continua).
+    const bravoBody = JSON.stringify({ product_id, amount_cents, method: 'pix', customer, utm, fbclid, ttclid, gclid })
+    const processOne = async (gatewayId) => {
+      if (gatewayId !== 'bravopay') throw new Error(`Sem processador para o gateway "${gatewayId}"`)
+      const r = await fetch(`${BASE}/transactions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+        body: bravoBody,
+      })
+      const d = await r.json().catch(() => ({}))
+      if (!r.ok) { const err = new Error('bravopay_http'); err.httpStatus = r.status; err.payload = d; throw err }
+      return { data: d, gatewayId }
+    }
+    const httpErr = (e) => {
+      const raw = e.payload && Object.keys(e.payload).length ? JSON.stringify(e.payload) : `HTTP ${e.httpStatus}`
+      return res.status(e.httpStatus).json({ error: `BravoPay (${e.httpStatus}): ${raw}`, status: e.httpStatus })
+    }
+
+    // Roteia pela saúde dos gateways; sem histórico de saúde (caso normal no
+    // lançamento) cai direto no BravoPay — preserva o comportamento original.
+    let data, gatewayUsed = 'bravopay', usedFallback = false
+    try {
+      const routed = await processWithFallback(sb, { product_id, amount_cents }, processOne)
+      data = routed.result?.data || {}
+      gatewayUsed = routed.gatewayUsed
+      usedFallback = routed.usedFallback
+    } catch (e) {
+      if (e?.httpStatus) return httpErr(e)
+      if (!(e instanceof NoGatewayAvailableError)) {
+        // todos os gateways da fila falharam por rede/timeout → último recurso BravoPay
+      }
+      try {
+        const direct = await processOne('bravopay')
+        data = direct.data
+      } catch (e2) {
+        if (e2?.httpStatus) return httpErr(e2)
+        throw e2
+      }
     }
 
     // extrai QR (copia-e-cola) e imagem em QUALQUER formato
@@ -82,6 +113,8 @@ export default async function handler(req, res) {
           items: items || [], total: total || (amount_cents / 100), method: 'pix', status: 'aguardando',
         }).select('id').single()
         saleId = sale?.id || null
+        // registra o gateway usado / fallback (separado: se a coluna não existir, não quebra a venda)
+        if (saleId) { try { await sb.from('sales').update({ gateway_id: gatewayUsed, gateway_fallback: usedFallback }).eq('id', saleId) } catch { /* coluna pode não existir */ } }
         if (owner) await sendPushToOwner(sb, owner, 'pending', { name: customer?.name, total: total || amount_cents / 100, product: items?.[0]?.name })
       } catch { /* segue sem saleId */ }
     }

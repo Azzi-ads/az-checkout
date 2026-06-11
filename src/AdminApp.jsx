@@ -18,6 +18,7 @@ import Cobrancas from './pages/Cobrancas.jsx'
 import Aparencia from './pages/Aparencia.jsx'
 import AZSecurity from './pages/AZSecurity.jsx'
 import Admin from './pages/Admin.jsx'
+import GatewaysAdmin from './pages/GatewaysAdmin.jsx'
 import useLiveCount from './useLiveCount.js'
 import Icon from './components/Icon.jsx'
 import { pageTitles, formatBRL } from './data.js'
@@ -34,6 +35,7 @@ const SIMPLE_PAGES = {
   checkout: CheckoutAdmin,
   integracoes: Integracoes,
   admin: Admin,
+  gateways: GatewaysAdmin,
   vendas: Vendas,
   config: Config,
   planos: Planos,
@@ -134,6 +136,7 @@ export default function AdminApp() {
     if (page === 'security') return <AZSecurity profile={profile} onSave={handleProfileSave} />
     if (page === 'cobrancas') return <Cobrancas profile={profile} onGoPlanos={() => selectPage('planos')} />
     if (page === 'admin' && !isOwner()) return <Dashboard profile={profile} onNav={selectPage} />
+    if (page === 'gateways' && !isOwner()) return <Dashboard profile={profile} onNav={selectPage} />
     const Page = SIMPLE_PAGES[page]
     return <Page />
   }

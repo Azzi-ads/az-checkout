@@ -30,6 +30,7 @@ export const pageTitles = {
   checkout: ['Checkout', 'Personalize o checkout dos seus produtos'],
   security: ['PinguFy Security', 'Proteção do checkout e dos dados'],
   admin: ['Admin', 'Painel do dono — contas e faturamento'],
+  gateways: ['Gateways', 'Roteamento e saúde dos gateways PIX'],
 }
 
 export const dashboardKpis = [

@@ -1,6 +1,8 @@
 // Painel do dono — lê TODAS as contas/vendas e permite editar (service_role).
 // Só responde a quem for o dono (verifica o token de sessão).
+// Também concentra o health-check de gateways (evita criar função nova no Hobby).
 import { createClient } from '@supabase/supabase-js'
+import { runHealthCheckOnce, cleanupOldHealth, gatewayIds } from '../jobs/healthCheck.js'
 
 const SB_URL = 'https://wgzihgfavsboezhrgqck.supabase.co'
 const OWNERS = ['enzoazzi76@gmail.com', 'enzozzi76@gmail.com']
@@ -24,6 +26,12 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
       const body = req.body || {}
+      if (body.action === 'gatewayHealthCheck') {
+        // roda um ciclo de health-check sob demanda (substitui o job no Hobby)
+        await runHealthCheckOnce(sb)
+        cleanupOldHealth(sb).catch(() => {})
+        return res.status(200).json({ ok: true, gateways: gatewayIds() })
+      }
       if (body.action === 'novidade') {
         if (!body.title) return res.status(400).json({ error: 'Título obrigatório.' })
         const { error } = await sb.from('announcements').insert({ title: body.title, body: body.body || '', tag: body.tag || 'Novidade' })

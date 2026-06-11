@@ -10,6 +10,8 @@ import { ping, leave, recordEvent } from '../liveTracker.js'
 import { joinCheckoutPresence } from '../livePresence.js'
 import { recordSale, updateSale, addSaleItem } from '../sales.js'
 import { hasBackend } from '../supabase.js'
+import { useIntentScore } from '../hooks/useIntentScore.js'
+import IntentActions from '../components/checkout/IntentActions.jsx'
 
 async function apiRegistrarVenda(payload) {
   try {
@@ -215,6 +217,10 @@ export function CheckoutView({ product, preview = false }) {
   const outcomeRef = useRef('abandoned')
   const infoRef = useRef({})
   const presRef = useRef(null)
+
+  // Purchase Intent Score — rastreio de comportamento + ações por faixa
+  const intent = useIntentScore({ checkoutId: product.slug })
+  useEffect(() => { if (status === 'paid') intent.markConverted() }, [status, intent])
 
   useEffect(() => {
     if (!cfg.timer || preview) return
@@ -671,7 +677,11 @@ export function CheckoutView({ product, preview = false }) {
   return (
     <Frame preview={preview} styleVars={styleVars} showTimer={cfg.timer} mmss={mmss} logo={cfg.logo} brandName={product.name} secure={secure} bg={cfg.bg} wa={cfg.whatsapp} tpl={cfg.model} skin={cfg.skin}>
       {cfg.bannerTop && <img className="ck-bannerimg" src={cfg.bannerTop} alt="" />}
-      <form className={gridClass} onSubmit={pay}>
+      <form
+        className={gridClass}
+        onSubmit={pay}
+        onFocus={(e) => { intent.trackFieldClick(); if (e.target?.id === 'ck-valor') intent.trackReturnToPrice() }}
+      >
         <div className="ck-main">
           {cfg.headline?.enabled && cfg.headline.text && <div className="ck-banner">{cfg.headline.text}</div>}
           {stepsN > 1 && introNode}
@@ -692,7 +702,13 @@ export function CheckoutView({ product, preview = false }) {
 
           {isLast ? (
             <>
-              <button type="submit" className="btn btn-primary ck-cta" disabled={!canPay || loading}>
+              <button
+                type="submit"
+                className="btn btn-primary ck-cta"
+                disabled={!canPay || loading}
+                onMouseEnter={intent.trackHoverPayButton}
+                onTouchStart={intent.trackHoverPayButton}
+              >
                 <Icon name="lock" />{loading ? 'Gerando Pix…' : `${cfg.ctaText} ${formatBRL(total)}`}
               </button>
               <p className="ck-secure"><Icon name="shield" /> Ambiente seguro e criptografado</p>
@@ -707,6 +723,19 @@ export function CheckoutView({ product, preview = false }) {
         {Resumo}
       </form>
       {cfg.bannerBottom && <img className="ck-bannerimg" src={cfg.bannerBottom} alt="" />}
+      {!preview && (
+        <IntentActions
+          score={intent.score}
+          isExitIntent={intent.isExitIntent}
+          checkoutId={product.slug}
+          whatsapp={cfg.whatsapp?.number || ''}
+          discountConfig={{
+            label: cfg.intentDiscount?.label || 'Desconto relâmpago',
+            couponCode: cfg.intentDiscount?.couponCode || 'PINGU10',
+            expiresInMinutes: cfg.intentDiscount?.expiresInMinutes || 10,
+          }}
+        />
+      )}
     </Frame>
   )
 }

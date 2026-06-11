@@ -127,6 +127,7 @@ export default function Sidebar({ page, onSelect, liveCount, onLogout, profile, 
           <div>
             <div className="nav-label">Dono</div>
             <NavItem item={{ id: 'admin', label: 'Admin', icon: 'shield' }} page={page} onSelect={onSelect} />
+            <NavItem item={{ id: 'gateways', label: 'Gateways', icon: 'store' }} page={page} onSelect={onSelect} />
           </div>
         )}
       </nav>
